@@ -7,6 +7,7 @@ use App\Models\Banner;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 
 class HomeController extends Controller
@@ -19,13 +20,15 @@ class HomeController extends Controller
             ->get();
 
         $brandProducts = [];
+        $brandTotalCounts = [];
         foreach ($brands as $brand) {
             $brandProducts[$brand->id] = Product::query()
                 ->published()
                 ->where('brand_id', $brand->id)
                 ->with(['primaryImage', 'defaultVariant.inventory', 'category'])
-                ->take(12)
+                ->take(6)
                 ->get();
+            $brandTotalCounts[$brand->id] = $brand->products_count;
         }
 
         $data = [
@@ -38,11 +41,35 @@ class HomeController extends Controller
                 ->with('user:id,name')->orderByDesc('rating')->take(3)->get(),
             'brands' => $brands,
             'brandProducts' => $brandProducts,
+            'brandTotalCounts' => $brandTotalCounts,
             'heroBanners' => Banner::running()->where('placement', 'hero')->take(2)->get(),
             'promotionalBanners' => Banner::running()->where('placement', 'promotional')->take(2)->get(),
         ];
 
         return view('customer.home', $data);
+    }
+
+    public function brandProductsApi(Brand $brand): JsonResponse
+    {
+        $offset = (int) request('offset', 0);
+        $limit = (int) request('limit', 12);
+        $limit = min($limit, 24);
+
+        $products = Product::query()
+            ->published()
+            ->where('brand_id', $brand->id)
+            ->with(['primaryImage', 'defaultVariant.inventory', 'category'])
+            ->skip($offset)
+            ->take($limit)
+            ->get();
+
+        $html = view('components.product-card-grid', ['products' => $products])->render();
+
+        return response()->json([
+            'html' => $html,
+            'count' => $products->count(),
+            'hasMore' => $products->count() === $limit,
+        ]);
     }
 
     protected function productRail(\Closure $scope, int $limit)

@@ -259,16 +259,38 @@
           x-transition:enter-end="opacity-100 translate-y-0"
         >
           @if(isset($brandProducts[$brand->id]) && $brandProducts[$brand->id]->count())
-            <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 sm:gap-4">
-              @foreach($brandProducts[$brand->id] as $product)
-                <x-product-card :product="$product" />
-              @endforeach
-            </div>
-            <div class="mt-6 text-center">
-              <a href="{{ route('shop.index', ['brand' => $brand->slug]) }}" class="inline-flex items-center gap-1.5 rounded-full border border-[#0C831F]/30 bg-white px-6 py-2.5 text-sm font-semibold text-[#0C831F] transition duration-300 hover:border-[#0C831F] hover:bg-[#0C831F] hover:text-white">
-                View All {{ $brand->name }} Products
-                <x-lucide-arrow-right class="h-4 w-4" />
-              </a>
+            <div
+              x-data="brandProductLoader({ brandId: {{ $brand->id }}, brandSlug: '{{ $brand->slug }}', initialCount: {{ $brandProducts[$brand->id]->count() }}, totalCount: {{ $brandTotalCounts[$brand->id] ?? 0 }})"
+              x-init="checkInitial()"
+            >
+              <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 sm:gap-4" x-ref="grid">
+                @foreach($brandProducts[$brand->id] as $product)
+                  <x-product-card :product="$product" />
+                @endforeach
+              </div>
+              <div class="mt-6 text-center">
+                <template x-if="hasMore">
+                  <button
+                    @click="loadMore()"
+                    :disabled="loading"
+                    class="inline-flex items-center gap-2 rounded-full border border-[#0C831F]/30 bg-white px-6 py-2.5 text-sm font-semibold text-[#0C831F] transition duration-300 hover:border-[#0C831F] hover:bg-[#0C831F] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <template x-if="!loading">
+                      Load More {{ $brand->name }} Products
+                      <x-lucide-chevron-down class="h-4 w-4" />
+                    </template>
+                    <template x-if="loading">
+                      <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                      Loading...
+                    </template>
+                  </button>
+                </template>
+                <template x-if="!hasMore && totalLoaded >= totalCount && totalCount > 0">
+                  <span class="inline-flex items-center gap-1.5 rounded-full border border-sage/30 bg-white px-6 py-2.5 text-sm font-semibold text-charcoal/50">
+                    All {{ $brand->name }} Products Loaded
+                  </span>
+                </template>
+              </div>
             </div>
           @else
             <div class="mt-6 rounded-2xl border border-dashed border-sage/30 bg-white/50 py-12 text-center">
@@ -541,5 +563,46 @@
   .rail-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 9999px; }
   .rail-scroll:hover::-webkit-scrollbar-thumb { background: #0C831F; }
 </style>
+
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('brandProductLoader', (config) => ({
+        brandId: config.brandId,
+        brandSlug: config.brandSlug,
+        offset: config.initialCount,
+        totalLoaded: config.initialCount,
+        totalCount: config.totalCount,
+        loading: false,
+        hasMore: true,
+
+        checkInitial() {
+            this.hasMore = this.totalLoaded < this.totalCount;
+        },
+
+        async loadMore() {
+            if (this.loading || !this.hasMore) return;
+            this.loading = true;
+            try {
+                const url = `/api/brands/${this.brandId}/products?offset=${this.offset}&limit=12`;
+                const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                const data = await resp.json();
+                if (data.html && data.html.trim()) {
+                    this.$refs.grid.insertAdjacentHTML('beforeend', data.html);
+                    this.offset += data.count;
+                    this.totalLoaded += data.count;
+                    this.hasMore = data.hasMore;
+                } else {
+                    this.hasMore = false;
+                }
+            } catch (e) {
+                console.error('Load more failed:', e);
+                this.hasMore = false;
+            } finally {
+                this.loading = false;
+            }
+        },
+    }));
+});
+</script>
 
 @endsection

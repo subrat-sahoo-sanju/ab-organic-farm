@@ -11,6 +11,7 @@ Route::get('/search', [Customer\SearchController::class, 'results'])->name('shop
 Route::get('/search-page', [Customer\SearchController::class, 'page'])->name('shop.search-page');
 Route::get('/api/search-suggest', [Customer\SearchController::class, 'suggest'])->name('shop.search-suggest');
 Route::get('/api/pincode/{pincode}/check', [Customer\DeliveryAreaController::class, 'check'])->name('pincode.check');
+Route::get('/api/brands/{brand}/products', [Customer\HomeController::class, 'brandProductsApi'])->name('api.brand.products');
 
 Route::get('/cart', [Customer\CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add', [Customer\CartController::class, 'add'])->name('cart.add');
