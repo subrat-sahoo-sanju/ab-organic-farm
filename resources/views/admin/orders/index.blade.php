@@ -3,6 +3,9 @@
 @section('content')
 <div class="space-y-5">
 
+  {{-- Live order feed strip --}}
+  <x-admin.live-orders />
+
   <div class="flex flex-wrap items-center justify-between gap-4">
     <div class="flex items-center gap-3">
       <h1 class="adm-page-title">Orders</h1>

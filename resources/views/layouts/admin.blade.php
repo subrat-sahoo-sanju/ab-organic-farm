@@ -321,11 +321,8 @@
           </template>
         </button>
 
-        {{-- Notifications Bell --}}
-        <button class="relative rounded-lg p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-white" title="Notifications">
-          <x-lucide-bell class="h-5 w-5" />
-          <span class="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500"></span>
-        </button>
+        {{-- Live Notifications Bell --}}
+        <x-admin.notifications />
 
         {{-- Mobile View Store --}}
         <a href="{{ route('shop.index') }}" target="_blank" rel="noopener noreferrer"

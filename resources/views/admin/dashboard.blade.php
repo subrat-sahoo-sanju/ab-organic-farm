@@ -121,6 +121,9 @@
 
   </div>
 
+  {{-- ───────── Live Today's Orders Ticker ───────── --}}
+  <x-admin.live-orders />
+
   {{-- ───────── Sales Chart ───────── --}}
   <div class="adm-section">
     <div class="mb-5 flex items-center justify-between">

@@ -135,6 +135,9 @@ class OrderService
 
             event(new \App\Events\OrderPlaced($order));
 
+            // Push a live admin notification (new order alert)
+            \App\Models\AdminNotification::orderPlaced($order);
+
             // Clear cart
             $cart->items()->delete();
             $cart->update(['coupon_id' => null]);
@@ -206,7 +209,34 @@ class OrderService
 
         event(new OrderStatusChanged($order, $from, $to));
 
+        // Live admin notification for the status change
+        $this->notifyStatusChange($order, $from, $to);
+
         return $order->refresh();
+    }
+
+    protected function notifyStatusChange(Order $order, OrderStatus $from, OrderStatus $to): void
+    {
+        // Only alert for meaningful changes that need attention
+        if ($to === OrderStatus::Pending || $to === $from) {
+            return; // placement already handled separately; no-op changes skipped
+        }
+
+        $label = $to->label();
+        \App\Models\AdminNotification::create([
+            'type' => 'status',
+            'title' => "Order {$order->order_number} → {$label}",
+            'message' => "Order moved from {$from->label()} to {$label}.",
+            'icon' => 'refresh-cw',
+            'color' => 'sky',
+            'order_id' => $order->id,
+            'meta' => [
+                'order_number' => $order->order_number,
+                'from' => $from->value,
+                'to' => $to->value,
+                'status' => $to->value,
+            ],
+        ]);
     }
 
     protected function wasDispatched(OrderStatus $status): bool

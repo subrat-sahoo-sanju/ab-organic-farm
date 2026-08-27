@@ -10,6 +10,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'active'])
             ->middleware('role:super_admin,admin,delivery_manager')
             ->name('dashboard');
 
+        // Live admin notifications
+        Route::get('/notifications', [Admin\NotificationController::class, 'index'])->name('notifications.index');
+        Route::get('/notifications/fresh', [Admin\NotificationController::class, 'fresh'])->name('notifications.fresh');
+        Route::post('/notifications/{notification}/read', [Admin\NotificationController::class, 'markRead'])->name('notifications.read');
+        Route::post('/notifications/read-all', [Admin\NotificationController::class, 'markAllRead'])->name('notifications.read-all');
+
         Route::resource('categories', Admin\CategoryController::class)
             ->except('show')->middleware('role:super_admin,admin');
         Route::post('/categories/{category}/restore', [Admin\CategoryController::class, 'restore'])
@@ -32,6 +38,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'active'])
         Route::post('/inventory/{inventory}/adjust', [Admin\InventoryController::class, 'adjust'])->name('inventory.adjust');
 
         Route::get('/orders', [Admin\OrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/live', [Admin\OrderController::class, 'live'])->name('orders.live');
         Route::get('/orders/{order}', [Admin\OrderController::class, 'show'])->name('orders.show');
         Route::patch('/orders/{order}/transition', [Admin\OrderController::class, 'transition'])->name('orders.transition');
 
