@@ -179,7 +179,7 @@
 {{-- ========== SECTION 2: CATEGORY PILLS (Horizontal Scroll) ========== --}}
 @if($categories->count())
 <section class="border-b border-sage/10 bg-white py-5">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <div class="w-full px-4 sm:px-6 lg:px-8">
     <div class="scrollbar-none flex items-center gap-3 overflow-x-auto pb-1" style="-webkit-overflow-scrolling: touch;">
       @foreach($categories as $category)
         <a
@@ -214,7 +214,7 @@
 {{-- ========== SECTION 3: BRAND SHOWCASE (Full Width Tabs) ========== --}}
 @if($brands->count())
 <section class="w-full bg-gradient-to-b from-[#FDFBF7] to-[#f5f9f0] py-10">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <div class="w-full px-4 sm:px-6 lg:px-8">
     <div class="text-center">
       <h2 class="font-display text-xl font-bold text-charcoal sm:text-2xl">Shop by Brand</h2>
       <p class="mt-1 text-sm text-charcoal/50">Explore our trusted organic brands</p>
@@ -286,7 +286,7 @@
 {{-- ========== SECTION 4: PROMOTIONAL BANNERS ========== --}}
 @if($promotionalBanners->count())
 <section class="py-6">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <div class="w-full px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
       @foreach($promotionalBanners as $banner)
         @if(!empty($banner->show_text) && $banner->show_text)
@@ -328,7 +328,7 @@
 @else
 {{-- Fallback Promo Cards --}}
 <section class="py-6">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <div class="w-full px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#ff6b35] to-[#ff9a5c] p-6 text-white shadow-lg transition duration-300 hover:shadow-xl sm:p-8">
         <div class="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-white/10"></div>
@@ -365,7 +365,7 @@
 {{-- ========== SECTION 5: FEATURED PRODUCTS ========== --}}
 @if($featuredProducts->count())
 <section class="py-8">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <div class="w-full px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between">
       <div>
         <h2 class="font-display text-xl font-bold text-charcoal sm:text-2xl">Featured Products</h2>
@@ -399,7 +399,7 @@
 {{-- ========== SECTION 5b: BEST SELLERS ========== --}}
 @if($bestSellers->count())
 <section class="bg-[#fefdf5] py-8">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <div class="w-full px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between">
       <div>
         <h2 class="font-display text-xl font-bold text-charcoal sm:text-2xl">Best Sellers</h2>
@@ -433,7 +433,7 @@
 {{-- ========== SECTION 5c: NEW ARRIVALS ========== --}}
 @if($newArrivals->count())
 <section class="py-8">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <div class="w-full px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between">
       <div>
         <h2 class="font-display text-xl font-bold text-charcoal sm:text-2xl">New Arrivals</h2>
@@ -466,7 +466,7 @@
 
 {{-- ========== SECTION 6: WHY CHOOSE US ========== --}}
 <section class="border-t border-sage/10 bg-white py-10">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <div class="w-full px-4 sm:px-6 lg:px-8">
     <h2 class="text-center font-display text-xl font-bold text-charcoal sm:text-2xl">Why Choose AB Organic Farm?</h2>
     <div class="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
       <div class="rounded-2xl border border-sage/20 bg-[#FDFBF7]/60 p-5 text-center transition duration-300 hover:border-[#0C831F]/30 hover:shadow-sm">
@@ -504,7 +504,7 @@
 {{-- ========== SECTION 7: TESTIMONIALS ========== --}}
 @if($testimonials->count())
 <section class="bg-[#0C831F]/5 py-10">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <div class="w-full px-4 sm:px-6 lg:px-8">
     <h2 class="text-center font-display text-xl font-bold text-charcoal sm:text-2xl">What Our Customers Say</h2>
     <div class="scrollbar-none mt-8 flex gap-4 overflow-x-auto pb-2 sm:justify-center" style="-webkit-overflow-scrolling: touch;">
       @foreach($testimonials as $review)
