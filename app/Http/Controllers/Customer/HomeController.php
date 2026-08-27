@@ -24,7 +24,7 @@ class HomeController extends Controller
                 ->published()
                 ->where('brand_id', $brand->id)
                 ->with(['primaryImage', 'defaultVariant.inventory', 'category'])
-                ->take(4)
+                ->take(12)
                 ->get();
         }
 
