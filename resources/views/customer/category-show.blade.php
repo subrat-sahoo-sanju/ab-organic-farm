@@ -51,7 +51,7 @@
   </div>
 
   @if($products->count())
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 sm:gap-4">
       @foreach($products as $product)
         <x-product-card :product="$product" />
       @endforeach

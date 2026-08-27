@@ -64,6 +64,15 @@
     --color-charcoal-800: #1E2922;
     --color-charcoal-900: #121B16;
 
+    /* ── Base tokens (enable slash-opacity modifiers) ──── */
+    --color-forest:   #0C831F;
+    --color-mint:     #30BD68;
+    --color-sage:     #A3C5B5;
+    --color-clay:     #E74D33;
+    --color-harvest:  #F5A623;
+    --color-cream:    #FDF9F2;
+    --color-charcoal: #3A4B42;
+
     /* ── Typography ────────────────────────────────────── */
     --font-display: 'Fraunces', Georgia, serif;
     --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;

@@ -5,7 +5,7 @@
   <h1 class="font-display text-3xl font-bold text-charcoal">Shop by Category</h1>
   <p class="mt-2 text-charcoal/60">Find exactly what you need — all certified organic, all farm-fresh.</p>
 
-  <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+  <div class="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 sm:gap-4">
     @foreach($categories as $category)
       <a href="{{ route('shop.category', $category->slug) }}" class="group relative overflow-hidden rounded-2xl border border-sage/20 bg-white shadow-sm transition hover:shadow-md hover:border-forest">
         <div class="aspect-[4/3] bg-forest/5 p-8 flex items-center justify-center">
