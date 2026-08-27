@@ -259,7 +259,7 @@
           x-transition:enter-end="opacity-100 translate-y-0"
         >
           @if(isset($brandProducts[$brand->id]) && $brandProducts[$brand->id]->count())
-            <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-4 sm:gap-4">
+            <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 sm:gap-4">
               @foreach($brandProducts[$brand->id] as $product)
                 <x-product-card :product="$product" />
               @endforeach
@@ -376,20 +376,9 @@
         <x-lucide-chevron-right class="h-4 w-4" />
       </a>
     </div>
-    <div x-data="{ paused: false }" @mouseenter="paused = true" @mouseleave="paused = false" x-init="
-      const el = $refs.rail;
-      let dir = 1;
-      setInterval(() => {
-        if (paused || !el) return;
-        el.scrollLeft += dir * 2;
-        if (el.scrollLeft >= el.scrollWidth - el.clientWidth - 10) dir = -1;
-        if (el.scrollLeft <= 10) dir = 1;
-      }, 30);
-    " x-ref="rail" class="rail-scroll mt-5 flex gap-4 overflow-x-auto pb-2" style="-webkit-overflow-scrolling: touch;">
+    <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 sm:gap-4">
       @foreach($featuredProducts as $product)
-        <div class="w-44 flex-shrink-0 sm:w-52">
-          <x-product-card :product="$product" />
-        </div>
+        <x-product-card :product="$product" />
       @endforeach
     </div>
   </div>
@@ -410,20 +399,9 @@
         <x-lucide-chevron-right class="h-4 w-4" />
       </a>
     </div>
-    <div x-data="{ paused: false }" @mouseenter="paused = true" @mouseleave="paused = false" x-init="
-      const el = $refs.rail;
-      let dir = 1;
-      setInterval(() => {
-        if (paused || !el) return;
-        el.scrollLeft += dir * 2;
-        if (el.scrollLeft >= el.scrollWidth - el.clientWidth - 10) dir = -1;
-        if (el.scrollLeft <= 10) dir = 1;
-      }, 30);
-    " x-ref="rail" class="rail-scroll mt-5 flex gap-4 overflow-x-auto pb-2" style="-webkit-overflow-scrolling: touch;">
+    <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 sm:gap-4">
       @foreach($bestSellers as $product)
-        <div class="w-44 flex-shrink-0 sm:w-52">
-          <x-product-card :product="$product" />
-        </div>
+        <x-product-card :product="$product" />
       @endforeach
     </div>
   </div>
@@ -444,20 +422,9 @@
         <x-lucide-chevron-right class="h-4 w-4" />
       </a>
     </div>
-    <div x-data="{ paused: false }" @mouseenter="paused = true" @mouseleave="paused = false" x-init="
-      const el = $refs.rail;
-      let dir = 1;
-      setInterval(() => {
-        if (paused || !el) return;
-        el.scrollLeft += dir * 2;
-        if (el.scrollLeft >= el.scrollWidth - el.clientWidth - 10) dir = -1;
-        if (el.scrollLeft <= 10) dir = 1;
-      }, 30);
-    " x-ref="rail" class="rail-scroll mt-5 flex gap-4 overflow-x-auto pb-2" style="-webkit-overflow-scrolling: touch;">
+    <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 sm:gap-4">
       @foreach($newArrivals as $product)
-        <div class="w-44 flex-shrink-0 sm:w-52">
-          <x-product-card :product="$product" />
-        </div>
+        <x-product-card :product="$product" />
       @endforeach
     </div>
   </div>
