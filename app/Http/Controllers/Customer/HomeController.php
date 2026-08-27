@@ -31,9 +31,9 @@ class HomeController extends Controller
         $data = [
             'categories' => Category::whereNull('parent_id')
                 ->withCount('products')->orderBy('sort_order')->take(8)->get(),
-            'featuredProducts' => $this->productRail(fn ($q) => $q->where('is_featured', true), 4),
-            'bestSellers' => $this->productRail(fn ($q) => $q->where('is_best_seller', true), 4),
-            'newArrivals' => $this->productRail(fn ($q) => $q->where('is_new_arrival', true), 4),
+            'featuredProducts' => $this->productRail(fn ($q) => $q->where('is_featured', true), 12),
+            'bestSellers' => $this->productRail(fn ($q) => $q->where('is_best_seller', true), 12),
+            'newArrivals' => $this->productRail(fn ($q) => $q->where('is_new_arrival', true), 12),
             'testimonials' => \App\Models\Review::where('status', 'approved')
                 ->with('user:id,name')->orderByDesc('rating')->take(3)->get(),
             'brands' => $brands,
