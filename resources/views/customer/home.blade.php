@@ -270,20 +270,36 @@
               </div>
               <div class="mt-6 text-center">
                 <template x-if="hasMore">
-                  <button
-                    @click="loadMore()"
-                    :disabled="loading"
-                    class="inline-flex items-center gap-2 rounded-full border border-[#0C831F]/30 bg-white px-6 py-2.5 text-sm font-semibold text-[#0C831F] transition duration-300 hover:border-[#0C831F] hover:bg-[#0C831F] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <template x-if="!loading">
-                      Load More {{ $brand->name }} Products
-                      <x-lucide-chevron-down class="h-4 w-4" />
-                    </template>
-                    <template x-if="loading">
-                      <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-                      Loading...
-                    </template>
-                  </button>
+                  <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <button
+                      @click="loadMore()"
+                      :disabled="loading"
+                      class="inline-flex items-center gap-2 rounded-full border border-[#0C831F]/30 bg-white px-6 py-2.5 text-sm font-semibold text-[#0C831F] transition duration-300 hover:border-[#0C831F] hover:bg-[#0C831F] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <template x-if="!loading">
+                        Load More
+                        <x-lucide-chevron-down class="h-4 w-4" />
+                      </template>
+                      <template x-if="loading">
+                        <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                        Loading...
+                      </template>
+                    </button>
+                    <button
+                      @click="loadAll()"
+                      :disabled="loading"
+                      class="inline-flex items-center gap-2 rounded-full border border-[#0C831F]/30 bg-[#0C831F] px-6 py-2.5 text-sm font-semibold text-white transition duration-300 hover:bg-[#0A6E1A] disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <template x-if="!loading">
+                        View All {{ $brand->name }} Products
+                        <x-lucide-arrow-right class="h-4 w-4" />
+                      </template>
+                      <template x-if="loading">
+                        <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                        Loading All...
+                      </template>
+                    </button>
+                  </div>
                 </template>
                 <template x-if="!hasMore && totalLoaded >= totalCount && totalCount > 0">
                   <span class="inline-flex items-center gap-1.5 rounded-full border border-sage/30 bg-white px-6 py-2.5 text-sm font-semibold text-charcoal/50">
@@ -596,6 +612,31 @@ document.addEventListener('alpine:init', () => {
                 }
             } catch (e) {
                 console.error('Load more failed:', e);
+                this.hasMore = false;
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async loadAll() {
+            if (this.loading || !this.hasMore) return;
+            this.loading = true;
+            try {
+                // Load all remaining at once
+                const remaining = this.totalCount - this.totalLoaded;
+                const url = `/api/brands/${this.brandId}/products?offset=${this.offset}&limit=${remaining}`;
+                const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                const data = await resp.json();
+                if (data.html && data.html.trim()) {
+                    this.$refs.grid.insertAdjacentHTML('beforeend', data.html);
+                    this.offset += data.count;
+                    this.totalLoaded += data.count;
+                    this.hasMore = data.hasMore;
+                } else {
+                    this.hasMore = false;
+                }
+            } catch (e) {
+                console.error('Load all failed:', e);
                 this.hasMore = false;
             } finally {
                 this.loading = false;

@@ -53,7 +53,7 @@ class HomeController extends Controller
     {
         $offset = (int) request('offset', 0);
         $limit = (int) request('limit', 12);
-        $limit = min($limit, 24);
+        $limit = min($limit, 100);
 
         $products = Product::query()
             ->published()
