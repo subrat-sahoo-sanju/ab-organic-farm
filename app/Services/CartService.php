@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Cart;
+use App\Models\CartItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Cookie;
@@ -46,7 +47,8 @@ class CartService
         $available = $variant->inventory?->available() ?? 0;
 
         $existing = $cart->items()->where('product_variant_id', $variant->id)->first();
-        $newQty = min($existing?->quantity ?? 0, 0) + max(1, $qty);
+        $qty = max(1, $qty);
+        $newQty = ($existing?->quantity ?? 0) + $qty;
 
         if ($newQty > $available) {
             throw new \DomainException($available > 0
@@ -55,7 +57,7 @@ class CartService
         }
 
         if ($existing) {
-            $existing->increment('quantity', $newQty - $existing->quantity);
+            $existing->update(['quantity' => $newQty]);
         } else {
             $cart->items()->create([
                 'product_variant_id' => $variant->id,

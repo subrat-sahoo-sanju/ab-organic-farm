@@ -269,8 +269,7 @@
                 @endforeach
               </div>
               <div class="mt-6 text-center">
-                <template x-if="hasMore">
-                  <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <div x-show="hasMore" x-cloak class="flex flex-col sm:flex-row items-center justify-center gap-3">
                     <button
                       @click="loadMore()"
                       :disabled="loading"
@@ -300,12 +299,10 @@
                       </template>
                     </button>
                   </div>
-                </template>
-                <template x-if="!hasMore && totalLoaded >= totalCount && totalCount > 0">
-                  <span class="inline-flex items-center gap-1.5 rounded-full border border-sage/30 bg-white px-6 py-2.5 text-sm font-semibold text-charcoal/50">
-                    All {{ $brand->name }} Products Loaded
-                  </span>
-                </template>
+                <span x-show="!hasMore && totalLoaded >= totalCount && totalCount > 0" x-cloak
+                  class="inline-flex items-center gap-1.5 rounded-full border border-sage/30 bg-white px-6 py-2.5 text-sm font-semibold text-charcoal/50">
+                  All {{ $brand->name }} Products Loaded
+                </span>
               </div>
             </div>
           @else

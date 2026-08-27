@@ -14,6 +14,7 @@ Route::get('/api/pincode/{pincode}/check', [Customer\DeliveryAreaController::cla
 Route::get('/api/brands/{brand}/products', [Customer\HomeController::class, 'brandProductsApi'])->name('api.brand.products');
 
 Route::get('/cart', [Customer\CartController::class, 'index'])->name('cart.index');
+Route::get('/cart/state', [Customer\CartController::class, 'state'])->name('cart.state');
 Route::post('/cart/add', [Customer\CartController::class, 'add'])->name('cart.add');
 Route::patch('/cart/items/{item}', [Customer\CartController::class, 'update'])->name('cart.update');
 Route::delete('/cart/items/{item}', [Customer\CartController::class, 'remove'])->name('cart.remove');

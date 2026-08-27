@@ -319,8 +319,7 @@ function cartPage() {
           this.couponDiscount = data.coupon_discount;
           this.deliveryCharge = data.delivery_charge;
           this.grandTotal = data.grand_total;
-          // Update header cart count
-          document.querySelectorAll('[data-cart-count]').forEach(el => el.textContent = data.count);
+          Alpine.store('cart').load();
         } else {
           this.flashMsg(data.error || 'Something went wrong', 'error');
         }
@@ -350,7 +349,7 @@ function cartPage() {
           this.couponDiscount = data.coupon_discount;
           this.deliveryCharge = data.delivery_charge;
           this.grandTotal = data.grand_total;
-          document.querySelectorAll('[data-cart-count]').forEach(el => el.textContent = data.count);
+          Alpine.store('cart').load();
           this.flashMsg(data.message || 'Item removed');
         }
       } catch (e) {

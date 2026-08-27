@@ -3,8 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'AB Organic Farm' }}</title>
     @vite(['resources/css/app.css','resources/js/app.js'])
+    <style>[x-cloak]{display:none!important}</style>
     @stack('head')
     @stack('meta')
 </head>
@@ -62,10 +64,10 @@
                    class="relative flex items-center gap-1.5 p-2.5 rounded-full hover:bg-cream-100 text-charcoal-700 transition-colors"
                    aria-label="Cart" x-data x-cloak>
                     <x-lucide-shopping-basket class="h-5 w-5"/>
-                    @php $cartCount = app(App\Services\CartService::class)->countForHeader(); @endphp
                     <span id="cart-badge"
-                          class="absolute -top-0.5 -right-0.5 h-5 min-w-5 px-1 rounded-full bg-forest-600 text-white text-[11px] font-bold grid place-items-center {{ $cartCount ? '' : 'hidden' }}">
-                        {{ $cartCount }}
+                          x-text="$store.cart.count"
+                          x-show="$store.cart.count > 0"
+                          class="absolute -top-0.5 -right-0.5 h-5 min-w-5 px-1 rounded-full bg-forest-600 text-white text-[11px] font-bold grid place-items-center">
                     </span>
                 </a>
 
@@ -241,7 +243,7 @@
          MOBILE BOTTOM NAV — Blinkit-style 5-tab
     ═══════════════════════════════════════════════════════════════ --}}
     <nav class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white border-t border-cream-200 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] pb-[env(safe-area-inset-bottom)]"
-         aria-label="Mobile navigation">
+         aria-label="Mobile navigation" x-data>
         <div class="grid grid-cols-5 h-16 text-[10px] font-semibold tracking-wide">
             <a href="{{ route('shop.index') }}"
                class="flex flex-col items-center justify-center gap-1 transition-colors {{ request()->routeIs('shop.index') ? 'text-forest-600' : 'text-charcoal-600' }}">
@@ -261,10 +263,9 @@
             <a href="{{ route('cart.index') }}"
                class="relative flex flex-col items-center justify-center gap-1 transition-colors {{ request()->routeIs('cart*') ? 'text-forest-600' : 'text-charcoal-600' }}">
                 <x-lucide-shopping-basket class="h-[22px] w-[22px]"/>
-                @php $mobileCartCount = app(App\Services\CartService::class)->countForHeader(); @endphp
-                @if($mobileCartCount)
-                    <span class="absolute top-2 right-[calc(50%-18px)] h-4 min-w-4 px-1 rounded-full bg-forest-600 text-white text-[10px] font-bold grid place-items-center leading-none">{{ $mobileCartCount }}</span>
-                @endif
+                <span x-text="$store.cart.count"
+                      x-show="$store.cart.count > 0"
+                      class="absolute top-2 right-[calc(50%-18px)] h-4 min-w-4 px-1 rounded-full bg-forest-600 text-white text-[10px] font-bold grid place-items-center leading-none"></span>
                 <span>Cart</span>
             </a>
             <a href="{{ auth()->check() ? route('account.dashboard') : route('login') }}"

@@ -29,7 +29,29 @@ class CartController extends Controller
         ]);
     }
 
-    public function add(): RedirectResponse
+    public function state(): \Illuminate\Http\JsonResponse
+    {
+        $cart = $this->carts->resolve(false);
+
+        $qtys = [];
+        $items = [];
+
+        if ($cart) {
+            foreach ($cart->items()->select('id', 'product_variant_id', 'quantity')->get() as $item) {
+                $qtys[$item->product_variant_id] = (int) $item->quantity;
+                $items[$item->product_variant_id] = (int) $item->id;
+            }
+        }
+
+        return response()->json([
+            'ok' => true,
+            'count' => $this->carts->countForHeader(),
+            'qtys' => $qtys,
+            'items' => $items,
+        ]);
+    }
+
+    public function add(): \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
     {
         $data = request()->validate([
             'variant_id' => ['required', 'integer', 'exists:product_variants,id'],

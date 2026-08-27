@@ -91,18 +91,46 @@
                 @endif
             </div>
 
-            {{-- Add / Out of Stock --}}
+            {{-- Add / Quantity / Out of Stock --}}
             @if($inStock)
-                <form action="{{ route('cart.add') }}" method="POST" class="inline-block">
-                    @csrf
-                    <input type="hidden" name="variant_id" value="{{ $variant->id }}">
+                <div
+                    x-data
+                    class="inline-flex items-center"
+                >
+                    {{-- ADD button (when not in cart) --}}
                     <button
-                        type="submit"
+                        type="button"
+                        x-show="$store.cart.qtyOf({{ $variant->id }}) === 0"
+                        @click="$store.cart.add({{ $variant->id }})"
                         class="inline-flex items-center gap-1 rounded-xl border border-emerald-600 bg-emerald-600 px-4 py-2 text-[12px] font-bold uppercase tracking-wide text-white shadow-sm transition hover:border-emerald-700 hover:bg-emerald-700 active:scale-90"
                     >
                         <x-lucide-plus class="h-3.5 w-3.5" />ADD
                     </button>
-                </form>
+
+                    {{-- Quantity stepper (when in cart) --}}
+                    <div
+                        x-show="$store.cart.qtyOf({{ $variant->id }}) > 0"
+                        x-cloak
+                        class="flex items-center overflow-hidden rounded-xl border-2 border-emerald-600 bg-white shadow-sm"
+                    >
+                        <button
+                            type="button"
+                            @click="$store.cart.setQty({{ $variant->id }}, $store.cart.items[{{ $variant->id }}], $store.cart.qtyOf({{ $variant->id }}) - 1)"
+                            class="flex h-9 w-9 items-center justify-center text-emerald-700 transition hover:bg-emerald-50"
+                        >
+                            <x-lucide-minus class="h-3.5 w-3.5" />
+                        </button>
+                        <span class="flex h-9 w-9 items-center justify-center text-sm font-extrabold text-emerald-700"
+                              x-text="$store.cart.qtyOf({{ $variant->id }})"></span>
+                        <button
+                            type="button"
+                            @click="$store.cart.setQty({{ $variant->id }}, $store.cart.items[{{ $variant->id }}], $store.cart.qtyOf({{ $variant->id }}) + 1)"
+                            class="flex h-9 w-9 items-center justify-center text-emerald-700 transition hover:bg-emerald-50"
+                        >
+                            <x-lucide-plus class="h-3.5 w-3.5" />
+                        </button>
+                    </div>
+                </div>
             @else
                 <span class="rounded-xl border border-gray-200 bg-gray-50 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
                     Out of Stock
