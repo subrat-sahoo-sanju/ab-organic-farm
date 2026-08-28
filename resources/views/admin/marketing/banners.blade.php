@@ -87,7 +87,7 @@
         <div class="grid gap-4 sm:grid-cols-2">
           <div>
             <label class="adm-label">Placement *</label>
-            <select name="placement" x-model="form.placement" required class="adm-input">
+            <select name="placement" x-model="form.placement" @change="applyRecommended()" required class="adm-input">
               <option value="hero">Hero</option>
               <option value="strip">Strip</option>
               <option value="category_top">Category Top</option>
@@ -101,6 +101,23 @@
             @error('sort_order') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
           </div>
         </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="adm-label">Image Width (px)</label>
+            <input type="number" name="width" x-model="form.width" min="1" class="adm-input">
+            @error('width') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+          </div>
+          <div>
+            <label class="adm-label">Image Height (px)</label>
+            <input type="number" name="height" x-model="form.height" min="1" class="adm-input">
+            @error('height') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+          </div>
+        </div>
+        <p class="text-[11px] adm-text-muted -mt-2">
+          Uploaded images are <strong>automatically center-cropped</strong> to these dimensions
+          (<span x-text="form.width + ' × ' + form.height"></span>). Leave blank to use the recommended size
+          for the selected placement.
+        </p>
         <div>
           <label class="adm-label">Button Text</label>
           <input type="text" name="button_text" x-model="form.button_text" placeholder="Shop Now" class="adm-input">
@@ -113,10 +130,31 @@
         </div>
         <div>
           <label class="adm-label" x-text="editingId ? 'Desktop Image (leave empty to keep current)' : 'Desktop Image *'"></label>
-          <input type="file" name="desktop_image" accept="image/jpeg,image/png,image/webp,image/svg+xml" :required="!editingId" class="adm-input">
-          <template x-if="editingId && form.desktop_image">
+          <input type="file" name="desktop_image" accept="image/jpeg,image/png,image/webp,image/svg+xml" :required="!editingId" @change="previewFile($event, 'new')" class="adm-input">
+          <template x-if="editingId && form.desktop_image && !newPreview">
             <div class="mt-2 h-16 w-32 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
               <img :src="'{{ asset('storage/') }}/' + form.desktop_image" class="h-full w-full object-cover">
+            </div>
+          </template>
+          <template x-if="newPreview">
+            <div class="mt-2 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-2">
+              <div class="relative" :style="'aspect-ratio: ' + form.width + ' / ' + form.height">
+                <img :src="newPreview" class="h-full w-full object-cover rounded-md">
+              </div>
+              <p class="mt-1.5 text-[11px] adm-text-muted">
+                Selected file: <span x-text="newPreviewDims ? newPreviewDims[0] + ' × ' + newPreviewDims[1] + 'px' : '…'"></span>
+                <template x-if="newPreview && newPreviewDims">
+                  <span>
+                    ·
+                    <template x-if="newPreviewDims[0] !== +form.width || newPreviewDims[1] !== +form.height">
+                      <strong class="text-amber-600">will be auto-adjusted to <span x-text="form.width + '×' + form.height"></span></strong>
+                    </template>
+                    <template x-else>
+                      <strong class="text-green-600">already the exact size</strong>
+                    </template>
+                  </span>
+                </template>
+              </p>
             </div>
           </template>
           @error('desktop_image') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
@@ -144,30 +182,67 @@
 
 <script>
 function bannerManager() {
+  const recommended = {
+    hero: [1400, 400],
+    strip: [1200, 150],
+    category_top: [1200, 220],
+    promotional: [1200, 400],
+  };
   return {
     showModal: false,
     editingId: null,
+    newPreview: '',
+    newPreviewDims: null,
     form: {
       title: '',
       subtitle: '',
       placement: 'hero',
+      width: 1400,
+      height: 400,
       sort_order: 0,
       button_text: '',
       button_url: '',
       desktop_image: '',
       is_active: true,
     },
+    applyRecommended() {
+      const r = recommended[this.form.placement] || recommended.promotional;
+      this.form.width = r[0];
+      this.form.height = r[1];
+      this.checkDims();
+    },
+    checkDims() {
+      // no-op placeholder so width/height changes re-evaluate the preview text live
+    },
+    previewFile(ev) {
+      const f = ev.target.files && ev.target.files[0];
+      if (!f) { this.newPreview = ''; this.newPreviewDims = null; return; }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.newPreview = e.target.result;
+        const img = new Image();
+        img.onload = () => { this.newPreviewDims = [img.naturalWidth, img.naturalHeight]; };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(f);
+    },
     openCreate() {
       this.editingId = null;
-      this.form = { title: '', subtitle: '', placement: 'hero', sort_order: 0, button_text: '', button_url: '', desktop_image: '', is_active: true, show_text: true };
+      this.newPreview = '';
+      this.newPreviewDims = null;
+      this.form = { title: '', subtitle: '', placement: 'hero', width: 1400, height: 400, sort_order: 0, button_text: '', button_url: '', desktop_image: '', is_active: true, show_text: true };
       this.showModal = true;
     },
     openEdit(banner) {
       this.editingId = banner.id;
+      this.newPreview = '';
+      this.newPreviewDims = null;
       this.form = {
         title: banner.title || '',
         subtitle: banner.subtitle || '',
         placement: banner.placement || 'hero',
+        width: banner.width || (recommended[banner.placement || 'hero'] || [1200, 400])[0],
+        height: banner.height || (recommended[banner.placement || 'hero'] || [1200, 400])[1],
         sort_order: banner.sort_order || 0,
         button_text: banner.button_text || '',
         button_url: banner.button_url || '',

@@ -1,7 +1,7 @@
 @extends('layouts.admin', ['title' => 'Brands'])
 
 @section('content')
-<div class="space-y-4" x-data="{ showModal: false, editing: null }">
+<div class="space-y-4" x-data="{ showModal: false, editing: null, logoPreview: '', previewLogo(e) { const f = e.target.files && e.target.files[0]; this.logoPreview = f ? URL.createObjectURL(f) : ''; } }">
 
   <div class="flex flex-wrap items-center justify-between gap-4">
     <h2 class="adm-page-title">All Brands <span class="adm-page-count">{{ $brands->count() }}</span></h2>
@@ -57,10 +57,16 @@
         </div>
         <div>
           <label class="adm-label">Logo</label>
-          <input type="file" name="logo" accept="image/jpeg,image/png,image/webp,image/svg" class="adm-input">
-          <template x-if="editing?.logo_path">
+          <input type="file" name="logo" accept="image/jpeg,image/png,image/webp,image/svg" @change="previewLogo($event)" class="adm-input">
+          <template x-if="logoPreview">
+            <div class="mt-2 h-14 w-14 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+              <img :src="logoPreview" class="h-full w-full object-contain">
+            </div>
+          </template>
+          <template x-if="editing?.logo_path && !logoPreview">
             <p class="mt-1 text-xs adm-text-muted">Current: <span x-text="editing?.logo_path"></span></p>
           </template>
+          <p class="mt-1 text-[11px] adm-text-muted">Logos are automatically resized to 300×300.</p>
         </div>
         <div class="flex gap-6">
           <label class="flex items-center gap-2 text-sm adm-text-primary">

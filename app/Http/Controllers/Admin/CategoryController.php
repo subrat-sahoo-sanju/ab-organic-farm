@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Services\ImageUtility;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -28,7 +29,7 @@ class CategoryController extends Controller
         $data['slug'] = $this->uniqueSlug($data['name']);
 
         if ($request->hasFile('image')) {
-            $data['image_path'] = $request->file('image')->store('categories', 'public');
+            $data['image_path'] = $this->storedImage($request);
         }
 
         Category::create($data);
@@ -46,7 +47,7 @@ class CategoryController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            $data['image_path'] = $request->file('image')->store('categories', 'public');
+            $data['image_path'] = $this->storedImage($request);
         }
 
         // Prevent self/nested parent loops
@@ -102,5 +103,11 @@ class CategoryController extends Controller
         }
 
         return $slug;
+    }
+
+    /** Auto-adjust (center-crop) the category image to the recommended square slot. */
+    protected function storedImage(Request $request): ?string
+    {
+        return app(ImageUtility::class)->processUpload($request->file('image'), 800, 800, 'categories');
     }
 }

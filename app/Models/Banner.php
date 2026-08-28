@@ -9,8 +9,24 @@ class Banner extends Model
     protected $fillable = [
         'placement', 'title', 'subtitle',
         'desktop_image', 'mobile_image', 'button_text', 'button_url',
+        'width', 'height',
         'starts_at', 'ends_at', 'sort_order', 'is_active', 'show_text',
     ];
+
+    /**
+     * Recommended dimensions (width, height) for a placement.
+     * Admins can override per banner in the form.
+     */
+    public static function recommendedDimensions(string $placement): array
+    {
+        return match ($placement) {
+            'hero'            => [1400, 400],
+            'strip'           => [1200, 150],
+            'category_top'    => [1200, 220],
+            'promotional'     => [1200, 400],
+            default           => [1200, 400],
+        };
+    }
 
     protected function casts(): array
     {

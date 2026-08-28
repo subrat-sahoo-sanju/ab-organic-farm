@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
+use App\Services\ImageUtility;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -27,7 +28,7 @@ class BrandController extends Controller
         ]);
 
         if ($request->hasFile('logo')) {
-            $data['logo_path'] = $request->file('logo')->store('brands', 'public');
+            $data['logo_path'] = $this->storedLogo($request);
         }
         unset($data['logo']);
 
@@ -52,7 +53,7 @@ class BrandController extends Controller
             if ($old && \Storage::disk('public')->exists($old)) {
                 \Storage::disk('public')->delete($old);
             }
-            $data['logo_path'] = $request->file('logo')->store('brands', 'public');
+            $data['logo_path'] = $this->storedLogo($request);
         }
         unset($data['logo']);
 
@@ -72,5 +73,11 @@ class BrandController extends Controller
         $brand->delete();
 
         return back()->with('success', 'Brand deleted.');
+    }
+
+    /** Auto-adjust (center-crop) the brand logo to the recommended square slot. */
+    protected function storedLogo(Request $request): ?string
+    {
+        return app(ImageUtility::class)->processUpload($request->file('logo'), 300, 300, 'brands');
     }
 }

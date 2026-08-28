@@ -162,6 +162,7 @@
         <div>
           <label class="adm-label">Upload New Images (multi-select allowed)</label>
           <input type="file" name="images[]" multiple accept="image/jpeg,image/png,image/webp" class="adm-input">
+          <p class="mt-1 text-[11px] adm-text-muted">Uploaded images are automatically resized to 1000×1000.</p>
         </div>
       </section>
 

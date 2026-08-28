@@ -204,7 +204,7 @@
 
         <div>
           <label class="adm-label">Image</label>
-          <input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/svg" class="adm-input">
+          <input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/svg" @change="previewImage($event)" class="adm-input">
           <template x-if="form.image_path && !imagePreview">
             <div class="mt-2 h-16 w-16 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
               <img :src="'{{ asset('storage/') }}/' + form.image_path" class="h-full w-full object-contain">
@@ -215,6 +215,7 @@
               <img :src="imagePreview" class="h-full w-full object-contain">
             </div>
           </template>
+          <p class="mt-1 text-[11px] adm-text-muted">Images are automatically resized to 800×800.</p>
         </div>
 
         <div class="flex gap-6">
@@ -273,6 +274,10 @@ function categoryManager() {
         image_path: cat.image_path || '',
       };
       this.showModal = true;
+    },
+    previewImage(e) {
+      const f = e.target.files && e.target.files[0];
+      this.imagePreview = f ? URL.createObjectURL(f) : null;
     },
   }
 }

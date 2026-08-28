@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Services\ImageUtility;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -57,7 +58,7 @@ class ProductImageController extends Controller
             if (! $file) {
                 continue;
             }
-            $path = $file->store("products/{$product->id}", 'public');
+            $path = app(ImageUtility::class)->processUpload($file, 1000, 1000, "products/{$product->id}");
 
             $product->images()->create([
                 'path' => 'storage/'.$path,

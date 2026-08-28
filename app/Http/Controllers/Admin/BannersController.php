@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
+use App\Services\ImageUtility;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -26,17 +27,22 @@ class BannersController extends Controller
             'button_url' => ['nullable', 'string', 'max:190'],
             'desktop_image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:4096'],
             'placement' => ['nullable', 'in:hero,strip,category_top,promotional'],
+            'width' => ['nullable', 'integer', 'min:1'],
+            'height' => ['nullable', 'integer', 'min:1'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
             'show_text' => ['nullable', 'boolean'],
         ]);
 
+        $placement = $data['placement'] ?? 'hero';
         if ($request->hasFile('desktop_image')) {
-            $data['desktop_image'] = $request->file('desktop_image')->store('banners', 'public');
+            $data['desktop_image'] = $this->storedImage($request, 'desktop_image', $placement);
         }
 
         $data['is_active'] = $request->boolean('is_active');
         $data['show_text'] = $request->boolean('show_text');
+        $data['width'] = $data['width'] ?: null;
+        $data['height'] = $data['height'] ?: null;
 
         Banner::create($data);
 
@@ -52,6 +58,8 @@ class BannersController extends Controller
             'button_url' => ['nullable', 'string', 'max:190'],
             'desktop_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:4096'],
             'placement' => ['nullable', 'in:hero,strip,category_top,promotional'],
+            'width' => ['nullable', 'integer', 'min:1'],
+            'height' => ['nullable', 'integer', 'min:1'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
             'show_text' => ['nullable', 'boolean'],
@@ -59,13 +67,16 @@ class BannersController extends Controller
 
         $data['is_active'] = $request->boolean('is_active');
         $data['show_text'] = $request->boolean('show_text');
+        $data['width'] = $data['width'] ?: null;
+        $data['height'] = $data['height'] ?: null;
 
         if ($request->hasFile('desktop_image')) {
             $old = str_replace('storage/', '', $banner->desktop_image ?? '');
             if ($old && \Storage::disk('public')->exists($old)) {
                 \Storage::disk('public')->delete($old);
             }
-            $data['desktop_image'] = $request->file('desktop_image')->store('banners', 'public');
+            $placement = $banner->placement ?? ($data['placement'] ?? 'hero');
+            $data['desktop_image'] = $this->storedImage($request, 'desktop_image', $placement);
         } else {
             unset($data['desktop_image']);
         }
@@ -89,5 +100,25 @@ class BannersController extends Controller
     {
         $banner->update(['is_active' => !$banner->is_active]);
         return back()->with('success', $banner->is_active ? 'Banner enabled.' : 'Banner disabled.');
+    }
+
+    /**
+     * Auto-adjust (center-crop) an uploaded banner image to the banner's
+     * dimensions — either the per-banner width/height from the form, or the
+     * placement's recommended size when none was provided.
+     */
+    protected function storedImage(Request $request, string $field, string $placement): ?string
+    {
+        if (! $request->hasFile($field)) {
+            return null;
+        }
+
+        $w = (int) $request->input('width');
+        $h = (int) $request->input('height');
+        if ($w <= 0 || $h <= 0) {
+            [$w, $h] = Banner::recommendedDimensions($placement);
+        }
+
+        return app(ImageUtility::class)->processUpload($request->file($field), $w, $h, 'banners');
     }
 }
