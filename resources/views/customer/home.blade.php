@@ -5,7 +5,7 @@
 {{-- ========== SECTION 1: FULL-WIDTH HERO BANNER ========== --}}
 @if($heroBanners->count())
 <section x-data="{ active: 0, total: {{ $heroBanners->count() }} }" x-init="setInterval(() => { active = (active + 1) % total }, 5000)" class="relative w-full overflow-hidden bg-[#0C831F]">
-  <div class="relative w-full">
+  <div class="relative h-[300px] w-full">
       @foreach($heroBanners as $index => $banner)
       <div
         x-show="active === {{ $index }}"
@@ -15,22 +15,22 @@
         x-transition:leave="transition duration-700 ease-in-out"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
-        class="relative w-full"
+        class="absolute inset-0"
       >
         @if(!empty($banner->show_text) && $banner->show_text)
-          {{-- FULL IMAGE WITH TEXT OVERLAY --}}
+          {{-- FULL IMAGE (object-contain => always 100% visible) + TEXT OVERLAY --}}
           @if(!empty($banner->mobile_image))
             <img
               src="{{ asset('storage/'.$banner->mobile_image) }}"
               alt="{{ $banner->title }}"
-              class="block h-auto w-full sm:hidden"
+              class="absolute inset-0 h-full w-full object-contain sm:hidden"
               loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
             />
           @endif
           <img
             src="{{ asset('storage/'.$banner->desktop_image) }}"
             alt="{{ $banner->title }}"
-            class="{{ !empty($banner->mobile_image) ? 'hidden sm:block' : 'block' }} h-auto w-full"
+            class="absolute inset-0 h-full w-full object-contain {{ !empty($banner->mobile_image) ? 'hidden sm:block' : 'block' }}"
             loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
           />
           <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
@@ -51,22 +51,22 @@
             </div>
           </div>
         @else
-          {{-- FULL IMAGE ONLY (no text overlay) --}}
+          {{-- IMAGE ONLY (no text overlay) --}}
           @if($banner->button_url)
-            <a href="{{ $banner->button_url }}" class="block" title="{{ $banner->title }}">
+            <a href="{{ $banner->button_url }}" class="absolute inset-0 block" title="{{ $banner->title }}">
           @endif
             @if(!empty($banner->mobile_image))
               <img
                 src="{{ asset('storage/'.$banner->mobile_image) }}"
                 alt="{{ $banner->title }}"
-                class="block h-auto w-full sm:hidden"
+                class="absolute inset-0 h-full w-full object-contain sm:hidden"
                 loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
               />
             @endif
             <img
               src="{{ asset('storage/'.$banner->desktop_image) }}"
               alt="{{ $banner->title }}"
-              class="{{ !empty($banner->mobile_image) ? 'hidden sm:block' : 'block' }} h-auto w-full"
+              class="absolute inset-0 h-full w-full object-contain {{ !empty($banner->mobile_image) ? 'hidden sm:block' : 'block' }}"
               loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
             />
           @if($banner->button_url)
