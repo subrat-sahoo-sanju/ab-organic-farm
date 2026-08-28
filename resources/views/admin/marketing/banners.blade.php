@@ -204,6 +204,7 @@ function bannerManager() {
       button_url: '',
       desktop_image: '',
       is_active: true,
+      show_text: true,
     },
     applyRecommended() {
       const r = recommended[this.form.placement] || recommended.promotional;

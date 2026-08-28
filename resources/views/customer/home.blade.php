@@ -17,9 +17,8 @@
         x-transition:leave-end="opacity-0"
         class="relative w-full"
       >
-        @if($banner->button_url)
-          <a href="{{ $banner->button_url }}" class="block" title="{{ $banner->title }}">
-        @endif
+        @if(!empty($banner->show_text) && $banner->show_text)
+          {{-- FULL IMAGE WITH TEXT OVERLAY --}}
           @if(!empty($banner->mobile_image))
             <img
               src="{{ asset('storage/'.$banner->mobile_image) }}"
@@ -34,8 +33,45 @@
             class="{{ !empty($banner->mobile_image) ? 'hidden sm:block' : 'block' }} h-auto w-full"
             loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
           />
-        @if($banner->button_url)
-          </a>
+          <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
+          <div class="absolute inset-0 flex items-center">
+            <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+              <div class="max-w-lg">
+                @if($banner->subtitle)
+                  <span class="mb-3 inline-block rounded-full bg-[#74C9A1]/20 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#74C9A1] backdrop-blur-sm">{{ $banner->subtitle }}</span>
+                @endif
+                <h2 class="font-display text-3xl font-extrabold text-white sm:text-4xl lg:text-5xl leading-tight">{{ $banner->title }}</h2>
+                @if($banner->button_text && $banner->button_url)
+                  <a href="{{ $banner->button_url }}" class="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#74C9A1] px-7 py-3.5 text-sm font-bold text-[#0C831F] shadow-lg transition duration-300 hover:bg-white hover:shadow-xl">
+                    {{ $banner->button_text }}
+                    <x-lucide-arrow-right class="h-4 w-4" />
+                  </a>
+                @endif
+              </div>
+            </div>
+          </div>
+        @else
+          {{-- FULL IMAGE ONLY (no text overlay) --}}
+          @if($banner->button_url)
+            <a href="{{ $banner->button_url }}" class="block" title="{{ $banner->title }}">
+          @endif
+            @if(!empty($banner->mobile_image))
+              <img
+                src="{{ asset('storage/'.$banner->mobile_image) }}"
+                alt="{{ $banner->title }}"
+                class="block h-auto w-full sm:hidden"
+                loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
+              />
+            @endif
+            <img
+              src="{{ asset('storage/'.$banner->desktop_image) }}"
+              alt="{{ $banner->title }}"
+              class="{{ !empty($banner->mobile_image) ? 'hidden sm:block' : 'block' }} h-auto w-full"
+              loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
+            />
+          @if($banner->button_url)
+            </a>
+          @endif
         @endif
       </div>
       @endforeach
@@ -302,22 +338,54 @@
   <div class="w-full px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
       @foreach($promotionalBanners as $banner)
-        <a href="{{ $banner->button_url ?? '#' }}" class="group relative block overflow-hidden rounded-2xl bg-gray-100 shadow-lg transition duration-300 hover:shadow-xl">
-          @if(!empty($banner->mobile_image))
+        @if(!empty($banner->show_text) && $banner->show_text)
+          <a href="{{ $banner->button_url ?? '#' }}" class="group relative block overflow-hidden rounded-2xl bg-gray-100 shadow-lg transition duration-300 hover:shadow-xl">
+            @if(!empty($banner->mobile_image))
+              <img
+                src="{{ asset('storage/'.$banner->mobile_image) }}"
+                alt="{{ $banner->title }}"
+                class="block h-auto w-full sm:hidden"
+                loading="lazy"
+              />
+            @endif
             <img
-              src="{{ asset('storage/'.$banner->mobile_image) }}"
+              src="{{ asset('storage/'.$banner->desktop_image) }}"
               alt="{{ $banner->title }}"
-              class="block h-auto w-full sm:hidden"
+              class="{{ !empty($banner->mobile_image) ? 'hidden sm:block' : 'block' }} h-auto w-full"
               loading="lazy"
             />
-          @endif
-          <img
-            src="{{ asset('storage/'.$banner->desktop_image) }}"
-            alt="{{ $banner->title }}"
-            class="{{ !empty($banner->mobile_image) ? 'hidden sm:block' : 'block' }} h-auto w-full"
-            loading="lazy"
-          />
-        </a>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+            <div class="absolute inset-0 flex flex-col justify-end p-6">
+              @if($banner->subtitle)
+                <span class="mb-1 inline-block w-fit rounded-full bg-[#74C9A1]/90 px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">{{ $banner->subtitle }}</span>
+              @endif
+              <h3 class="font-display text-xl font-extrabold text-white sm:text-2xl">{{ $banner->title }}</h3>
+              @if($banner->button_text)
+                <span class="mt-2 inline-flex w-fit items-center gap-1 text-sm font-bold text-[#74C9A1] transition duration-300 group-hover:text-white">
+                  {{ $banner->button_text }}
+                  <x-lucide-arrow-right class="h-4 w-4 transition duration-300 group-hover:translate-x-1" />
+                </span>
+              @endif
+            </div>
+          </a>
+        @else
+          <a href="{{ $banner->button_url ?? '#' }}" class="group relative block overflow-hidden rounded-2xl bg-gray-100 shadow-lg transition duration-300 hover:shadow-xl">
+            @if(!empty($banner->mobile_image))
+              <img
+                src="{{ asset('storage/'.$banner->mobile_image) }}"
+                alt="{{ $banner->title }}"
+                class="block h-auto w-full sm:hidden"
+                loading="lazy"
+              />
+            @endif
+            <img
+              src="{{ asset('storage/'.$banner->desktop_image) }}"
+              alt="{{ $banner->title }}"
+              class="{{ !empty($banner->mobile_image) ? 'hidden sm:block' : 'block' }} h-auto w-full"
+              loading="lazy"
+            />
+          </a>
+        @endif
       @endforeach
     </div>
   </div>
