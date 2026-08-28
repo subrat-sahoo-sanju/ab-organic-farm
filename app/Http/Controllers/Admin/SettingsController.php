@@ -10,9 +10,13 @@ class SettingsController extends Controller
 {
     public function show(): View
     {
+        $current = \App\Models\Setting::query()->get()
+            ->mapWithKeys(fn ($s) => [$s->group.'.'.$s->key => $s->value])
+            ->toArray();
+
         return view('admin.settings.index', [
             'sections' => $this->sections(),
-            'current' => \App\Models\Setting::pluck('value', 'key')->toArray(),
+            'current' => $current,
         ]);
     }
 
@@ -20,14 +24,10 @@ class SettingsController extends Controller
     {
         $data = $request->validate($this->validationRules());
 
+        $service = app(\App\Services\SettingsService::class);
         foreach ($data as $key => $value) {
-            $existing = \App\Models\Setting::where('key', $key)->first();
-            $existing
-                ? $existing->update(['value' => $value ?? ''])
-                : \App\Models\Setting::create(['key' => $key, 'value' => $value ?? '']);
+            $service->set($key, $value ?? '');
         }
-
-        \Illuminate\Support\Facades\Cache::forget('settings.all');
 
         return back()->with('success', 'Settings saved and live on the storefront.');
     }
@@ -38,23 +38,25 @@ class SettingsController extends Controller
             'store' => [
                 'title' => 'Store Info',
                 'keys' => [
-                    ['key' => 'store_name', 'label' => 'Store Name'],
-                    ['key' => 'store_tagline', 'label' => 'Tagline'],
-                    ['key' => 'store_email', 'label' => 'Contact Email'],
-                    ['key' => 'store_phone', 'label' => 'Contact Phone'],
-                    ['key' => 'store_whatsapp', 'label' => 'WhatsApp Number'],
-                    ['key' => 'store_address', 'label' => 'Store Address', 'type' => 'textarea'],
+                    ['key' => 'store.name', 'label' => 'Store Name'],
+                    ['key' => 'store.tagline', 'label' => 'Tagline'],
+                    ['key' => 'store.email', 'label' => 'Contact Email'],
+                    ['key' => 'store.phone', 'label' => 'Contact Phone'],
+                    ['key' => 'store.address', 'label' => 'Store Address', 'type' => 'textarea'],
                 ],
             ],
             'seo' => [
                 'title' => 'SEO & Social',
                 'keys' => [
-                    ['key' => 'seo_title', 'label' => 'Default Title Tag'],
-                    ['key' => 'seo_description', 'label' => 'Meta Description', 'type' => 'textarea'],
-                    ['key' => 'seo_keywords', 'label' => 'Meta Keywords'],
-                    ['key' => 'og_title', 'label' => 'OG Title'],
-                    ['key' => 'og_description', 'label' => 'OG Description', 'type' => 'textarea'],
-                    ['key' => 'og_image_url', 'label' => 'OG Image URL'],
+                    ['key' => 'seo.title', 'label' => 'Default Title Tag'],
+                    ['key' => 'seo.description', 'label' => 'Meta Description', 'type' => 'textarea'],
+                    ['key' => 'seo.keywords', 'label' => 'Meta Keywords'],
+                    ['key' => 'og.title', 'label' => 'OG Title'],
+                    ['key' => 'og.description', 'label' => 'OG Description', 'type' => 'textarea'],
+                    ['key' => 'og.image_url', 'label' => 'OG Image URL'],
+                    ['key' => 'social.facebook', 'label' => 'Facebook URL'],
+                    ['key' => 'social.instagram', 'label' => 'Instagram URL'],
+                    ['key' => 'social.whatsapp', 'label' => 'WhatsApp Number'],
                 ],
             ],
             'cod' => [
