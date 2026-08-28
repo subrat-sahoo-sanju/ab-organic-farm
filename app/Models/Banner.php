@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\ImageUtility;
 use Illuminate\Database\Eloquent\Model;
 
 class Banner extends Model
@@ -53,5 +54,23 @@ class Banner extends Model
             ->where(fn ($q) => $q->whereNull('starts_at')->orWhere('starts_at', '<=', now()))
             ->where(fn ($q) => $q->whereNull('ends_at')->orWhere('ends_at', '>=', now()))
             ->orderBy('sort_order');
+    }
+
+    /**
+     * Real aspect ratio ("W/H") of the desktop image, read from the stored file.
+     * Used to auto-fit the banner section so the full image always displays.
+     */
+    public function desktopRatio(): ?string
+    {
+        return ImageUtility::aspectRatioOf($this->desktop_image);
+    }
+
+    /**
+     * Real aspect ratio ("W/H") of the mobile image, or of the desktop image
+     * when no mobile image is uploaded. Never returns null for a valid banner.
+     */
+    public function mobileRatio(): ?string
+    {
+        return ImageUtility::aspectRatioOf($this->mobile_image) ?? $this->desktopRatio();
     }
 }

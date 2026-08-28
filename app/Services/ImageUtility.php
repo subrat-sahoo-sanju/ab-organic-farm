@@ -78,6 +78,48 @@ class ImageUtility
     }
 
     /**
+     * Resolve a stored relative path (e.g. "banners/xyz.jpg") to the real
+     * dimensions of the file on the public disk.
+     *
+     * @return array{0:int,1:int}|null  [width, height] or null when unreadable.
+     */
+    public static function dimensionsOf(string $path): ?array
+    {
+        if (! $path) {
+            return null;
+        }
+
+        $full = null;
+        try {
+            $full = \Illuminate\Support\Facades\Storage::disk('public')->path($path);
+        } catch (\Throwable $e) {
+            $full = null;
+        }
+        if (! $full || ! is_file($full)) {
+            return null;
+        }
+
+        $info = @getimagesize($full);
+
+        return $info ? [$info[0], $info[1]] : null;
+    }
+
+    /**
+     * CSS aspect-ratio string ("W/H") for a stored image, or null. Used to
+     * auto-fit the banner section to the upload so a 100% full image is shown
+     * on every device with no cropping, no zooming and no empty bars.
+     */
+    public static function aspectRatioOf(string $path): ?string
+    {
+        $dim = self::dimensionsOf($path);
+        if (! $dim || ($dim[0] ?? 0) <= 0 || ($dim[1] ?? 0) <= 0) {
+            return null;
+        }
+
+        return $dim[0].'/'.$dim[1];
+    }
+
+    /**
      * Center-crop to the exact target dimensions using "cover" behaviour
      * (no distortion: scale to fill, then crop the overflow).
      *
