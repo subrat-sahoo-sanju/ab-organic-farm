@@ -83,18 +83,21 @@
       </div>
       <input
         type="text"
-        placeholder="Search for organic groceries, spices, grains..."
+        placeholder="{{ setting('home.search_placeholder', 'Search for organic groceries, spices, grains...') }}"
         class="flex-1 bg-transparent px-3 py-4 text-base text-charcoal outline-none placeholder:text-charcoal/40"
       />
       <button class="mr-2 rounded-xl bg-[#0C831F] px-6 py-3 text-sm font-bold text-white transition duration-300 hover:bg-[#096818]">
         Search
       </button>
     </div>
+    @php $searchTags = setting_json('home.tags', ['Cold-Pressed Oil', 'Millets', 'Turmeric', 'Jaggery']); @endphp
+    @if(count($searchTags))
     <div class="mt-3 flex flex-wrap items-center justify-center gap-2 text-sm">
-      @foreach(['Cold-Pressed Oil', 'Millets', 'Turmeric', 'Jaggery'] as $tag)
+      @foreach($searchTags as $tag)
         <span class="cursor-pointer rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs text-white/80 backdrop-blur-sm transition duration-300 hover:border-[#74C9A1]/50 hover:text-white">{{ $tag }}</span>
       @endforeach
     </div>
+    @endif
   </div>
 
   {{-- Delivery Badge Strip --}}
@@ -105,7 +108,7 @@
         10-min delivery
       </span>
       <span class="flex items-center gap-1.5"><span class="inline-block h-1.5 w-1.5 rounded-full bg-[#74C9A1]"></span>100% Organic</span>
-      <span class="flex items-center gap-1.5"><span class="inline-block h-1.5 w-1.5 rounded-full bg-[#74C9A1]"></span>Free delivery ₹499+</span>
+      <span class="flex items-center gap-1.5"><span class="inline-block h-1.5 w-1.5 rounded-full bg-[#74C9A1]"></span>{{ setting('home.delivery_charge_text', 'Free delivery ₹499+') }}</span>
     </div>
   </div>
 </section>
@@ -216,8 +219,8 @@
 <section class="w-full bg-gradient-to-b from-[#FDFBF7] to-[#f5f9f0] py-10">
   <div class="w-full px-4 sm:px-6 lg:px-8">
     <div class="text-center">
-      <h2 class="font-display text-xl font-bold text-charcoal sm:text-2xl">Shop by Brand</h2>
-      <p class="mt-1 text-sm text-charcoal/50">Explore our trusted organic brands</p>
+      <h2 class="font-display text-xl font-bold text-charcoal sm:text-2xl">{{ setting('home.brand_title', 'Shop by Brand') }}</h2>
+      <p class="mt-1 text-sm text-charcoal/50">{{ setting('home.brand_subtitle', 'Explore our trusted organic brands') }}</p>
     </div>
 
     <div x-data="{ activeBrand: {{ $brands->first()?->id ?? 0 }} }">
@@ -362,39 +365,49 @@
 </section>
 @else
 {{-- Fallback Promo Cards --}}
+@php
+    $promoGradients = [
+        'orange' => 'from-[#ff6b35] to-[#ff9a5c]',
+        'green' => 'from-[#0C831F] to-[#2d9a4e]',
+        'blue' => 'from-[#1d7fd4] to-[#4aa3e8]',
+        'forest' => 'from-[#14532d] to-[#1a7a3a]',
+    ];
+    $promoTextColor = ['orange' => 'text-[#ff6b35]', 'green' => 'text-[#0C831F]', 'blue' => 'text-[#1d7fd4]', 'forest' => 'text-[#14532d]'];
+    $promoCards = setting_json('home.promo_cards', [
+        ['color' => 'orange', 'badge' => 'Limited Time', 'title' => 'Flat 20% Off', 'subtitle' => 'On your first organic order. Use code', 'code' => 'ORGANIC20', 'cta' => 'Order Now', 'link' => '/categories/all'],
+        ['color' => 'green', 'badge' => 'Free Delivery', 'title' => 'Free Delivery on ₹499+', 'subtitle' => 'No minimum order. Get fresh organic produce delivered free!', 'code' => '', 'cta' => 'Shop Now', 'link' => '/categories/all'],
+    ]);
+@endphp
+@if($promoCards && count($promoCards))
 <section class="py-6">
   <div class="w-full px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#ff6b35] to-[#ff9a5c] p-6 text-white shadow-lg transition duration-300 hover:shadow-xl sm:p-8">
-        <div class="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-white/10"></div>
-        <div class="absolute -bottom-4 -right-4 h-24 w-24 rounded-full bg-white/10"></div>
-        <div class="relative">
-          <span class="inline-block rounded-full bg-white/20 px-3 py-1 text-xs font-bold uppercase tracking-wide">Limited Time</span>
-          <h3 class="mt-3 text-2xl font-extrabold sm:text-3xl">Flat 20% Off</h3>
-          <p class="mt-1 text-sm text-white/80">On your first organic order. Use code <span class="font-bold">ORGANIC20</span></p>
-          <a href="{{ route('shop.index') }}" class="mt-4 inline-flex items-center gap-1 rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-[#ff6b35] transition duration-300 hover:bg-white/90">
-            Order Now
-            <x-lucide-arrow-right class="h-4 w-4" />
-          </a>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-{{ min(2, count($promoCards)) }}">
+      @foreach($promoCards as $card)
+        @if(!empty($card['title']))
+        @php $c = $card['color'] ?? 'green'; $grad = $promoGradients[$c] ?? 'from-[#0C831F] to-[#2d9a4e]'; @endphp
+        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br {{ $grad }} p-6 text-white shadow-lg transition duration-300 hover:shadow-xl sm:p-8">
+          <div class="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-white/10"></div>
+          <div class="absolute -bottom-4 -right-4 h-24 w-24 rounded-full bg-white/10"></div>
+          <div class="relative">
+            @if(!empty($card['badge']))
+              <span class="inline-block rounded-full bg-white/20 px-3 py-1 text-xs font-bold uppercase tracking-wide">{{ $card['badge'] }}</span>
+            @endif
+            <h3 class="mt-3 text-2xl font-extrabold sm:text-3xl">{{ $card['title'] }}</h3>
+            <p class="mt-1 text-sm text-white/80">{{ $card['subtitle'] ?? '' }}@if(!empty($card['code'])) <span class="font-bold">{{ $card['code'] }}</span>@endif</p>
+            @if(!empty($card['cta']))
+              <a href="{{ $card['link'] ?: route('shop.index') }}" class="mt-4 inline-flex items-center gap-1 rounded-xl bg-white px-5 py-2.5 text-sm font-bold {{ $promoTextColor[$c] ?? 'text-[#0C831F]' }} transition duration-300 hover:bg-white/90">
+                {{ $card['cta'] }}
+                <x-lucide-arrow-right class="h-4 w-4" />
+              </a>
+            @endif
+          </div>
         </div>
-      </div>
-
-      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0C831F] to-[#2d9a4e] p-6 text-white shadow-lg transition duration-300 hover:shadow-xl sm:p-8">
-        <div class="absolute -left-6 -top-6 h-32 w-32 rounded-full bg-white/10"></div>
-        <div class="absolute -bottom-4 -left-4 h-24 w-24 rounded-full bg-white/10"></div>
-        <div class="relative">
-          <span class="inline-block rounded-full bg-white/20 px-3 py-1 text-xs font-bold uppercase tracking-wide">Free Delivery</span>
-          <h3 class="mt-3 text-2xl font-extrabold sm:text-3xl">Free Delivery on ₹499+</h3>
-          <p class="mt-1 text-sm text-white/80">No minimum order. Get fresh organic produce delivered free!</p>
-          <a href="{{ route('shop.index') }}" class="mt-4 inline-flex items-center gap-1 rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-[#0C831F] transition duration-300 hover:bg-white/90">
-            Shop Now
-            <x-lucide-arrow-right class="h-4 w-4" />
-          </a>
-        </div>
-      </div>
+        @endif
+      @endforeach
     </div>
   </div>
 </section>
+@endif
 @endif
 
 {{-- ========== SECTION 5: FEATURED PRODUCTS ========== --}}
@@ -403,8 +416,8 @@
   <div class="w-full px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="font-display text-xl font-bold text-charcoal sm:text-2xl">Featured Products</h2>
-        <p class="mt-0.5 text-sm text-charcoal/50">Hand-picked organic favourites</p>
+        <h2 class="font-display text-xl font-bold text-charcoal sm:text-2xl">{{ setting('home.featured_title', 'Featured Products') }}</h2>
+        <p class="mt-0.5 text-sm text-charcoal/50">{{ setting('home.featured_subtitle', 'Hand-picked organic favourites') }}</p>
       </div>
       <a href="{{ route('shop.index') }}" class="flex items-center gap-1 text-sm font-semibold text-[#0C831F] transition duration-300 hover:text-[#0C831F]/80">
         See All
@@ -426,8 +439,8 @@
   <div class="w-full px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="font-display text-xl font-bold text-charcoal sm:text-2xl">Best Sellers</h2>
-        <p class="mt-0.5 text-sm text-charcoal/50">What our community loves most</p>
+        <h2 class="font-display text-xl font-bold text-charcoal sm:text-2xl">{{ setting('home.best_title', 'Best Sellers') }}</h2>
+        <p class="mt-0.5 text-sm text-charcoal/50">{{ setting('home.best_subtitle', 'What our community loves most') }}</p>
       </div>
       <a href="{{ route('shop.index') }}" class="flex items-center gap-1 text-sm font-semibold text-[#0C831F] transition duration-300 hover:text-[#0C831F]/80">
         See All
@@ -449,8 +462,8 @@
   <div class="w-full px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="font-display text-xl font-bold text-charcoal sm:text-2xl">New Arrivals</h2>
-        <p class="mt-0.5 text-sm text-charcoal/50">Just stocked fresh from the farms</p>
+        <h2 class="font-display text-xl font-bold text-charcoal sm:text-2xl">{{ setting('home.new_title', 'New Arrivals') }}</h2>
+        <p class="mt-0.5 text-sm text-charcoal/50">{{ setting('home.new_subtitle', 'Just stocked fresh from the farms') }}</p>
       </div>
       <a href="{{ route('shop.index') }}" class="flex items-center gap-1 text-sm font-semibold text-[#0C831F] transition duration-300 hover:text-[#0C831F]/80">
         See All
@@ -467,47 +480,44 @@
 @endif
 
 {{-- ========== SECTION 6: WHY CHOOSE US ========== --}}
+@php
+    $whyIconMap = ['leaf' => 'leaf', 'truck' => 'truck', 'hand_coins' => 'hand-coins', 'shield_check' => 'shield-check', 'sprout' => 'sprout', 'sparkles' => 'sparkles', 'recycle' => 'recycle', 'heart' => 'heart'];
+    $whyItems = setting_json('home.why_items', [
+        ['icon' => 'leaf', 'title' => '100% Organic', 'text' => 'Certified organic with zero pesticides and chemicals'],
+        ['icon' => 'truck', 'title' => '10-Min Delivery', 'text' => 'Lightning-fast delivery of fresh organic produce'],
+        ['icon' => 'hand_coins', 'title' => 'Direct from Farms', 'text' => 'Fair prices to farmers, fresher produce for you'],
+        ['icon' => 'shield_check', 'title' => 'Lab Tested', 'text' => 'Every product undergoes rigorous quality testing'],
+    ]);
+@endphp
+@if($whyItems && count($whyItems))
 <section class="border-t border-sage/10 bg-white py-10">
   <div class="w-full px-4 sm:px-6 lg:px-8">
-    <h2 class="text-center font-display text-xl font-bold text-charcoal sm:text-2xl">Why Choose AB Organic Farm?</h2>
-    <div class="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
-      <div class="rounded-2xl border border-sage/20 bg-[#FDFBF7]/60 p-5 text-center transition duration-300 hover:border-[#0C831F]/30 hover:shadow-sm">
-        <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#0C831F]/10 text-[#0C831F]">
-          <x-lucide-leaf class="h-6 w-6" />
+    <h2 class="text-center font-display text-xl font-bold text-charcoal sm:text-2xl">{{ setting('home.why_title', 'Why Choose AB Organic Farm?') }}</h2>
+    <div class="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-{{ min(4, max(1, count($whyItems))) }}">
+      @foreach($whyItems as $item)
+        @if(!empty($item['title']))
+        <div class="rounded-2xl border border-sage/20 bg-[#FDFBF7]/60 p-5 text-center transition duration-300 hover:border-[#0C831F]/30 hover:shadow-sm">
+          <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#0C831F]/10 text-[#0C831F]">
+            @php
+                $icon = $whyIconMap[$item['icon'] ?? 'leaf'] ?? 'leaf';
+                echo app(\BladeUI\Icons\Factory::class)->svg('lucide-'.$icon, 'h-6 w-6')->toHtml();
+            @endphp
+          </div>
+          <h3 class="text-sm font-bold text-charcoal">{{ $item['title'] }}</h3>
+          <p class="mt-1.5 text-xs leading-relaxed text-charcoal/50">{{ $item['text'] ?? '' }}</p>
         </div>
-        <h3 class="text-sm font-bold text-charcoal">100% Organic</h3>
-        <p class="mt-1.5 text-xs leading-relaxed text-charcoal/50">Certified organic with zero pesticides and chemicals</p>
-      </div>
-      <div class="rounded-2xl border border-sage/20 bg-[#FDFBF7]/60 p-5 text-center transition duration-300 hover:border-[#0C831F]/30 hover:shadow-sm">
-        <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#0C831F]/10 text-[#0C831F]">
-          <x-lucide-truck class="h-6 w-6" />
-        </div>
-        <h3 class="text-sm font-bold text-charcoal">10-Min Delivery</h3>
-        <p class="mt-1.5 text-xs leading-relaxed text-charcoal/50">Lightning-fast delivery of fresh organic produce</p>
-      </div>
-      <div class="rounded-2xl border border-sage/20 bg-[#FDFBF7]/60 p-5 text-center transition duration-300 hover:border-[#0C831F]/30 hover:shadow-sm">
-        <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#0C831F]/10 text-[#0C831F]">
-          <x-lucide-hand-coins class="h-6 w-6" />
-        </div>
-        <h3 class="text-sm font-bold text-charcoal">Direct from Farms</h3>
-        <p class="mt-1.5 text-xs leading-relaxed text-charcoal/50">Fair prices to farmers, fresher produce for you</p>
-      </div>
-      <div class="rounded-2xl border border-sage/20 bg-[#FDFBF7]/60 p-5 text-center transition duration-300 hover:border-[#0C831F]/30 hover:shadow-sm">
-        <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#0C831F]/10 text-[#0C831F]">
-          <x-lucide-shield-check class="h-6 w-6" />
-        </div>
-        <h3 class="text-sm font-bold text-charcoal">Lab Tested</h3>
-        <p class="mt-1.5 text-xs leading-relaxed text-charcoal/50">Every product undergoes rigorous quality testing</p>
-      </div>
+        @endif
+      @endforeach
     </div>
   </div>
 </section>
+@endif
 
 {{-- ========== SECTION 7: TESTIMONIALS ========== --}}
 @if($testimonials->count())
 <section class="bg-[#0C831F]/5 py-10">
   <div class="w-full px-4 sm:px-6 lg:px-8">
-    <h2 class="text-center font-display text-xl font-bold text-charcoal sm:text-2xl">What Our Customers Say</h2>
+    <h2 class="text-center font-display text-xl font-bold text-charcoal sm:text-2xl">{{ setting('home.testimonial_title', 'What Our Customers Say') }}</h2>
     <div class="scrollbar-none mt-8 flex gap-4 overflow-x-auto pb-2 sm:justify-center" style="-webkit-overflow-scrolling: touch;">
       @foreach($testimonials as $review)
         <div class="w-72 flex-shrink-0 rounded-2xl border border-sage/20 bg-white p-5 shadow-sm transition duration-300 hover:shadow-md sm:w-80">
@@ -545,15 +555,15 @@
   </div>
   <div class="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
     <h2 class="font-display text-3xl font-extrabold text-white sm:text-4xl">
-      Go Organic. Go Fresh. Go Fast.
+      {{ setting('home.cta_title', 'Go Organic. Go Fresh. Go Fast.') }}
     </h2>
     <p class="mx-auto mt-3 max-w-lg text-base text-white/70">
-      Join thousands of families who trust AB Organic Farm for their daily groceries. Your first delivery is on us!
+      {{ setting('home.cta_subtitle', 'Join thousands of families who trust AB Organic Farm for their daily groceries. Your first delivery is on us!') }}
     </p>
     <div class="mt-7 flex flex-wrap items-center justify-center gap-4">
-      <a href="{{ route('shop.index') }}" class="inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3.5 text-sm font-bold text-[#0C831F] shadow-lg transition duration-300 hover:bg-white/90 hover:shadow-xl">
+      <a href="{{ setting('home.cta_link', route('shop.index')) }}" class="inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3.5 text-sm font-bold text-[#0C831F] shadow-lg transition duration-300 hover:bg-white/90 hover:shadow-xl">
         <x-lucide-shopping-cart class="h-4 w-4" />
-        Start Shopping
+        {{ setting('home.cta_button', 'Start Shopping') }}
       </a>
       <a href="{{ route('shop.categories') }}" class="inline-flex items-center gap-2 rounded-xl border-2 border-white/30 px-7 py-3.5 text-sm font-bold text-white transition duration-300 hover:border-white/60 hover:bg-white/10">
         Browse Categories

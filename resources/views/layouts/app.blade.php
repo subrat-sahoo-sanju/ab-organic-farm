@@ -184,29 +184,41 @@
                     </span>
                     <span class="font-display text-base font-bold text-white">AB Organic Farm</span>
                 </div>
-                <p class="leading-relaxed text-emerald-100/60">{{ setting('store.tagline') }} Certified organic products from partner farms, delivered fresh to your home.</p>
+                <p class="leading-relaxed text-emerald-100/60">{{ setting('footer.tagline', setting('store.tagline', 'Certified organic products from partner farms, delivered fresh to your home.')) }}</p>
             </div>
 
             {{-- Shop --}}
+            @php $footerShopLinks = setting_json('footer.links_shop', [
+                ['label' => 'Fruits & Vegetables', 'url' => '/categories/fruits-vegetables'],
+                ['label' => 'Rice & Grains', 'url' => '/categories/rice-grains-flour'],
+                ['label' => 'Oils & Ghee', 'url' => '/categories/oils-ghee'],
+                ['label' => 'Dry Fruits', 'url' => '/categories/dry-fruits-nuts'],
+                ['label' => 'All Categories', 'url' => route('shop.categories')],
+            ]); @endphp
+            @if(count($footerShopLinks))
             <div>
-                <h4 class="font-semibold text-white mb-4">Shop</h4>
+                <h4 class="font-semibold text-white mb-4">{{ setting('footer.shop_title', 'Shop') }}</h4>
                 <ul class="space-y-2.5">
-                    <li><a href="/categories/fruits-vegetables" class="hover:text-white transition-colors">Fruits & Vegetables</a></li>
-                    <li><a href="/categories/rice-grains-flour" class="hover:text-white transition-colors">Rice & Grains</a></li>
-                    <li><a href="/categories/oils-ghee" class="hover:text-white transition-colors">Oils & Ghee</a></li>
-                    <li><a href="/categories/dry-fruits-nuts" class="hover:text-white transition-colors">Dry Fruits</a></li>
-                    <li><a href="{{ route('shop.categories') }}" class="hover:text-white transition-colors">All Categories</a></li>
+                    @foreach($footerShopLinks as $link)
+                        <li><a href="{{ $link['url'] }}" class="hover:text-white transition-colors">{{ $link['label'] }}</a></li>
+                    @endforeach
                 </ul>
             </div>
+            @endif
 
             {{-- Account --}}
+            @php $footerAccountLinks = setting_json('footer.links_account', [
+                ['label' => 'My Account', 'url' => route('account.dashboard')],
+                ['label' => 'My Orders', 'url' => route('account.orders')],
+                ['label' => 'Wishlist', 'url' => route('account.wishlist')],
+                ['label' => 'Cart', 'url' => route('cart.index')],
+            ]); @endphp
             <div>
-                <h4 class="font-semibold text-white mb-4">Account</h4>
+                <h4 class="font-semibold text-white mb-4">{{ setting('footer.account_title', 'Account') }}</h4>
                 <ul class="space-y-2.5">
-                    <li><a href="{{ route('account.dashboard') }}" class="hover:text-white transition-colors">My Account</a></li>
-                    <li><a href="{{ route('account.orders') }}" class="hover:text-white transition-colors">My Orders</a></li>
-                    <li><a href="{{ route('account.wishlist') }}" class="hover:text-white transition-colors">Wishlist</a></li>
-                    <li><a href="{{ route('cart.index') }}" class="hover:text-white transition-colors">Cart</a></li>
+                    @foreach($footerAccountLinks as $link)
+                        <li><a href="{{ $link['url'] }}" class="hover:text-white transition-colors">{{ $link['label'] }}</a></li>
+                    @endforeach
                     @auth
                         @if(auth()->user()->isStaff())
                             <li><a href="{{ route('admin.dashboard') }}" class="hover:text-white transition-colors font-medium">Admin Panel</a></li>
@@ -217,12 +229,12 @@
 
             {{-- Payment --}}
             <div>
-                <h4 class="font-semibold text-white mb-4">We Accept</h4>
+                <h4 class="font-semibold text-white mb-4">{{ setting('footer.payment_title', 'We Accept') }}</h4>
                 <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2.5 font-semibold tracking-wide text-white">
                     <x-lucide-banknote class="h-5 w-5"/>
                     Cash on Delivery
                 </div>
-                <p class="mt-3 text-xs text-emerald-100/50">Pay when your order arrives at your door. Secure & hassle-free.</p>
+                <p class="mt-3 text-xs text-emerald-100/50">{{ setting('footer.payment_text', 'Pay when your order arrives at your door. Secure & hassle-free.') }}</p>
             </div>
         </div>
 
