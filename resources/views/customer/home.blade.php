@@ -22,7 +22,7 @@
           <img
             src="{{ asset('storage/'.$banner->desktop_image) }}"
             alt="{{ $banner->title }}"
-            class="h-full w-full object-cover"
+            class="h-full w-full object-contain object-center"
             loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
           />
           <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
@@ -49,7 +49,7 @@
               <img
                 src="{{ asset('storage/'.$banner->desktop_image) }}"
                 alt="{{ $banner->title }}"
-                class="h-full w-full object-cover transition duration-500 hover:scale-[1.02]"
+                class="h-full w-full object-contain object-center transition duration-500"
                 loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
               />
             </a>
@@ -57,7 +57,7 @@
             <img
               src="{{ asset('storage/'.$banner->desktop_image) }}"
               alt="{{ $banner->title }}"
-              class="h-full w-full object-cover"
+              class="h-full w-full object-contain object-center"
               loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
             />
           @endif
@@ -328,11 +328,11 @@
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
       @foreach($promotionalBanners as $banner)
         @if(!empty($banner->show_text) && $banner->show_text)
-          <a href="{{ $banner->button_url ?? '#' }}" class="group relative overflow-hidden rounded-2xl shadow-lg transition duration-300 hover:shadow-xl">
+          <a href="{{ $banner->button_url ?? '#' }}" class="group relative block overflow-hidden rounded-2xl bg-gray-100 shadow-lg transition duration-300 hover:shadow-xl">
             <img
             src="{{ asset('storage/'.$banner->desktop_image) }}"
               alt="{{ $banner->title }}"
-              class="h-48 w-full object-cover transition duration-500 group-hover:scale-105 sm:h-56"
+              class="h-48 w-full object-contain object-center sm:h-56"
               loading="lazy"
             />
             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
@@ -350,11 +350,11 @@
             </div>
           </a>
         @else
-          <a href="{{ $banner->button_url ?? '#' }}" class="group block overflow-hidden rounded-2xl shadow-lg transition duration-300 hover:shadow-xl">
+          <a href="{{ $banner->button_url ?? '#' }}" class="group block overflow-hidden rounded-2xl bg-gray-100 shadow-lg transition duration-300 hover:shadow-xl">
             <img
               src="{{ asset('storage/'.$banner->desktop_image) }}"
               alt="{{ $banner->title }}"
-              class="h-48 w-full object-cover transition duration-500 group-hover:scale-105 sm:h-56"
+              class="h-48 w-full object-contain object-center sm:h-56"
               loading="lazy"
             />
           </a>
