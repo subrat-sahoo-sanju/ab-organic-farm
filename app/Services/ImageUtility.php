@@ -78,6 +78,25 @@ class ImageUtility
     }
 
     /**
+     * Store an uploaded file as-is, without any cropping or resizing, so the
+     * storefront can show the complete original image and auto-fit the section
+     * to its real ratio.
+     *
+     * @return string|null  Stored relative path (e.g. "banners/xyz.jpg") or null.
+     */
+    public function storeOriginal(UploadedFile $file, string $folder): ?string
+    {
+        $src = $file->getRealPath();
+        if (! $src || ! is_file($src)) {
+            return null;
+        }
+
+        $ext = strtolower((string) $file->getClientOriginalExtension()) ?: 'jpg';
+
+        return $this->storeProcessed($src, $folder, $ext);
+    }
+
+    /**
      * Resolve a stored relative path (e.g. "banners/xyz.jpg") to the real
      * dimensions of the file on the public disk.
      *

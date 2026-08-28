@@ -103,9 +103,12 @@ class BannersController extends Controller
     }
 
     /**
-     * Auto-adjust (center-crop) an uploaded banner image to the banner's
-     * dimensions — either the per-banner width/height from the form, or the
-     * placement's recommended size when none was provided.
+     * Store a banner image.
+     *
+     * When the admin explicitly provides BOTH width and height the upload is
+     * auto-cropped to exactly those dimensions. When either is left blank the
+     * image is stored as-is (full, uncropped) so the home page auto-fits the
+     * section to the image's real ratio and always shows the complete picture.
      */
     protected function storedImage(Request $request, string $field, string $placement): ?string
     {
@@ -115,10 +118,13 @@ class BannersController extends Controller
 
         $w = (int) $request->input('width');
         $h = (int) $request->input('height');
-        if ($w <= 0 || $h <= 0) {
-            [$w, $h] = Banner::recommendedDimensions($placement);
+
+        $canvas = app(ImageUtility::class);
+
+        if ($w > 0 && $h > 0) {
+            return $canvas->processUpload($request->file($field), $w, $h, 'banners');
         }
 
-        return app(ImageUtility::class)->processUpload($request->file($field), $w, $h, 'banners');
+        return $canvas->storeOriginal($request->file($field), 'banners');
     }
 }

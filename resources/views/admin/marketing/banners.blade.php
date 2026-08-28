@@ -114,9 +114,9 @@
           </div>
         </div>
         <p class="text-[11px] adm-text-muted -mt-2">
-          Uploaded images are <strong>automatically center-cropped</strong> to these dimensions
-          (<span x-text="form.width + ' × ' + form.height"></span>). Leave blank to use the recommended size
-          for the selected placement.
+          <strong>Leave Width &amp; Height blank</strong> to keep your full image as-is &mdash; the website
+          automatically fits the banner section to your image so the <strong>complete image always shows</strong>.
+          Enter both values to crop the upload to an exact size.
         </p>
         <div>
           <label class="adm-label">Button Text</label>
@@ -138,16 +138,19 @@
           </template>
           <template x-if="newPreview">
             <div class="mt-2 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-2">
-              <div class="relative" :style="'aspect-ratio: ' + form.width + ' / ' + form.height">
-                <img :src="newPreview" class="h-full w-full object-cover rounded-md">
+              <div class="relative" :style="(form.width && form.height) ? 'aspect-ratio: ' + form.width + ' / ' + form.height : ''">
+                <img :src="newPreview" class="h-full w-full object-contain rounded-md">
               </div>
               <p class="mt-1.5 text-[11px] adm-text-muted">
                 Selected file: <span x-text="newPreviewDims ? newPreviewDims[0] + ' × ' + newPreviewDims[1] + 'px' : '…'"></span>
                 <template x-if="newPreview && newPreviewDims">
                   <span>
                     ·
-                    <template x-if="newPreviewDims[0] !== +form.width || newPreviewDims[1] !== +form.height">
-                      <strong class="text-amber-600">will be auto-adjusted to <span x-text="form.width + '×' + form.height"></span></strong>
+                    <template x-if="!form.width || !form.height">
+                      <strong class="text-green-600">full image will be kept · auto-fits on the site</strong>
+                    </template>
+                    <template x-else-if="newPreviewDims[0] !== +form.width || newPreviewDims[1] !== +form.height">
+                      <strong class="text-amber-600">will be auto-cropped to <span x-text="form.width + '×' + form.height"></span></strong>
                     </template>
                     <template x-else>
                       <strong class="text-green-600">already the exact size</strong>
@@ -197,8 +200,8 @@ function bannerManager() {
       title: '',
       subtitle: '',
       placement: 'hero',
-      width: 1400,
-      height: 400,
+      width: '',
+      height: '',
       sort_order: 0,
       button_text: '',
       button_url: '',
@@ -208,8 +211,10 @@ function bannerManager() {
     },
     applyRecommended() {
       const r = recommended[this.form.placement] || recommended.promotional;
-      this.form.width = r[0];
-      this.form.height = r[1];
+      // Blank by default so the full uploaded image is kept (auto-fit on the site).
+      // Only crop when the admin enters explicit Width & Height.
+      this.form.width = '';
+      this.form.height = '';
       this.checkDims();
     },
     checkDims() {
@@ -231,7 +236,7 @@ function bannerManager() {
       this.editingId = null;
       this.newPreview = '';
       this.newPreviewDims = null;
-      this.form = { title: '', subtitle: '', placement: 'hero', width: 1400, height: 400, sort_order: 0, button_text: '', button_url: '', desktop_image: '', is_active: true, show_text: true };
+      this.form = { title: '', subtitle: '', placement: 'hero', width: '', height: '', sort_order: 0, button_text: '', button_url: '', desktop_image: '', is_active: true, show_text: true };
       this.showModal = true;
     },
     openEdit(banner) {
@@ -242,8 +247,8 @@ function bannerManager() {
         title: banner.title || '',
         subtitle: banner.subtitle || '',
         placement: banner.placement || 'hero',
-        width: banner.width || (recommended[banner.placement || 'hero'] || [1200, 400])[0],
-        height: banner.height || (recommended[banner.placement || 'hero'] || [1200, 400])[1],
+        width: banner.width || '',
+        height: banner.height || '',
         sort_order: banner.sort_order || 0,
         button_text: banner.button_text || '',
         button_url: banner.button_url || '',
