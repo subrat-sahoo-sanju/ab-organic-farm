@@ -4,8 +4,13 @@
 
 {{-- ========== SECTION 1: FULL-WIDTH HERO BANNER ========== --}}
 @if($heroBanners->count())
+<style>
+.hero-viewport{position:relative;width:100%;height:280px;overflow:hidden;background-color:#0C831F}
+@media (min-width:640px){.hero-viewport{height:380px}}
+@media (min-width:1024px){.hero-viewport{height:430px}}
+</style>
 <section x-data="{ active: 0, total: {{ $heroBanners->count() }} }" x-init="setInterval(() => { active = (active + 1) % total }, 5000)" class="relative w-full overflow-hidden bg-[#0C831F]">
-  <div class="relative aspect-[16/9] w-full overflow-hidden bg-[#0C831F] sm:aspect-[7/3] lg:aspect-[7/2]">
+  <div class="hero-viewport">
       @foreach($heroBanners as $index => $banner)
       <div
         x-show="active === {{ $index }}"
