@@ -147,7 +147,7 @@
                   <span>
                     ·
                     <template x-if="!form.width || !form.height">
-                      <strong class="text-green-600">full image will be kept · auto-fits on the site</strong>
+                      <strong class="text-green-600">will be auto-converted to <span x-text="siteSizeText()"></span> · uniform banner</strong>
                     </template>
                     <template x-else-if="newPreviewDims[0] !== +form.width || newPreviewDims[1] !== +form.height">
                       <strong class="text-amber-600">will be auto-cropped to <span x-text="form.width + '×' + form.height"></span></strong>
@@ -244,10 +244,10 @@ function bannerManager() {
       }
 
       if (hasW !== hasH) {
-        dimsMsg = 'Enter <strong>both</strong> Width and Height to crop, or leave <strong>both blank</strong> to keep the full image.';
+        dimsMsg = 'Enter <strong>both</strong> Width and Height for an exact crop, or leave <strong>both blank</strong> to auto-convert to <strong>' + this.siteSizeText() + '</strong>.';
         dimsOk = false;
       } else if (!hasW && !hasH) {
-        dimsMsg = 'Keeping the <strong>full image</strong> — the site auto-fits the banner to your upload.';
+        dimsMsg = 'Auto-converted to <strong>' + this.siteSizeText() + '</strong> — the perfect ' + this.form.placement + ' banner size for your website.';
       } else if (wOk && hOk) {
         const r = recommended[this.form.placement] || recommended.promotional;
         if (w === r[0] && h === r[1]) {
@@ -263,6 +263,10 @@ function bannerManager() {
       this.errHeight = hMsg;
       this.dimsOk = dimsOk && wOk && hOk;
       this.dimsMsg = dimsMsg;
+    },
+    siteSizeText() {
+      const r = recommended[this.form.placement] || recommended.promotional;
+      return r[0] + '×' + r[1] + 'px';
     },
     previewFile(ev) {
       const f = ev.target.files && ev.target.files[0];

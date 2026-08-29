@@ -105,10 +105,11 @@ class BannersController extends Controller
     /**
      * Store a banner image.
      *
-     * When the admin explicitly provides BOTH width and height the upload is
-     * auto-cropped to exactly those dimensions. When either is left blank the
-     * image is stored as-is (full, uncropped) so the home page auto-fits the
-     * section to the image's real ratio and always shows the complete picture.
+     * Every upload is automatically centred-cropped to the site's banner size
+     * for its placement (hero 1600x500, strip 1200x150, category_top 1200x220,
+     * promotional 1200x400) so all banners are uniform, professional, full
+     * images — no manual width/height needed. When the admin provides BOTH
+     * width and height those override the site default (exact crop).
      */
     protected function storedImage(Request $request, string $field, string $placement): ?string
     {
@@ -119,12 +120,24 @@ class BannersController extends Controller
         $w = (int) $request->input('width');
         $h = (int) $request->input('height');
 
-        $canvas = app(ImageUtility::class);
-
-        if ($w > 0 && $h > 0) {
-            return $canvas->processUpload($request->file($field), $w, $h, 'banners');
+        if ($w <= 0 || $h <= 0) {
+            [$w, $h] = $this->siteSize($placement);
         }
 
-        return $canvas->storeOriginal($request->file($field), 'banners');
+        return app(ImageUtility::class)->processUpload($request->file($field), $w, $h, 'banners');
+    }
+
+    /**
+     * The site's standard banner dimensions for a placement. Used to
+     * automatically convert every upload to a clean, uniform size.
+     */
+    protected function siteSize(string $placement): array
+    {
+        return match ($placement) {
+            'strip'        => [1200, 150],
+            'category_top' => [1200, 220],
+            'promotional'  => [1200, 400],
+            default        => [1600, 500], // hero
+        };
     }
 }
