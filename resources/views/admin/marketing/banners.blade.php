@@ -104,20 +104,20 @@
         <div class="grid gap-4 sm:grid-cols-2">
           <div>
             <label class="adm-label">Image Width (px)</label>
-            <input type="number" name="width" x-model="form.width" min="1" class="adm-input">
-            @error('width') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+            <input type="number" name="width" x-model="form.width" min="1" :max="MAX" @input="checkDims()"
+              :class="errWidth ? 'adm-input !border-red-400' : 'adm-input'" class="adm-input">
+            <p x-show="errWidth" x-text="errWidth" class="mt-1 text-xs font-medium text-red-500"></p>
           </div>
           <div>
             <label class="adm-label">Image Height (px)</label>
-            <input type="number" name="height" x-model="form.height" min="1" class="adm-input">
-            @error('height') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+            <input type="number" name="height" x-model="form.height" min="1" :max="MAX" @input="checkDims()"
+              :class="errHeight ? 'adm-input !border-red-400' : 'adm-input'" class="adm-input">
+            <p x-show="errHeight" x-text="errHeight" class="mt-1 text-xs font-medium text-red-500"></p>
           </div>
         </div>
-        <p class="text-[11px] adm-text-muted -mt-2">
-          <strong>Leave Width &amp; Height blank</strong> to keep your full image as-is &mdash; the website
-          automatically fits the banner section to your image so the <strong>complete image always shows</strong>.
-          Enter both values to crop the upload to an exact size.
-        </p>
+        <div x-show="dimsMsg"
+          :class="dimsOk ? 'border-green-200 bg-green-50 text-green-700' : 'border-red-200 bg-red-50 text-red-600'"
+          class="-mt-2 rounded-lg border px-3 py-2 text-[12px] leading-relaxed" x-html="dimsMsg"></div>
         <div>
           <label class="adm-label">Button Text</label>
           <input type="text" name="button_text" x-model="form.button_text" placeholder="Shop Now" class="adm-input">
@@ -186,7 +186,7 @@
 <script>
 function bannerManager() {
   const recommended = {
-    hero: [1400, 400],
+    hero: [1600, 500],
     strip: [1200, 150],
     category_top: [1200, 220],
     promotional: [1200, 400],
@@ -217,8 +217,52 @@ function bannerManager() {
       this.form.height = '';
       this.checkDims();
     },
+    MAX: 4000,
+    errWidth: '',
+    errHeight: '',
+    dimsMsg: '',
+    dimsOk: true,
     checkDims() {
-      // no-op placeholder so width/height changes re-evaluate the preview text live
+      const MAX = this.MAX;
+      const hasW = this.form.width !== '' && this.form.width !== null;
+      const hasH = this.form.height !== '' && this.form.height !== null;
+      const w = hasW ? Number(this.form.width) : null;
+      const h = hasH ? Number(this.form.height) : null;
+      const validNum = (v) => Number.isInteger(v) && v >= 1;
+      const tooBig = (v) => validNum(v) && v > MAX;
+      const isNum = (v) => hasW && v !== null && v !== '' && !Number.isNaN(v);
+
+      let wMsg = '', hMsg = '', wOk = true, hOk = true, dimsOk = true;
+
+      if (hasW) {
+        if (!isNum(w) || !validNum(w)) { wMsg = 'Enter a whole number ≥ 1'; wOk = false; }
+        else if (tooBig(w)) { wMsg = 'Too large — maximum ' + MAX + 'px'; wOk = false; }
+      }
+      if (hasH) {
+        if (!isNum(h) || !validNum(h)) { hMsg = 'Enter a whole number ≥ 1'; hOk = false; }
+        else if (tooBig(h)) { hMsg = 'Too large — maximum ' + MAX + 'px'; hOk = false; }
+      }
+
+      if (hasW !== hasH) {
+        dimsMsg = 'Enter <strong>both</strong> Width and Height to crop, or leave <strong>both blank</strong> to keep the full image.';
+        dimsOk = false;
+      } else if (!hasW && !hasH) {
+        dimsMsg = 'Keeping the <strong>full image</strong> — the site auto-fits the banner to your upload.';
+      } else if (wOk && hOk) {
+        const r = recommended[this.form.placement] || recommended.promotional;
+        if (w === r[0] && h === r[1]) {
+          dimsMsg = '<strong class="text-green-600">Perfect</strong> — that is the ideal size for this placement.';
+        } else {
+          dimsMsg = 'Will be <strong>cropped to ' + w + '×' + h + 'px</strong> · recommended <strong>' + r[0] + '×' + r[1] + 'px</strong> for ' + this.form.placement + '.';
+        }
+      } else {
+        dimsOk = false;
+      }
+
+      this.errWidth = wMsg;
+      this.errHeight = hMsg;
+      this.dimsOk = dimsOk && wOk && hOk;
+      this.dimsMsg = dimsMsg;
     },
     previewFile(ev) {
       const f = ev.target.files && ev.target.files[0];
@@ -237,6 +281,7 @@ function bannerManager() {
       this.newPreview = '';
       this.newPreviewDims = null;
       this.form = { title: '', subtitle: '', placement: 'hero', width: '', height: '', sort_order: 0, button_text: '', button_url: '', desktop_image: '', is_active: true, show_text: true };
+      this.checkDims();
       this.showModal = true;
     },
     openEdit(banner) {
@@ -256,6 +301,7 @@ function bannerManager() {
         is_active: banner.is_active,
         show_text: banner.show_text !== false,
       };
+      this.checkDims();
       this.showModal = true;
     }
   }

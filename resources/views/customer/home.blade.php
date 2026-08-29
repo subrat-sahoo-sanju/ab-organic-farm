@@ -5,7 +5,7 @@
 {{-- ========== SECTION 1: FULL-WIDTH HERO BANNER ========== --}}
 @if($heroBanners->count())
 <section x-data="{ active: 0, total: {{ $heroBanners->count() }} }" x-init="setInterval(() => { active = (active + 1) % total }, 5000)" class="relative w-full overflow-hidden bg-[#0C831F]">
-  <div class="relative h-[300px] w-full overflow-hidden">
+  <div class="relative h-[260px] w-full overflow-hidden sm:h-[360px] lg:h-[420px]">
       @foreach($heroBanners as $index => $banner)
       <div
         x-show="active === {{ $index }}"
