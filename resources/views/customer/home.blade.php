@@ -4,24 +4,10 @@
 
 {{-- ========== SECTION 1: FULL-WIDTH HERO BANNER ========== --}}
 @if($heroBanners->count())
-<section x-data="{
-  active: 0,
-  total: {{ $heroBanners->count() }},
-  activeHeight: 'auto',
-  init() {
-    this.$nextTick(() => this.measure());
-    setInterval(() => { this.active = (this.active + 1) % this.total; this.$nextTick(() => this.measure()); }, 5000);
-    window.addEventListener('resize', () => this.$nextTick(() => this.measure()));
-  },
-  measure() {
-    const el = this.$refs['slide' + this.active];
-    if (el) { const h = el.offsetHeight; if (h > 0) this.activeHeight = h + 'px'; }
-  }
-}" class="relative w-full overflow-hidden bg-[#0C831F]">
-  <div class="relative w-full overflow-hidden transition-[height] duration-700 ease-in-out" :style="{ height: activeHeight }">
+<section x-data="{ active: 0, total: {{ $heroBanners->count() }} }" x-init="setInterval(() => { active = (active + 1) % total }, 5000)" class="relative w-full overflow-hidden bg-[#0C831F]">
+  <div class="grid w-full">
       @foreach($heroBanners as $index => $banner)
       <div
-        :x-ref="'slide' + {{ $index }}"
         x-show="active === {{ $index }}"
         x-transition:enter="transition duration-700 ease-in-out"
         x-transition:enter-start="opacity-0"
@@ -29,7 +15,7 @@
         x-transition:leave="transition duration-700 ease-in-out"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
-        class="absolute inset-x-0 top-0"
+        class="col-start-1 row-start-1 w-full"
       >
         @if(!empty($banner->show_text) && $banner->show_text)
           {{-- FULL image auto-adjust + TEXT OVERLAY --}}
@@ -96,7 +82,7 @@
     @if($heroBanners->count() > 1)
       <div class="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 gap-2">
         @foreach($heroBanners as $index => $banner)
-          <button @click="active = {{ $index }}; $nextTick(() => measure())" :class="active === {{ $index }} ? 'w-8 bg-[#74C9A1]' : 'w-2 bg-white/60'" class="h-2 rounded-full transition-all duration-300 shadow"></button>
+          <button @click="active = {{ $index }}" :class="active === {{ $index }} ? 'w-8 bg-[#74C9A1]' : 'w-2 bg-white/60'" class="h-2 rounded-full transition-all duration-300 shadow"></button>
         @endforeach
       </div>
     @endif
