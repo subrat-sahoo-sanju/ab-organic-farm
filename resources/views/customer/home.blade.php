@@ -2,117 +2,40 @@
 
 @section('content')
 
-{{-- ========== SECTION 1: FULL-WIDTH HERO BANNER ========== --}}
-@if($heroBanners->count())
-<section x-data="{ active: 0, total: {{ $heroBanners->count() }} }" x-init="setInterval(() => { active = (active + 1) % total }, 5000)" class="relative w-full overflow-hidden bg-[#0C831F]">
-  <div class="relative h-[300px] w-full">
-      @foreach($heroBanners as $index => $banner)
-      <div
-        x-show="active === {{ $index }}"
-        x-transition:enter="transition duration-700 ease-in-out"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition duration-700 ease-in-out"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="absolute inset-0"
-      >
-        @if(!empty($banner->show_text) && $banner->show_text)
-          {{-- FULL IMAGE (object-contain => always 100% visible) + TEXT OVERLAY --}}
-          @if(!empty($banner->mobile_image))
-            <img
-              src="{{ asset('storage/'.$banner->mobile_image) }}"
-              alt="{{ $banner->title }}"
-              class="absolute inset-0 h-full w-full object-contain sm:hidden"
-              loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
-            />
-          @endif
-          <img
-            src="{{ asset('storage/'.$banner->desktop_image) }}"
-            alt="{{ $banner->title }}"
-            class="absolute inset-0 h-full w-full object-contain {{ !empty($banner->mobile_image) ? 'hidden sm:block' : 'block' }}"
-            loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
-          />
-          <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
-          <div class="absolute inset-0 flex items-center">
-            <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div class="max-w-lg">
-                @if($banner->subtitle)
-                  <span class="mb-3 inline-block rounded-full bg-[#74C9A1]/20 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#74C9A1] backdrop-blur-sm">{{ $banner->subtitle }}</span>
-                @endif
-                <h2 class="font-display text-3xl font-extrabold text-white sm:text-4xl lg:text-5xl leading-tight">{{ $banner->title }}</h2>
-                @if($banner->button_text && $banner->button_url)
-                  <a href="{{ $banner->button_url }}" class="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#74C9A1] px-7 py-3.5 text-sm font-bold text-[#0C831F] shadow-lg transition duration-300 hover:bg-white hover:shadow-xl">
-                    {{ $banner->button_text }}
-                    <x-lucide-arrow-right class="h-4 w-4" />
-                  </a>
-                @endif
-              </div>
-            </div>
-          </div>
-        @else
-          {{-- IMAGE ONLY (no text overlay) --}}
-          @if($banner->button_url)
-            <a href="{{ $banner->button_url }}" class="absolute inset-0 block" title="{{ $banner->title }}">
-          @endif
-            @if(!empty($banner->mobile_image))
-              <img
-                src="{{ asset('storage/'.$banner->mobile_image) }}"
-                alt="{{ $banner->title }}"
-                class="absolute inset-0 h-full w-full object-contain sm:hidden"
-                loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
-              />
-            @endif
-            <img
-              src="{{ asset('storage/'.$banner->desktop_image) }}"
-              alt="{{ $banner->title }}"
-              class="absolute inset-0 h-full w-full object-contain {{ !empty($banner->mobile_image) ? 'hidden sm:block' : 'block' }}"
-              loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
-            />
-          @if($banner->button_url)
-            </a>
-          @endif
-        @endif
+{{-- ========== SECTION 1: SEARCH HEADER (no banner) ========== --}}
+<section class="relative w-full overflow-hidden bg-[#0C831F]">
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute -top-20 -right-20 h-80 w-80 rounded-full bg-white/20 blur-3xl"></div>
+    <div class="absolute -bottom-32 -left-20 h-96 w-96 rounded-full bg-white/10 blur-3xl"></div>
+  </div>
+  <div class="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
+    <div class="mx-auto max-w-2xl">
+      <div class="flex items-center overflow-hidden rounded-2xl bg-white shadow-2xl shadow-black/10">
+        <div class="flex items-center gap-2 pl-5 text-charcoal/40">
+          <x-lucide-search class="h-5 w-5" />
+        </div>
+        <input
+          type="text"
+          placeholder="{{ setting('home.search_placeholder', 'Search for organic groceries, spices, grains...') }}"
+          class="flex-1 bg-transparent px-3 py-4 text-base text-charcoal outline-none placeholder:text-charcoal/40"
+        />
+        <button class="mr-2 rounded-xl bg-[#0C831F] px-6 py-3 text-sm font-bold text-white transition duration-300 hover:bg-[#096818]">
+          Search
+        </button>
       </div>
-      @endforeach
-
-    {{-- Dots --}}
-    @if($heroBanners->count() > 1)
-      <div class="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 gap-2">
-        @foreach($heroBanners as $index => $banner)
-          <button @click="active = {{ $index }}" :class="active === {{ $index }} ? 'w-8 bg-[#74C9A1]' : 'w-2 bg-white/60'" class="h-2 rounded-full transition-all duration-300 shadow"></button>
+      @php $searchTags = setting_json('home.tags', ['Cold-Pressed Oil', 'Millets', 'Turmeric', 'Jaggery']); @endphp
+      @if(count($searchTags))
+      <div class="mt-4 flex flex-wrap items-center justify-center gap-2 text-sm text-white/70">
+        @foreach($searchTags as $tag)
+          <span class="cursor-pointer rounded-full border border-white/20 px-3 py-1 text-xs text-white/80 transition duration-300 hover:border-white/50 hover:text-white">{{ $tag }}</span>
         @endforeach
       </div>
-    @endif
-  </div>
-
-  {{-- Search Bar --}}
-  <div class="relative -mt-8 z-10 mx-auto max-w-2xl px-4 sm:px-6">
-    <div class="flex items-center overflow-hidden rounded-2xl bg-white shadow-2xl shadow-black/10">
-      <div class="flex items-center gap-2 pl-5 text-charcoal/40">
-        <x-lucide-search class="h-5 w-5" />
-      </div>
-      <input
-        type="text"
-        placeholder="{{ setting('home.search_placeholder', 'Search for organic groceries, spices, grains...') }}"
-        class="flex-1 bg-transparent px-3 py-4 text-base text-charcoal outline-none placeholder:text-charcoal/40"
-      />
-      <button class="mr-2 rounded-xl bg-[#0C831F] px-6 py-3 text-sm font-bold text-white transition duration-300 hover:bg-[#096818]">
-        Search
-      </button>
+      @endif
     </div>
-    @php $searchTags = setting_json('home.tags', ['Cold-Pressed Oil', 'Millets', 'Turmeric', 'Jaggery']); @endphp
-    @if(count($searchTags))
-    <div class="mt-3 flex flex-wrap items-center justify-center gap-2 text-sm">
-      @foreach($searchTags as $tag)
-        <span class="cursor-pointer rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs text-white/80 backdrop-blur-sm transition duration-300 hover:border-[#74C9A1]/50 hover:text-white">{{ $tag }}</span>
-      @endforeach
-    </div>
-    @endif
   </div>
 
   {{-- Delivery Badge Strip --}}
-  <div class="bg-[#0C831F] py-2">
+  <div class="relative border-t border-white/15 bg-[#0C831F] py-2">
     <div class="mx-auto flex max-w-7xl items-center justify-center gap-6 px-4 text-xs font-medium text-white/90 sm:gap-8 sm:text-sm">
       <span class="flex items-center gap-1.5">
         <span class="relative flex h-2 w-2"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#74C9A1] opacity-75"></span><span class="relative inline-flex h-2 w-2 rounded-full bg-[#74C9A1]"></span></span>
@@ -123,72 +46,6 @@
     </div>
   </div>
 </section>
-@else
-{{-- Fallback Hero --}}
-<section class="relative w-full overflow-hidden bg-gradient-to-br from-[#0C831F] via-[#1a7a3a] to-[#2d9a4e]">
-  <div class="absolute inset-0 opacity-10">
-    <div class="absolute -top-20 -right-20 h-80 w-80 rounded-full bg-white/20 blur-3xl"></div>
-    <div class="absolute -bottom-32 -left-20 h-96 w-96 rounded-full bg-white/10 blur-3xl"></div>
-    <svg class="absolute bottom-0 left-0 w-full opacity-5" viewBox="0 0 1440 320"><path fill="white" d="M0,224L48,213.3C96,203,192,181,288,186.7C384,192,480,224,576,218.7C672,213,768,171,864,165.3C960,160,1056,192,1152,197.3C1248,203,1344,181,1392,170.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>
-  </div>
-  <div class="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-    <div class="text-center">
-      <div class="mb-5 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm">
-        <x-lucide-zap class="h-4 w-4 text-yellow-300" />
-        <span>Lightning-fast organic delivery</span>
-      </div>
-      <h1 class="font-display text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
-        Groceries delivered in
-        <span class="relative">
-          <span class="relative z-10 text-[#74C9A1]">10 minutes</span>
-          <span class="absolute bottom-1 left-0 z-0 h-3 w-full bg-[#74C9A1]/30"></span>
-        </span>
-      </h1>
-      <p class="mx-auto mt-4 max-w-xl text-lg text-white/80">
-        100% organic, farm-fresh groceries at your doorstep. No chemicals, no compromise.
-      </p>
-
-      {{-- Search Bar --}}
-      <div class="mx-auto mt-8 max-w-2xl">
-        <div class="flex items-center overflow-hidden rounded-2xl bg-white shadow-2xl shadow-black/10">
-          <div class="flex items-center gap-2 pl-5 text-charcoal/40">
-            <x-lucide-search class="h-5 w-5" />
-          </div>
-          <input
-            type="text"
-            placeholder="Search for organic groceries, spices, grains..."
-            class="flex-1 bg-transparent px-3 py-4 text-base text-charcoal outline-none placeholder:text-charcoal/40"
-          />
-          <button class="mr-2 rounded-xl bg-[#0C831F] px-6 py-3 text-sm font-bold text-white transition duration-300 hover:bg-[#096818]">
-            Search
-          </button>
-        </div>
-        <div class="mt-4 flex flex-wrap items-center justify-center gap-2 text-sm text-white/60">
-          <span>Popular:</span>
-          @foreach(['Cold-Pressed Oil', 'Millets', 'Turmeric', 'Jaggery'] as $tag)
-            <span class="cursor-pointer rounded-full border border-white/20 px-3 py-1 text-xs text-white/80 transition duration-300 hover:border-white/50 hover:text-white">{{ $tag }}</span>
-          @endforeach
-        </div>
-      </div>
-
-      <div class="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm font-medium text-white/70">
-        <div class="flex items-center gap-2">
-          <x-lucide-clock class="h-4 w-4 text-[#74C9A1]" />
-          <span>10-min delivery</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <x-lucide-shield-check class="h-4 w-4 text-[#74C9A1]" />
-          <span>Certified organic</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <x-lucide-badge-percent class="h-4 w-4 text-[#74C9A1]" />
-          <span>Best prices</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-@endif
 
 {{-- ========== SECTION 2: CATEGORY PILLS (Horizontal Scroll) ========== --}}
 @if($categories->count())
