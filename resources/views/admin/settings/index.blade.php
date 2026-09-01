@@ -7,6 +7,7 @@
     @foreach($sections as $key => $section)
       <button @click="activeTab = '{{ $key }}'" :class="activeTab === '{{ $key }}' ? 'adm-pill-active' : 'adm-pill'">{{ $section['title'] }}</button>
     @endforeach
+    <button @click="activeTab = 'sections'" :class="activeTab === 'sections' ? 'adm-pill-active' : 'adm-pill'">Homepage Sections</button>
   </div>
 
   <form action="{{ route('admin.settings.update') }}" method="POST">
@@ -116,6 +117,87 @@
       <div class="adm-divider"></div>
       <div class="flex justify-end">
         <button type="submit" class="adm-btn-primary">Save Settings</button>
+      </div>
+    </div>
+  </form>
+
+  {{-- ═══ HOMEPAGE SECTIONS MANAGER ═══ --}}
+  <form action="{{ route('admin.settings.sections') }}" method="POST" x-show="activeTab === 'sections'" x-cloak>
+    @csrf
+    <div class="adm-section p-6 space-y-4">
+      <h3 class="adm-section-title">Homepage Sections</h3>
+      <div class="adm-divider"></div>
+      <p class="adm-text-secondary text-sm mb-4">Toggle sections, reorder them, and edit their titles/subtitles. Product-count and focus-tab settings make every section dynamic.</p>
+
+      @foreach($homepageSections as $idx => $s)
+        @php $cfg = $s->config ?? []; @endphp
+        <div class="rounded-xl border border-gray-200 bg-white p-4">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-forest-50 text-xs font-extrabold text-forest-700">{{ $loop->iteration }}</span>
+              <div>
+                <p class="text-sm font-bold text-gray-800">{{ $s->key }} <span class="ml-1 rounded bg-cream-100 px-1.5 py-0.5 text-[10px] font-semibold text-charcoal-500">{{ $s->key }}</span></p>
+                <label class="relative mt-1 inline-flex cursor-pointer items-center gap-2">
+                  <input type="hidden" name="sections[{{ $s->id }}][visible]" value="0">
+                  <input type="checkbox" name="sections[{{ $s->id }}][visible]" value="1" {{ $s->is_visible ? 'checked' : '' }} class="accent-forest">
+                  <span class="text-xs font-medium {{ $s->is_visible ? 'text-forest-700' : 'text-gray-400' }}">{{ $s->is_visible ? 'Visible' : 'Hidden' }}</span>
+                </label>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <label class="text-xs font-medium text-gray-500">Order</label>
+              <input type="number" name="sections[{{ $s->id }}][sort_order]" value="{{ $s->sort_order }}" min="0" step="1" class="w-20 adm-input !py-1.5">
+            </div>
+          </div>
+
+          <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div>
+              <label class="adm-label">Title</label>
+              <input type="text" name="sections[{{ $s->id }}][title]" value="{{ $s->title }}" class="adm-input">
+            </div>
+            <div>
+              <label class="adm-label">Subtitle</label>
+              <input type="text" name="sections[{{ $s->id }}][subtitle]" value="{{ $s->subtitle }}" class="adm-input">
+            </div>
+          </div>
+
+          <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <label class="adm-label">Products Count</label>
+              <input type="number" name="sections[{{ $s->id }}][product_count]" value="{{ $cfg['product_count'] ?? '' }}" min="1" max="24" class="adm-input">
+            </div>
+
+            @if(str_starts_with($s->key, 'focus_') || $s->key === 'welcome')
+              <div class="sm:col-span-2">
+                <label class="adm-label">Focus Tabs (category slugs, comma separated — blank = auto)</label>
+                <input type="text" name="sections[{{ $s->id }}][tabs]" value="{{ implode(', ', $cfg['tabs'] ?? []) }}" placeholder="e.g. desi-cow-ghee, bilona-a2-ghee" class="adm-input">
+              </div>
+            @endif
+
+            @if($s->key === 'app_download')
+              <div>
+                <label class="adm-label">Android Store URL</label>
+                <input type="url" name="sections[{{ $s->id }}][android_url]" value="{{ $cfg['android_url'] ?? '' }}" class="adm-input">
+              </div>
+              <div>
+                <label class="adm-label">iOS Store URL</label>
+                <input type="url" name="sections[{{ $s->id }}][ios_url]" value="{{ $cfg['ios_url'] ?? '' }}" class="adm-input">
+              </div>
+            @endif
+
+            @if($s->key === 'trust_badges')
+              <div class="sm:col-span-2">
+                <label class="adm-label">Trust Badges (JSON: [{"icon":"leaf","title":"...","text":"..."}])</label>
+                <textarea name="sections[{{ $s->id }}][items]" rows="4" class="adm-input !font-mono !text-xs">{{ json_encode($cfg['items'] ?? [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) }}</textarea>
+              </div>
+            @endif
+          </div>
+        </div>
+      @endforeach
+
+      <div class="adm-divider"></div>
+      <div class="flex justify-end">
+        <button type="submit" class="adm-btn-primary">Save Sections</button>
       </div>
     </div>
   </form>

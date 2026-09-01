@@ -14,9 +14,9 @@ class Product extends Model
         'uuid', 'category_id', 'brand_id', 'name', 'slug', 'sku',
         'short_description', 'description',
         'ingredients', 'benefits', 'usage_instructions', 'storage_instructions',
-        'origin', 'farmer_source', 'certification', 'is_organic',
+        'origin', 'farmer_source', 'certification', 'is_organic', 'badge_label',
         'cost_price', 'regular_price', 'sale_price',
-        'weight_grams', 'unit_label',
+        'weight_grams', 'unit_label', 'promo_note',
         'status', 'is_featured', 'is_best_seller', 'is_new_arrival',
         'seo_title', 'meta_description', 'meta_keywords', 'published_at',
     ];
@@ -33,6 +33,36 @@ class Product extends Model
             'sale_price' => 'decimal:2',
             'published_at' => 'datetime',
         ];
+    }
+
+    /* ---------------- Helpers ---------------- */
+
+    /** Second image for hover-swap on cards, falls back to primary. */
+    public function hoverImage()
+    {
+        return $this->images()
+            ->when(true, fn ($q) => $q)
+            ->orderBy('sort_order')
+            ->skip(1)
+            ->first() ?? $this->primaryImage;
+    }
+
+    /** Display badge for product cards — admin override first. */
+    public function displayBadge(): ?string
+    {
+        if (! empty($this->badge_label)) {
+            return $this->badge_label;
+        }
+
+        if ($this->is_new_arrival) {
+            return 'New Launch';
+        }
+
+        if ($this->is_best_seller) {
+            return 'Best Seller';
+        }
+
+        return null;
     }
 
     /* ---------------- Relationships ---------------- */

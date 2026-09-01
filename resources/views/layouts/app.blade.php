@@ -16,6 +16,20 @@
         <div id="flash-data" data-success="{{ session('success') }}" data-error="{{ session('error') }}" hidden></div>
     @endif
 
+    {{-- Announcement bar --}}
+    @php $announcement = setting('store.announcement_text', 'Free delivery on orders above ₹499 · 100% certified organic'); @endphp
+    @if($announcement)
+    <div class="bg-[#0C831F] text-white">
+        <div class="mx-auto flex max-w-7xl items-center justify-center gap-2 px-4 py-2 text-center text-xs font-semibold tracking-wide sm:text-sm">
+            <x-lucide-megaphone class="h-3.5 w-3.5 shrink-0 text-[#74C9A1]" />
+            <span>{{ $announcement }}</span>
+            @if(setting('store.announcement_link'))
+                <a href="{{ setting('store.announcement_link') }}" class="hidden items-center gap-1 rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-bold hover:bg-white/25 sm:inline-flex">Shop Now<x-lucide-arrow-right class="h-3 w-3" /></a>
+            @endif
+        </div>
+    </div>
+    @endif
+
     {{-- ═══════════════════════════════════════════════════════════════
          HEADER — Sticky top, Blinkit-style
     ═══════════════════════════════════════════════════════════════ --}}

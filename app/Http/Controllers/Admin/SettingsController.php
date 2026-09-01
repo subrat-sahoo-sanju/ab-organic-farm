@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\HomepageSection;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class SettingsController extends Controller
@@ -17,7 +19,48 @@ class SettingsController extends Controller
         return view('admin.settings.index', [
             'sections' => $this->sections(),
             'current' => $current,
+            'homepageSections' => HomepageSection::orderBy('sort_order')->get(),
         ]);
+    }
+
+    public function updateSections(Request $request): RedirectResponse
+    {
+        foreach ($request->input('sections', []) as $id => $payload) {
+            $section = HomepageSection::find((int) $id);
+            if (! $section) {
+                continue;
+            }
+
+            $config = $section->config ?? [];
+            $config['product_count'] = ($payload['product_count'] ?? '') !== '' ? (int) $payload['product_count'] : null;
+
+            if (isset($payload['tabs'])) {
+                $config['tabs'] = array_values(array_filter(array_map('trim', explode(',', $payload['tabs']))));
+            }
+
+            if (array_key_exists('android_url', $payload)) {
+                $config['android_url'] = $payload['android_url'];
+            }
+            if (array_key_exists('ios_url', $payload)) {
+                $config['ios_url'] = $payload['ios_url'];
+            }
+            if (isset($payload['items'])) {
+                $decoded = json_decode((string) $payload['items'], true);
+                if (is_array($decoded)) {
+                    $config['items'] = $decoded;
+                }
+            }
+
+            $section->update([
+                'title' => $payload['title'] ?? '',
+                'subtitle' => $payload['subtitle'] ?? '',
+                'is_visible' => ! empty($payload['visible']) && $payload['visible'] !== '0' ? 1 : 0,
+                'sort_order' => (int) ($payload['sort_order'] ?? $section->sort_order),
+                'config' => $config,
+            ]);
+        }
+
+        return back()->with('success', 'Homepage sections updated and live on the storefront.');
     }
 
     public function update(\Illuminate\Http\Request $request): RedirectResponse

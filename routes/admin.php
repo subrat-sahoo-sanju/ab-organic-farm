@@ -77,6 +77,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'active'])
 
         Route::get('/reports', [Admin\ReportsController::class, 'index'])->name('reports.index');
 
-        Route::get('/settings', [Admin\SettingsController::class, 'show'])->name('settings.show');
-        Route::patch('/settings', [Admin\SettingsController::class, 'update'])->name('settings.update');
+Route::get('/settings', [Admin\SettingsController::class, 'show'])->name('settings.show');
+       Route::patch('/settings', [Admin\SettingsController::class, 'update'])->name('settings.update');
+       Route::post('/settings/sections', [Admin\SettingsController::class, 'updateSections'])->name('settings.sections');
     });

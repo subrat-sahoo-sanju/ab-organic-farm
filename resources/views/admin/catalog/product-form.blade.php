@@ -202,6 +202,14 @@
           <label class="flex items-center gap-2 text-xs adm-text-primary"><input type="checkbox" name="is_best_seller" value="1" {{ old('is_best_seller', $product->is_best_seller) ? 'checked' : '' }} class="accent-forest"> Best Seller</label>
           <label class="flex items-center gap-2 text-xs adm-text-primary"><input type="checkbox" name="is_new_arrival" value="1" {{ old('is_new_arrival', $product->is_new_arrival) ? 'checked' : '' }} class="accent-forest"> New Arrival</label>
         </div>
+        <div>
+          <label class="adm-label">Card Badge Text <span class="adm-text-secondary">(e.g. "Top Rated", "Selling Fast" — optional)</span></label>
+          <input type="text" name="badge_label" maxlength="64" value="{{ old('badge_label', $product->badge_label) }}" placeholder="Auto from flags if blank" class="adm-input">
+        </div>
+        <div>
+          <label class="adm-label">Promo Note <span class="adm-text-secondary">(small green note under price, e.g. "Best price ₹340")</span></label>
+          <input type="text" name="promo_note" maxlength="190" value="{{ old('promo_note', $product->promo_note) }}" class="adm-input">
+        </div>
       </section>
 
       <div class="flex flex-col gap-2">
