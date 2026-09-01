@@ -56,10 +56,7 @@
             <td class="text-right">
               <div class="flex items-center justify-end gap-2">
                 <button @click="openEdit({{ $category->toJson() }})" class="adm-action-link">Edit</button>
-                <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" onsubmit="return confirm('Delete this category?')">
-                  @csrf @method('DELETE')
-                  <button type="submit" class="adm-action-link adm-action-link-muted">Delete</button>
-                </form>
+                <button @click="confirmDelete({{ $category->id }}, '{{ $category->name }}')" class="adm-action-link adm-action-link-muted">Delete</button>
               </div>
             </td>
           </tr>
@@ -100,10 +97,7 @@
                 <td class="text-right">
                   <div class="flex items-center justify-end gap-2">
                     <button @click="openEdit({{ $child->toJson() }})" class="adm-action-link">Edit</button>
-                    <form action="{{ route('admin.categories.destroy', $child) }}" method="POST" onsubmit="return confirm('Delete this category?')">
-                      @csrf @method('DELETE')
-                      <button type="submit" class="adm-action-link adm-action-link-muted">Delete</button>
-                    </form>
+                    <button @click="confirmDelete({{ $child->id }}, '{{ $child->name }}')" class="adm-action-link adm-action-link-muted">Delete</button>
                   </div>
                 </td>
               </tr>
@@ -143,10 +137,7 @@
                     <td class="text-right">
                       <div class="flex items-center justify-end gap-2">
                         <button @click="openEdit({{ $grandchild->toJson() }})" class="adm-action-link">Edit</button>
-                        <form action="{{ route('admin.categories.destroy', $grandchild) }}" method="POST" onsubmit="return confirm('Delete this category?')">
-                          @csrf @method('DELETE')
-                          <button type="submit" class="adm-action-link adm-action-link-muted">Delete</button>
-                        </form>
+                        <button @click="confirmDelete({{ $grandchild->id }}, '{{ $grandchild->name }}')" class="adm-action-link adm-action-link-muted">Delete</button>
                       </div>
                     </td>
                   </tr>
@@ -236,12 +227,57 @@
     </div>
   </div>
 
+  <div x-show="deleteModal" x-cloak class="adm-modal" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+    <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-lift dark:bg-gray-800" @click.away="deleteModal = false">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600 dark:bg-rose-500/15 dark:text-rose-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-charcoal dark:text-white">Delete category?</h3>
+          <p class="text-xs adm-text-muted">This action cannot be undone.</p>
+        </div>
+        <button @click="deleteModal = false" class="ml-auto text-charcoal/40 transition hover:text-charcoal dark:text-gray-400 dark:hover:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <p class="mt-4 text-sm text-charcoal/70 dark:text-gray-300">
+        You are about to delete <strong class="font-semibold" x-text="deleteName"></strong>.
+      </p>
+
+      <div class="mt-3 space-y-2 rounded-xl border border-sage/15 bg-forest/5 p-3 text-xs text-charcoal/70 dark:border-gray-700 dark:bg-gray-700/30 dark:text-gray-300">
+        <p class="flex items-start gap-2">
+          <svg class="mt-0.5 h-3.5 w-3.5 shrink-0 text-forest" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          <span>Sub-categories will be moved up one level and kept live.</span>
+        </p>
+        <p class="flex items-start gap-2">
+          <svg class="mt-0.5 h-3.5 w-3.5 shrink-0 text-forest" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          <span>Products in this category will be kept and reassigned.</span>
+        </p>
+      </div>
+
+      <form :action="'{{ url('admin/categories') }}/' + deleteId" method="POST" class="mt-6 flex justify-end gap-3">
+        @csrf
+        @method('DELETE')
+        <button type="button" @click="deleteModal = false" class="adm-btn-outline">Cancel</button>
+        <button type="submit" class="adm-btn-danger">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+          Delete Category
+        </button>
+      </form>
+    </div>
+  </div>
+
 </div>
 
 <script>
 function categoryManager() {
   return {
     showModal: false,
+    deleteModal: false,
+    deleteId: null,
+    deleteName: '',
     editingId: null,
     imagePreview: null,
     form: {
@@ -274,6 +310,11 @@ function categoryManager() {
         image_path: cat.image_path || '',
       };
       this.showModal = true;
+    },
+    confirmDelete(id, name) {
+      this.deleteId = id;
+      this.deleteName = name;
+      this.deleteModal = true;
     },
     previewImage(e) {
       const f = e.target.files && e.target.files[0];

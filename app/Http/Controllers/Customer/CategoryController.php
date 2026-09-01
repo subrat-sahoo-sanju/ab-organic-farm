@@ -20,7 +20,7 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function show(Category $category): View
+    public function show(Category $category): View|\Illuminate\Http\JsonResponse
     {
         $filters = request()->validate([
             'q' => ['nullable', 'string', 'max:120'],
@@ -61,6 +61,14 @@ class CategoryController extends Controller
             }, fn (Builder $q) => $q->orderByDesc('sold_count'))
             ->paginate(12)
             ->withQueryString();
+
+        if (request()->ajax()) {
+            return response()->json([
+                'html' => view('customer.partials.product-grid', ['products' => $products])->render(),
+                'nextPageUrl' => $products->nextPageUrl(),
+                'hasMorePages' => $products->hasMorePages(),
+            ]);
+        }
 
         return view('customer.category-show', [
             'category' => $category,

@@ -2,7 +2,7 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'AB Organic Farm' }}</title>
     @vite(['resources/css/app.css','resources/js/app.js'])
@@ -189,7 +189,8 @@
 
             {{-- Shop --}}
             @php $footerShopLinks = setting_json('footer.links_shop', [
-                ['label' => 'Fruits & Vegetables', 'url' => '/categories/fruits-vegetables'],
+                ['label' => 'Fresh Fruits', 'url' => '/categories/fresh-fruits'],
+                ['label' => 'Fresh Vegetables', 'url' => '/categories/fresh-vegetables'],
                 ['label' => 'Rice & Grains', 'url' => '/categories/rice-grains-flour'],
                 ['label' => 'Oils & Ghee', 'url' => '/categories/oils-ghee'],
                 ['label' => 'Dry Fruits', 'url' => '/categories/dry-fruits-nuts'],

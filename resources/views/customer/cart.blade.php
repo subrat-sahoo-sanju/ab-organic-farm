@@ -1,7 +1,7 @@
 @extends('layouts.app', ['title' => 'Your Basket — AB Organic Farm'])
 
 @section('content')
-<div class="min-h-screen bg-gray-50 pb-40 lg:pb-8" x-data="cartPage()" x-cloak>
+<div class="min-h-screen bg-gray-50 pb-52 lg:pb-8" x-data="cartPage()" x-cloak>
 
   {{-- Flash Messages --}}
   <template x-if="flash">
@@ -224,7 +224,7 @@
 
   {{-- ===== BOTTOM STICKY BAR (Mobile) ===== --}}
   <template x-if="lines.length > 0">
-    <div class="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] lg:hidden">
+    <div class="sticky-total-bar fixed inset-x-0 z-40 border-t border-gray-200 bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] lg:hidden">
       <div class="flex items-center gap-4 px-4 py-3.5">
         <div class="flex-1">
           <div class="text-xs text-gray-400">Total</div>
@@ -360,5 +360,8 @@ function cartPage() {
   }
 }
 </script>
-<style>[x-cloak] { display: none !important; }</style>
+<style>[x-cloak] { display: none !important; }
+/* Keep the Total/Checkout bar clear of the fixed mobile bottom nav (h-16 + safe-area). */
+.sticky-total-bar { bottom: calc(env(safe-area-inset-bottom, 0px) + 4rem); }
+</style>
 @endsection

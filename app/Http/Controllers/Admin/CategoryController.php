@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Services\ImageUtility;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -62,12 +63,25 @@ class CategoryController extends Controller
 
     public function destroy(Category $category): RedirectResponse
     {
-        abort_if($category->children()->exists(), 422, 'Move or delete sub-categories first.');
-        abort_if($category->products()->exists(), 422, 'Category still has products.');
+        DB::transaction(function () use ($category) {
+            $parentId = $category->parent_id;
+            $firstChildId = $category->children()->value('id');
 
-        $category->delete();
+            // Re-parent sub-categories so they (and their products) stay live.
+            Category::where('parent_id', $category->id)->update(['parent_id' => $parentId]);
 
-        return back()->with('success', 'Category deleted.');
+            // Reassign direct products so none become orphaned.
+            if ($category->products()->exists()) {
+                $destinationId = $parentId ?? $firstChildId;
+                if ($destinationId) {
+                    $category->products()->update(['category_id' => $destinationId]);
+                }
+            }
+
+            $category->delete();
+        });
+
+        return back()->with('success', 'Category deleted. Sub-categories and products were kept.');
     }
 
     public function restore(int $id): RedirectResponse

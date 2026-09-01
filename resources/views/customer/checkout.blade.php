@@ -1,7 +1,7 @@
 @extends('layouts.app', ['title' => 'Checkout — AB Organic Farm'])
 
 @section('content')
-<div class="min-h-screen bg-gray-50 pb-32 lg:pb-8" x-data="checkoutPage()" x-init="init()">
+<div class="min-h-screen bg-gray-50 pb-44 lg:pb-8" x-data="checkoutPage()" x-init="init()">
 
   {{-- Flash Messages --}}
   @if(session('success'))
@@ -426,7 +426,7 @@
   </div>
 
   {{-- ===== BOTTOM STICKY BAR (Mobile + Desktop) ===== --}}
-  <div class="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+  <div class="sticky-total-bar fixed inset-x-0 z-40 border-t border-gray-200 bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
     <div class="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
       {{-- Total --}}
       <div class="flex-1">
@@ -469,7 +469,7 @@
 
   {{-- Validation Errors Banner --}}
   <div x-show="validationError" x-transition x-cloak
-    class="fixed bottom-24 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-sm font-medium text-white shadow-2xl">
+    class="sticky-toast fixed left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-sm font-medium text-white shadow-2xl">
     <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
     <span x-text="validationError"></span>
   </div>
@@ -583,5 +583,15 @@ function checkoutPage() {
 
 <style>
 [x-cloak] { display: none !important; }
+/* Keep the Total/Place-Order bar clear of the fixed mobile bottom nav (h-16 + safe-area). */
+.sticky-total-bar { bottom: calc(env(safe-area-inset-bottom, 0px) + 4rem); }
+@media (min-width: 1024px) {
+  .sticky-total-bar { bottom: 0; }
+}
+/* Validation toast floats above the mobile nav + total bar. */
+.sticky-toast { bottom: calc(env(safe-area-inset-bottom, 0px) + 9.5rem); }
+@media (min-width: 1024px) {
+  .sticky-toast { bottom: 6rem; }
+}
 </style>
 @endsection

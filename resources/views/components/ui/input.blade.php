@@ -16,10 +16,17 @@
         </label>
     @endif
 
-    <input {{ $attributes
-        ->merge(['type' => $type])
-        ->merge(['class' => 'w-full h-11 px-3.5 rounded-xl border bg-white text-sm placeholder:text-charcoal-600/40 transition-colors focus:outline-none focus:ring-2 focus:ring-forest-500/30 focus:border-forest-500 '.($error ? 'border-rose-400' : 'border-cream-200 hover:border-forest-300')]) }}
-    >
+    @php
+        $attrs = $attributes->merge([
+            'type' => $type,
+            'class' => 'w-full h-11 px-3.5 rounded-xl border bg-white text-sm placeholder:text-charcoal-600/40 transition-colors focus:outline-none focus:ring-2 focus:ring-forest-500/30 focus:border-forest-500 '.($error ? 'border-rose-400' : 'border-cream-200 hover:border-forest-300'),
+        ]);
+        if ($name) {
+            $attrs = $attrs->merge(['name' => $name]);
+        }
+    @endphp
+
+    <input {{ $attrs }}>
 
     @if($hint && !$error)
         <p class="mt-1.5 text-xs text-charcoal-600/70">{{ $hint }}</p>

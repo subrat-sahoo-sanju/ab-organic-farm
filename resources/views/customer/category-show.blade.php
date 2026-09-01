@@ -51,12 +51,52 @@
   </div>
 
   @if($products->count())
-    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 sm:gap-4">
-      @foreach($products as $product)
-        <x-product-card :product="$product" />
-      @endforeach
+    <div
+        x-data="{
+            nextUrl: @json($products->nextPageUrl()),
+            hasMore: @json($products->hasMorePages()),
+            loading: false,
+            failed: false,
+            loadMore() {
+                if (!this.nextUrl || this.loading) return
+                this.loading = true
+                this.failed = false
+                fetch(this.nextUrl, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json' },
+                })
+                .then(r => { if (!r.ok) throw new Error('Request failed'); return r.json() })
+                .then(d => {
+                    this.$refs.grid.insertAdjacentHTML('beforeend', d.html)
+                    this.nextUrl = d.nextPageUrl
+                    this.hasMore = d.hasMorePages
+                })
+                .catch(() => { this.failed = true })
+                .finally(() => { this.loading = false })
+            },
+        }"
+    >
+      <div x-ref="grid" class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 sm:gap-4">
+        @foreach($products as $product)
+          <x-product-card :product="$product" />
+        @endforeach
+      </div>
+
+      <div x-cloak x-show="hasMore" x-transition class="mt-10 flex flex-col items-center gap-3">
+        <button
+            type="button"
+            @click="loadMore"
+            :disabled="loading"
+            class="inline-flex items-center gap-2 rounded-full border-2 border-forest bg-white px-8 py-3 text-sm font-bold text-forest shadow-sm transition hover:bg-forest hover:text-white focus:outline-none focus:ring-2 focus:ring-forest/40 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <svg x-show="loading" x-cloak class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4z"></path>
+          </svg>
+          <span x-text="loading ? 'Loading…' : 'Show More Products'"></span>
+        </button>
+        <p x-cloak x-show="failed" class="text-sm text-red-500">Something went wrong. Please try again.</p>
+      </div>
     </div>
-    <div class="mt-10">{{ $products->withQueryString()->links('pagination::tailwind') }}</div>
   @else
     <div class="rounded-2xl border border-sage/20 bg-white py-16 text-center">
       <div class="text-5xl mb-4 opacity-40">🌿</div>
