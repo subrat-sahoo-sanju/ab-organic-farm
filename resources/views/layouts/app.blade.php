@@ -40,10 +40,14 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-3 md:gap-6">
 
             <a href="{{ route('shop.index') }}" class="flex items-center gap-2 shrink-0">
-                <span class="h-9 w-9 rounded-lg bg-anv-600 text-white grid place-items-center">
-                    <x-lucide-leaf class="h-5 w-5"/>
-                </span>
-                <span class="font-display text-lg font-bold text-anv-700 leading-tight hidden sm:block">AB Organic<br><span class="text-xs font-medium text-charcoal-600/60 tracking-wide">FARM</span></span>
+                @if($siteLogo = setting('display.logo', ''))
+                    <img src="{{ asset('storage/'.$siteLogo) }}" alt="{{ config('app.name', 'Store') }} logo" class="h-10 w-auto max-w-[160px] object-contain">
+                @else
+                    <span class="h-9 w-9 rounded-lg bg-anv-600 text-white grid place-items-center">
+                        <x-lucide-leaf class="h-5 w-5"/>
+                    </span>
+                    <span class="font-display text-lg font-bold text-anv-700 leading-tight hidden sm:block">{{ setting('store.name', 'AB Organic') }}<br><span class="text-xs font-medium text-charcoal-600/60 tracking-wide">{{ setting('store.tagline', 'FARM') }}</span></span>
+                @endif
             </a>
 
             <form action="{{ route('shop.search') }}" method="GET" class="hidden md:flex flex-1 max-w-2xl mx-auto">
@@ -164,8 +168,12 @@
 
             <div>
                 <div class="flex items-center gap-2 mb-4">
-                    <span class="h-8 w-8 rounded-lg bg-anv-600 text-white grid place-items-center"><x-lucide-leaf class="h-4 w-4"/></span>
-                    <span class="font-display text-base font-bold text-white">AB Organic Farm</span>
+                    @if($siteLogoWhite = setting('display.logo_white', ''))
+                        <img src="{{ asset('storage/'.$siteLogoWhite) }}" alt="{{ config('app.name', 'Store') }} logo" class="h-9 w-auto max-w-[180px] object-contain">
+                    @else
+                        <span class="h-8 w-8 rounded-lg bg-anv-600 text-white grid place-items-center"><x-lucide-leaf class="h-4 w-4"/></span>
+                        <span class="font-display text-base font-bold text-white">{{ setting('store.name', 'AB Organic Farm') }}</span>
+                    @endif
                 </div>
                 <p class="leading-relaxed text-white/50">{{ setting('footer.tagline', setting('store.tagline', 'Farm-fresh certified organic products, delivered to your doorstep.')) }}</p>
                 <div class="mt-5 flex gap-3">

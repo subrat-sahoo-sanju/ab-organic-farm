@@ -10,7 +10,7 @@
     <button @click="activeTab = 'sections'" :class="activeTab === 'sections' ? 'adm-pill-active' : 'adm-pill'">Homepage Sections</button>
   </div>
 
-  <form action="{{ route('admin.settings.update') }}" method="POST">
+  <form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data">
     @csrf
     @method('PATCH')
 
@@ -26,7 +26,21 @@
               <div>
                 <label class="adm-label">{{ $field['label'] }}</label>
 
-                @if(($field['type'] ?? 'text') === 'textarea')
+                @if(($field['type'] ?? 'text') === 'image')
+                  @php $fileField = str_replace('.', '__', $field['key']); @endphp
+                  <div class="space-y-2">
+                    @if($value)
+                      <div class="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3">
+                        <img src="{{ asset('storage/'.$value) }}" alt="Current {{ $field['label'] }}" class="h-12 w-auto max-w-[200px] object-contain rounded ring-1 ring-gray-100">
+                        <span class="text-xs adm-text-secondary break-all">{{ $value }}</span>
+                      </div>
+                    @endif
+                    <input type="hidden" name="{{ $fileField }}_existing" value="{{ $value }}">
+                    <input type="file" name="{{ $fileField }}" accept="image/jpeg,image/png,image/webp,image/svg+xml" class="adm-input file:mr-3 file:rounded-md file:border-0 file:bg-forest file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-forest-dark">
+                    <p class="text-xs adm-text-secondary">Upload a new logo and every page of the storefront updates automatically. Leave empty to keep the current one.</p>
+                  </div>
+
+                @elseif(($field['type'] ?? 'text') === 'textarea')
                   <textarea name="{{ $field['key'] }}" rows="3" class="adm-input">{{ $value }}</textarea>
 
                 @elseif(($field['type'] ?? 'text') === 'number')
@@ -204,6 +218,22 @@
               <div class="sm:col-span-2">
                 <label class="adm-label">Trust Badges (JSON: [{"icon":"leaf","title":"...","text":"..."}])</label>
                 <textarea name="sections[{{ $s->id }}][items]" rows="4" class="adm-input !font-mono !text-xs">{{ json_encode($cfg['items'] ?? [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) }}</textarea>
+              </div>
+            @endif
+
+            @if($s->key === 'hero')
+              <div class="sm:col-span-2">
+                <label class="adm-label">Hero Slides (JSON: [{"desktop":"sections/hero-desktop.webp","mobile":"sections/hero-mobile.webp","alt":"...","url":"..."}])</label>
+                <textarea name="sections[{{ $s->id }}][slides_json]" rows="5" class="adm-input !font-mono !text-xs">{{ json_encode($cfg['slides'] ?? [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) }}</textarea>
+                <p class="text-[11px] text-gray-400">Paths are relative to <code>storage/app/public/</code>. Use the image upload boxes below to replace the desktop/mobile images of the first slide.</p>
+              </div>
+            @endif
+
+            @if(in_array($s->key, ['native_ingredients','quality']))
+              <div class="sm:col-span-2">
+                <label class="adm-label">Carousel Images (JSON: [{"image":"sections/native1.jpg","url":"","alt":""}])</label>
+                <textarea name="sections[{{ $s->id }}][carousel_json]" rows="5" class="adm-input !font-mono !text-xs">{{ json_encode($cfg['carousel'] ?? [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) }}</textarea>
+                <p class="text-[11px] text-gray-400">Portrait images, one per entry. Paths are relative to <code>storage/app/public/</code>.</p>
               </div>
             @endif
           </div>

@@ -1,17 +1,24 @@
 @php
-    // Reference-style full-bleed hero with autoplay slideshow.
+    // Reference-style full-bleed hero: fixed aspect-ratio slides, dots + arrows.
     $cfg = $sec->config ?? [];
     $imgs = $cfg['images'] ?? [];
     $banners = $data ?? collect();
 
-    // Build slides from admin config first, else seeded hero banners.
+    // Slides from admin `slides` config → else single legacy image → else hero banners.
     $slides = [];
-    if (! empty($imgs['desktop'])) {
+    if (! empty($cfg['slides']) && is_array($cfg['slides'])) {
+        $slides = collect($cfg['slides'])->map(fn ($s) => [
+            'image'  => $s['desktop'] ?? null,
+            'mobile' => $s['mobile'] ?? ($s['desktop'] ?? null),
+            'alt'    => $s['alt'] ?? ($sec->title ?? ''),
+            'url'    => $s['url'] ?? '',
+        ])->filter(fn ($s) => $s['image'])->values()->all();
+    } elseif (! empty($imgs['desktop'])) {
         $slides[] = [
-            'image'   => $imgs['desktop'],
-            'mobile'  => $imgs['mobile'] ?? $imgs['desktop'],
-            'alt'     => $imgs['alt'] ?? $sec->title,
-            'url'     => $imgs['url'] ?? '',
+            'image'  => $imgs['desktop'],
+            'mobile' => $imgs['mobile'] ?? $imgs['desktop'],
+            'alt'    => $imgs['alt'] ?? $sec->title,
+            'url'    => $imgs['url'] ?? '',
         ];
     } else {
         foreach ($banners as $b) {
@@ -24,26 +31,34 @@
         }
     }
     if (empty($slides)) {
-        $slides[] = ['image' => 'hero-desktop.jpg', 'mobile' => 'hero-mobile.jpg', 'alt' => $sec->title ?? 'Hero', 'url' => route('shop.categories')];
+        $slides[] = ['image' => 'sections/hero-desktop.webp', 'mobile' => 'sections/hero-mobile.webp', 'alt' => $sec->title ?? 'Hero', 'url' => route('shop.categories')];
     }
-
-    $urls = array_map(fn ($s) => $s['url'] ?? '', $slides);
 @endphp
 
 @if(count($slides))
-<section class="relative w-full overflow-hidden" x-data="heroSlider({{ count($slides) }})">
+<section class="relative w-full overflow-hidden bg-[#f3f3f3]" x-data="heroSlider({{ count($slides) }})">
     <div class="relative">
         @foreach($slides as $idx => $slide)
+            @php
+                $isHttp = str_starts_with((string) $slide['image'], 'http') || str_starts_with((string) $slide['image'], '/');
+                $isHttpM = str_starts_with((string) $slide['mobile'], 'http') || str_starts_with((string) $slide['mobile'], '/');
+            @endphp
             <a href="{{ $slide['url'] ?: route('shop.categories') }}"
                x-show="active === {{ $idx }}"
                x-transition:enter="transition-opacity duration-700"
                x-transition:enter-start="opacity-0"
                x-transition:enter-end="opacity-100"
                class="block">
-                <img src="{{ str_starts_with((string)$slide['image'], 'http') ? $slide['image'] : asset('storage/'.$slide['image']) }}"
+                {{-- Desktop — 2400×735 intrinsic ratio --}}
+                <img src="{{ $isHttp ? $slide['image'] : asset('storage/'.$slide['image']) }}"
                      alt="{{ $slide['alt'] ?? '' }}"
-                     loading="{{ $loop->first ? 'eager' : 'lazy' }}"
-                     class="h-auto min-h-[280px] w-full object-cover sm:min-h-[420px] lg:min-h-[560px]">
+                     loading="{{ $idx === 0 ? 'eager' : 'lazy' }}"
+                     class="hidden w-full object-cover sm:block">
+                {{-- Mobile — 1200×796 intrinsic ratio --}}
+                <img @if($isHttpM) src="{{ $slide['mobile'] }}" @else src="{{ asset('storage/'.$slide['mobile']) }}" @endif
+                     alt="{{ $slide['alt'] ?? '' }}"
+                     loading="{{ $idx === 0 ? 'eager' : 'lazy' }}"
+                     class="w-full object-cover sm:hidden">
             </a>
         @endforeach
     </div>

@@ -6,7 +6,7 @@
 <section class="w-full border-t border-sage-100 bg-gradient-to-b from-white to-leaf-50 py-12">
     <div class="mx-auto w-full max-w-[1300px] px-4 sm:px-6 lg:px-8">
         <div class="text-center">
-            <h2 class="font-display text-[26px] font-bold text-anv-800 sm:text-3xl">{{ $sec->title }}</h2>
+            <h2 class="font-display text-[24px] font-bold text-[#242424] sm:text-[26px]">{{ $sec->title }}</h2>
             <p class="mt-1 text-sm text-charcoal-600/60">{{ $sec->subtitle }}</p>
             <div class="mt-3 inline-flex items-center gap-1 text-gold-500">
                 @for($i=1;$i<=5;$i++)

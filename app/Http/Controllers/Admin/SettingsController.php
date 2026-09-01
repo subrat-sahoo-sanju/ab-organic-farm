@@ -51,6 +51,18 @@ class SettingsController extends Controller
                 }
             }
 
+            // Hero slides / carousel items (JSON arrays) — admin-editable.
+            foreach (['slides' => 'slides_json', 'carousel' => 'carousel_json'] as $cfgKey => $field) {
+                if (array_key_exists($field, $payload)) {
+                    $decoded = json_decode((string) $payload[$field], true);
+                    if (is_array($decoded)) {
+                        $config[$cfgKey] = array_values($decoded);
+                    } else {
+                        unset($config[$cfgKey]);
+                    }
+                }
+            }
+
             // Section images (desktop + mobile) — upload to storage/sections.
             $images = $config['images'] ?? [];
             $images['alt'] = $payload['image_alt'] ?? ($images['alt'] ?? '');
@@ -83,6 +95,29 @@ class SettingsController extends Controller
     {
         $data = $request->validate($this->validationRules());
 
+        // Image fields (site logo, footer logo, favicon…) → store in storage/logos.
+        foreach ($this->sections() as $section) {
+            foreach ($section['keys'] as $field) {
+                if (($field['type'] ?? 'text') !== 'image') {
+                    continue;
+                }
+
+                $key = $field['key'];
+                $fileKey = str_replace('.', '__', $key);
+                $file = $request->file($fileKey);
+                if ($file instanceof \Illuminate\Http\UploadedFile && $file->isValid()) {
+                    $path = $file->store('logos', 'public');
+                    if ($path) {
+                        $data[$key] = $path;
+                        continue;
+                    }
+                }
+
+                $existing = $request->input($fileKey.'_existing');
+                $data[$key] = $existing ?? (string) setting($key, '');
+            }
+        }
+
         $service = app(\App\Services\SettingsService::class);
         foreach ($data as $key => $value) {
             $service->set($key, $value ?? '');
@@ -94,6 +129,15 @@ class SettingsController extends Controller
     protected function sections(): array
     {
         return [
+            'branding' => [
+                'title' => 'Branding & Logo',
+                'keys' => [
+                    ['key' => 'display.logo', 'label' => 'Site Logo (header — applied site-wide automatically)', 'type' => 'image'],
+                    ['key' => 'display.logo_white', 'label' => 'Footer Logo (white version, on dark background)', 'type' => 'image'],
+                    ['key' => 'store.name', 'label' => 'Store Name (used when no logo uploaded)'],
+                    ['key' => 'store.tagline', 'label' => 'Tagline'],
+                ],
+            ],
             'store' => [
                 'title' => 'Store Info',
                 'keys' => [
@@ -208,10 +252,14 @@ class SettingsController extends Controller
         $rules = [];
         foreach ($this->sections() as $section) {
             foreach ($section['keys'] as $field) {
-                $rules[$field['key']] = match ($field['type'] ?? 'text') {
+                $key = ($field['type'] ?? 'text') === 'image'
+                    ? str_replace('.', '__', $field['key'])
+                    : $field['key'];
+                $rules[$key] = match ($field['type'] ?? 'text') {
                     'boolean' => ['nullable', 'boolean'],
                     'number'  => ['nullable', 'numeric', 'min:0'],
                     'json'    => ['nullable', 'json'],
+                    'image'   => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,svg', 'max:2048'],
                     default   => ['nullable', 'string', 'max:500'],
                 };
             }

@@ -59,15 +59,35 @@ class HomeController extends Controller
             }
 
             if ($key === 'native_ingredients') {
-                $data[$key] = $this->rail()->whereHas('primaryImage')->take(4)->get()->map(fn ($p) => (object) [
-                    'image' => $p->primaryImage->path,
-                    'url' => route('shop.product', $p),
-                ]);
+                // Admin-configured carousel images → fallback to first products' photos.
+                $carousel = $config['carousel'] ?? [];
+                if (is_array($carousel) && count($carousel)) {
+                    $data[$key] = collect($carousel)->map(fn ($c) => (object) [
+                        'image' => $c['image'] ?? null,
+                        'url' => $c['url'] ?? '',
+                        'alt' => $c['alt'] ?? ($sec->title ?? ''),
+                    ]);
+                } else {
+                    $data[$key] = $this->rail()->whereHas('primaryImage')->take(4)->get()->map(fn ($p) => (object) [
+                        'image' => $p->primaryImage->path,
+                        'url' => route('shop.product', $p),
+                    ]);
+                }
             }
 
             if ($key === 'quality') {
-                $data[$key] = Banner::running()->where('placement', 'quality')
-                    ->get()->map(fn ($b) => (object) ['image' => $b->desktop_image, 'url' => $b->button_url]);
+                // Admin-configured carousel images → fallback to seeded quality banners.
+                $carousel = $config['carousel'] ?? [];
+                if (is_array($carousel) && count($carousel)) {
+                    $data[$key] = collect($carousel)->map(fn ($c) => (object) [
+                        'image' => $c['image'] ?? null,
+                        'url' => $c['url'] ?? '',
+                        'alt' => $c['alt'] ?? ($sec->title ?? ''),
+                    ]);
+                } else {
+                    $data[$key] = Banner::running()->where('placement', 'quality')
+                        ->get()->map(fn ($b) => (object) ['image' => $b->desktop_image, 'url' => $b->button_url]);
+                }
             }
 
             if ($key === 'logo_slider') {

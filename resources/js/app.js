@@ -334,6 +334,38 @@ Alpine.data('reviewsSlider', () => ({
     },
 }))
 
+/* ── Generic slide carousel (portrait/any image rails, transform-based) ── */
+Alpine.data('slideCarousel', () => ({
+    index: 0,
+    per: 1,
+    init() {
+        this.measure()
+        window.addEventListener('resize', () => this.measure())
+        this.index = Math.min(this.index, this.maxIndex())
+    },
+    measure() {
+        const el = this.$refs.track
+        this.per = 1
+        if (!el) return
+        const first = el.querySelector(':scope > *')
+        const gap = 12
+        const railW = el.parentElement?.clientWidth || el.clientWidth || 1200
+        const itemW = first ? first.getBoundingClientRect().width : railW
+        this.per = Math.max(1, Math.round((railW + gap) / (itemW + gap)))
+        this.index = Math.min(this.index, this.maxIndex())
+    },
+    maxIndex() {
+        const el = this.$refs.track
+        return Math.max(0, (el?.children.length || 1) - this.per)
+    },
+    prev() {
+        this.index = Math.max(0, this.index - 1)
+    },
+    next() {
+        this.index = Math.min(this.maxIndex(), this.index + 1)
+    },
+}))
+
 /* ── Tab grids (welcome / focus) with sliding bar ─────────────────── */
 Alpine.data('tabGrid', (gridId, initial) => {
     const grid = () => document.getElementById(gridId)

@@ -30,7 +30,7 @@
 
 <article class="anv-card group relative flex h-full w-full flex-col overflow-hidden bg-white">
     {{-- ═══ IMAGE · 1:1 · badges · hover swap · sold-out ═══ --}}
-    <a href="{{ route('shop.product', $product) }}" class="relative block aspect-square w-full overflow-hidden rounded-t-[14px] bg-leaf-50">
+    <a href="{{ route('shop.product', $product) }}" class="relative block aspect-square w-full overflow-hidden rounded-t-[10px] bg-[#f3f3f3]">
         <img src="{{ $img ? asset('storage/'.$img) : asset('images/placeholder.png') }}" loading="lazy"
              alt="{{ $product->name }}"
              class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.05] group-hover:opacity-0">
@@ -52,8 +52,40 @@
         @endif
     </a>
 
-    {{-- ═══ BODY ═══ --}}
+    {{-- ═══ BODY — ADD on top (reference order) ═══ --}}
     <div class="flex flex-1 flex-col p-3">
+
+        {{-- ═══ QUICK-ADD / STEPPER ═══ --}}
+        @if(!$inStock)
+            <button type="button" @click.prevent="$dispatch('open-notify', {name: {{ json_encode($product->name) }}, slug: {{ json_encode($product->slug) }}})"
+                    class="anv-badge-tag mb-2 w-full rounded-full border-2 border-[#CF9726] py-1.5 text-xs font-extrabold uppercase tracking-wider text-[#CF9726] transition hover:bg-[#CF9726] hover:text-white">
+                Notify Me
+            </button>
+        @elseif($multi)
+            <button type="button" @click.prevent="$dispatch('open-variant', { variants: {{ $variantsJson }}, name: {{ json_encode($product->name) }} })"
+                    class="mb-2 flex w-full items-center justify-center gap-1.5 rounded-full border-2 border-anv-600 py-1.5 text-xs font-extrabold uppercase tracking-wide text-anv-600 transition hover:bg-anv-600 hover:text-white">
+                ADD
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="h-4 w-4"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            </button>
+        @else
+            @php $vid = $variant->id; @endphp
+            <div class="mb-2 flex items-center rounded-full border-2 border-anv-600 {{ $available ? '' : 'pointer-events-none opacity-40' }}"
+                 x-data="anvStepper('{{ $vid }}', {{ $available ? '1' : '0' }})"
+                 :style="qty>0 && 'background:#235A49;border-color:#235A49'">
+                <button type="button" @click.prevent="window.AnvCart.plus('{{ $vid }}')"
+                        class="flex-1 py-1.5 text-center text-xs font-extrabold uppercase tracking-wide text-anv-600" :class="qty>0?'text-white':'text-anv-600'">
+                    ADD<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="mx-auto mt-0.5 h-3.5 w-3.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                </button>
+                <template x-if="qty > 0">
+                    <button type="button" @click.prevent="window.AnvCart.minus('{{ $vid }}')" class="px-3 py-1.5 text-lg font-bold leading-none text-white">−</button>
+                </template>
+                <span x-show="qty>0" x-text="qty" class="text-sm font-bold text-white" x-cloak></span>
+                <template x-if="qty > 0">
+                    <button type="button" @click.prevent="window.AnvCart.plus('{{ $vid }}')" class="px-3 py-1.5 text-lg font-bold leading-none text-white">+</button>
+                </template>
+            </div>
+        @endif
+
         <a href="{{ route('shop.product', $product) }}" class="block">
             <h3 class="line-clamp-2 text-sm font-semibold leading-snug text-[#242424]">{{ $product->name }}</h3>
         </a>
@@ -84,37 +116,6 @@
 
         @if($product->promo_note)
             <p class="mt-1 text-[11px] font-semibold text-anv-500">{{ $product->promo_note }}</p>
-        @endif
-
-        {{-- ═══ QUICK-ADD / STEPPER ═══ --}}
-        @if(!$inStock)
-            <button type="button" @click.prevent="$dispatch('open-notify', {name: {{ json_encode($product->name) }}, slug: {{ json_encode($product->slug) }}})"
-                    class="anv-badge-tag mt-3 w-full rounded-full border-2 border-[#CF9726] py-1.5 text-xs font-extrabold uppercase tracking-wider text-[#CF9726] transition hover:bg-[#CF9726] hover:text-white">
-                Notify Me
-            </button>
-        @elseif($multi)
-            <button type="button" @click.prevent="$dispatch('open-variant', { variants: {{ $variantsJson }}, name: {{ json_encode($product->name) }} })"
-                    class="mt-3 flex w-full items-center justify-center gap-1.5 rounded-full border-2 border-anv-600 py-1.5 text-xs font-extrabold uppercase tracking-wide text-anv-600 transition hover:bg-anv-600 hover:text-white">
-                ADD
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="h-4 w-4"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-            </button>
-        @else
-            @php $vid = $variant->id; @endphp
-            <div class="mt-3 flex items-center rounded-full border-2 border-anv-600 {{ $available ? '' : 'pointer-events-none opacity-40' }}"
-                 x-data="anvStepper('{{ $vid }}', {{ $available ? '1' : '0' }})"
-                 :style="qty>0 && 'background:#235A49;border-color:#235A49'">
-                <button type="button" @click.prevent="window.AnvCart.plus('{{ $vid }}')"
-                        class="flex-1 py-1.5 text-center text-xs font-extrabold uppercase tracking-wide text-anv-600" :class="qty>0?'text-white':'text-anv-600'">
-                    ADD<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="mx-auto mt-0.5 h-3.5 w-3.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                </button>
-                <template x-if="qty > 0">
-                    <button type="button" @click.prevent="window.AnvCart.minus('{{ $vid }}')" class="px-3 py-1.5 text-lg font-bold leading-none text-white">−</button>
-                </template>
-                <span x-show="qty>0" x-text="qty" class="text-sm font-bold text-white" x-cloak></span>
-                <template x-if="qty > 0">
-                    <button type="button" @click.prevent="window.AnvCart.plus('{{ $vid }}')" class="px-3 py-1.5 text-lg font-bold leading-none text-white">+</button>
-                </template>
-            </div>
         @endif
     </div>
 </article>
