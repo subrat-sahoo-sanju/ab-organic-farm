@@ -52,5 +52,9 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::post('/notifications/mark-all-read', [Customer\NotificationController::class, 'markAllRead'])->name('notifications.mark-all');
     });
 
-    Route::post('/reviews', [Customer\ReviewController::class, 'store'])->name('reviews.store');
+Route::post('/reviews', [Customer\ReviewController::class, 'store'])->name('reviews.store');
 });
+
+// Guest request endpoints (notify-me, newsletter)
+Route::post('/notify-me', [Customer\NotificationRequestController::class, 'notifyMe'])->name('notify-me');
+Route::post('/newsletter', [Customer\NotificationRequestController::class, 'newsletter'])->name('newsletter');

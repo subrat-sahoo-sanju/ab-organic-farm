@@ -1,28 +1,37 @@
 @php
-    $tiles = $data ?? collect();
+    // Full-width "Only Perfect Makes The Cut" banner — admin image uploadable.
+    $cfg = $sec->config ?? [];
+    $imgs = $cfg['images'] ?? [];
+    $fallback = $data ?? collect();
+
+    $desktop = $imgs['desktop'] ?? null;
+    $mobile  = $imgs['mobile'] ?? null;
+    if (! $desktop) {
+        $first = $fallback->first();
+        $desktop = $first->image ?? $first->desktop_image ?? null;
+        $mobile = $first->mobile_image ?? null;
+    }
+    $desktopSrc = $desktop ? (str_starts_with((string)$desktop, 'http') ? $desktop : asset('storage/'.$desktop)) : asset('images/hero-desktop.jpg');
+    $mobileSrc  = $mobile ? (str_starts_with((string)$mobile, 'http') ? $mobile : asset('storage/'.$mobile)) : asset('images/hero-mobile.jpg');
 @endphp
 
-@if($tiles->count())
-<section class="py-12">
-  <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-    @include('customer.sections._header', ['title' => $sec->title, 'subtitle' => $sec->subtitle, 'align' => 'center'])
-
-    <div class="mt-8 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
-      @foreach($tiles as $tile)
-        <a href="{{ $tile->url ?: route('shop.categories') }}" class="group relative block overflow-hidden rounded-2xl bg-cream-100">
-          @if($tile->image)
-            <img src="{{ asset('storage/'.$tile->image) }}" alt="{{ $tile->title ?? 'Hand-picked quality' }}" class="aspect-[4/5] w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" />
-          @else
-            <div class="flex aspect-[4/5] w-full items-center justify-center bg-gradient-to-br from-forest-50 to-cream-100 text-5xl">🌿</div>
-          @endif
-          <div class="absolute inset-0 bg-gradient-to-t from-charcoal-900/60 via-transparent to-transparent opacity-0 transition duration-300 group-hover:opacity-100"></div>
-          <div class="absolute inset-x-0 bottom-0 translate-y-4 p-4 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-            <p class="font-display text-sm font-bold text-white">{{ $tile->title }}</p>
-            @if($tile->subtitle)<p class="mt-0.5 text-[11px] text-white/80">{{ $tile->subtitle }}</p>@endif
-          </div>
-        </a>
-      @endforeach
+<section class="relative w-full overflow-hidden bg-[#0B3B30]">
+    <div class="hidden sm:block">
+        <img src="{{ $desktopSrc }}" alt="{{ $imgs['alt'] ?? $sec->title }}" class="h-[360px] w-full object-cover opacity-95 lg:h-[460px]" loading="lazy">
     </div>
-  </div>
+    <div class="sm:hidden">
+        <img src="{{ $mobileSrc }}" alt="{{ $imgs['alt'] ?? $sec->title }}" class="h-[240px] w-full object-cover opacity-95" loading="lazy">
+    </div>
+    <div class="absolute inset-0 flex items-center justify-center text-center">
+        <div class="mx-auto w-full max-w-[1300px] px-4 sm:px-6 lg:px-8">
+            <p class="mx-auto mb-2 inline-flex items-center gap-2 rounded-full bg-gold-400/90 px-4 py-1 text-[11px] font-bold uppercase tracking-widest text-[#0B3B30]">
+                <svg viewBox="0 0 20 20" fill="currentColor" class="h-3 w-3"><path d="M6.6 10.8l2 2 4.8-4.8-1.1-1.1-3.7 3.7-.9-.9z"/></svg>
+                Hand-picked & tested
+            </p>
+            <h2 class="font-display text-2xl font-bold text-white sm:text-3xl lg:text-4xl">{{ $sec->title }}</h2>
+            @if($sec->subtitle)
+                <p class="mt-2 text-sm text-white/85 sm:text-base">{{ $sec->subtitle }}</p>
+            @endif
+        </div>
+    </div>
 </section>
-@endif

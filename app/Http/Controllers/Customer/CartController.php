@@ -35,17 +35,20 @@ class CartController extends Controller
 
         $qtys = [];
         $items = [];
+        $total = 0.0;
 
         if ($cart) {
-            foreach ($cart->items()->select('id', 'product_variant_id', 'quantity')->get() as $item) {
+            $cart->items()->with('variant')->get()->each(function ($item) use (&$qtys, &$items, &$total) {
                 $qtys[$item->product_variant_id] = (int) $item->quantity;
                 $items[$item->product_variant_id] = (int) $item->id;
-            }
+                $total += (float) $item->quantity * (float) ($item->variant?->sale_price ?? $item->variant?->price ?? 0);
+            });
         }
 
         return response()->json([
             'ok' => true,
             'count' => $this->carts->countForHeader(),
+            'total' => round($total, 2),
             'qtys' => $qtys,
             'items' => $items,
         ]);

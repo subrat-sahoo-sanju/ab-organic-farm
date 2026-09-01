@@ -64,6 +64,31 @@
     --color-charcoal-800: #1E2922;
     --color-charcoal-900: #121B16;
 
+    /* ── Anveshan-style deep green (primary) ───────────── */
+    --color-anv-50:  #EEF4F1;
+    --color-anv-100: #DCE8E2;
+    --color-anv-200: #B7D0C3;
+    --color-anv-300: #8FB3A2;
+    --color-anv-400: #5F8F7B;
+    --color-anv-500: #2E6B58;
+    --color-anv-600: #235A49;
+    --color-anv-700: #1A4D42;
+    --color-anv-800: #123C33;
+    --color-anv-900: #0C3028;
+
+    /* ── Anveshan-style gold (accent) ──────────────────── */
+    --color-gold-100: #F9F2D9;
+    --color-gold-200: #F1E3B4;
+    --color-gold-300: #E8D998;
+    --color-gold-400: #DBBE62;
+    --color-gold-500: #C9A333;
+    --color-gold-600: #B8862A;
+    --color-gold-700: #8F6A1E;
+
+    /* ── Soft leaf page background ──────────────────────── */
+    --color-leaf-50:  #FAFCFA;
+    --color-leaf-100: #F1F7F2;
+
     /* ── Base tokens (enable slash-opacity modifiers) ──── */
     --color-forest:   #0C831F;
     --color-mint:     #30BD68;
@@ -74,8 +99,8 @@
     --color-charcoal: #3A4B42;
 
     /* ── Typography ────────────────────────────────────── */
-    --font-display: 'Fraunces', Georgia, serif;
-    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Roboto Slab', Georgia, serif;
+    --font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
 
     /* ── Shadows ───────────────────────────────────────── */
     --shadow-card: 0 2px 12px -2px rgb(12 131 31 / 0.08);
@@ -1349,3 +1374,141 @@ textarea.adm-input {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   Anveshan-style reference components
+   ════════════════════════════════════════════════════════════════════ */
+
+/* Sliding tab indicator (menu nav) */
+.anv-tabs { position: relative; }
+.anv-tab-indicator {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #235A49, #2E6B58);
+  border-radius: 9999px;
+  transition: transform 0.3s ease, width 0.3s ease;
+  will-change: transform, width;
+}
+.anv-tab-btn { white-space: nowrap; color: rgba(36,36,36,.55); transition: color .2s ease; }
+.anv-tab-btn.active { color: #235A49; font-weight: 700; }
+.anv-tab-btn.active::after {
+  content: ''; position: absolute; left: 0.85rem; right: 0.85rem; bottom: -1px;
+  height: 2px; border-radius: 9999px;
+  background: linear-gradient(90deg, #235A49, #2E6B58);
+}
+
+/* Marquee (logo slider / combo rails) */
+@keyframes anvMarquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.anv-marquee { display: flex; width: max-content; animation: anvMarquee 40s linear infinite; }
+.anv-marquee:hover { animation-play-state: paused; }
+.anv-marquee-track:hover .anv-marquee { animation-play-state: paused; }
+
+/* Horizontal product rows */
+.anv-rail { display: flex; gap: 0.75rem; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+.anv-rail .anv-rail-item { flex: 0 0 auto; scroll-snap-align: start; }
+.anv-rail::-webkit-scrollbar { display: none; }
+.anv-rail { scrollbar-width: none; }
+
+/* Cards */
+.anv-card {
+  background: #fff; border: 1px solid #EDF3EF; border-radius: 14px;
+  box-shadow: 0 2px 14px -6px rgba(18,18,18,.08);
+  transition: box-shadow .25s ease, transform .25s ease;
+}
+.anv-card:hover { box-shadow: 0 10px 26px -8px rgba(35,90,73,.22); transform: translateY(-2px); }
+
+/* Product card quick-add pill */
+.anv-qty-pill { transition: opacity .15s ease; }
+.anv-add-btn { opacity: 1; transition: opacity .15s ease; }
+.anv-add-btn.hidden-btn { opacity: 0; pointer-events: none; position: absolute; }
+
+/* Discount / NewLaunch badges */
+#anv-badge-percent::before { content: attr(data-pct); }
+.anv-badge-tag { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 700; letter-spacing: .04em; }
+
+/* Qty-sold badge (🔥) */
+@keyframes anvQsb { 0%{transform:scale(.6);opacity:0} 60%{transform:scale(1.15);opacity:1} 100%{transform:scale(1)} }
+.anv-qty-sold { animation: anvQsb .5s ease both; }
+
+/* Hero slideshow */
+.anv-hero-dot { width: 8px; height: 8px; border-radius: 9999px; background: rgba(255,255,255,.45); transition: width .25s ease, background .25s ease; }
+.anv-hero-dot.active { width: 26px; background: #fff; }
+
+/* Reviews slider */
+.anv-rev-nav { width: 40px; height: 40px; border-radius: 9999px; display: grid; place-items: center;
+  background: #fff; border: 1px solid #EDF3EF; color: #235A49; cursor: pointer; transition: all .2s ease; }
+.anv-rev-nav:hover { background: #235A49; color: #fff; }
+.anv-rev-dot { width: 8px; height: 8px; border-radius: 9999px; background: #d9e2dc; transition: .2s; cursor: pointer; }
+.anv-rev-dot.active { width: 24px; background: #235A49; }
+
+/* App download strip */
+@keyframes anvShine { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* Sticky rewards bar */
+.anv-rewards-bar { transition: transform .3s ease, opacity .3s ease; }
+.anv-rewards-bar.scroll-hidden { transform: translateY(140%); opacity: 0; }
+
+/* Floating cart */
+.floating-cart-fly { border-radius: 12px; z-index: 120; pointer-events: none; }
+
+/* Toast slide (Blinkit style add) */
+@keyframes anvToastIn { from{opacity:0; transform:translateY(24px) scale(.96)} to{opacity:1; transform:none} }
+.anv-toast { animation: anvToastIn .3s cubic-bezier(.22,1,.36,1) both; }
+
+/* ═══════════ APP DOWNLOAD BAR (reference: anveshan.farm) ═══════════ */
+.app-download-bar {
+  background: #00584b;
+  color: #ffffff;
+  width: 100%;
+  padding: 10px 0;
+  box-sizing: border-box;
+  font-size: 13px;
+  line-height: 1.25;
+  z-index: 30;
+  position: relative;
+}
+.app-download-bar__inner {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  box-sizing: border-box;
+}
+.app-download-bar__left { display: flex; align-items: center; gap: 14px; flex: 1 1 auto; min-width: 0; }
+.app-download-bar__right { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+.app-download-bar__icon {
+  flex: 0 0 auto; width: 44px; height: 44px; background: #fff; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.12);
+}
+.app-download-bar__icon img { max-width: 100%; max-height: 100%; display: block; }
+.app-download-bar__divider { width: 1px; height: 32px; background: rgba(255,255,255,.25); flex: 0 0 auto; }
+.app-download-bar__text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+.app-download-bar__heading {
+  font-weight: 700; font-size: 16px; margin: 0; letter-spacing: .2px;
+  background: linear-gradient(100deg,#ffffff 0%,#ffffff 30%,#b8860b 40%,#ffd700 46%,#fff5b0 50%,#ffd700 54%,#b8860b 60%,#ffffff 70%,#ffffff 100%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  animation: anvShine 6s linear infinite;
+}
+.app-download-bar__sub { font-size: 12px; color: rgba(255,255,255,.92); margin: 1px 0 0; }
+.app-download-bar__btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 999px;
+  background: linear-gradient(135deg,#ffd700 0%,#ffdf6b 100%); color: #00584b; font-weight: 800;
+  font-size: 13px; text-decoration: none; transition: transform .2s ease, box-shadow .2s ease; white-space: nowrap;
+}
+.app-download-bar__btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.25); }
+.app-download-bar__btn svg { width: 14px; height: 14px; }
+.app-download-bar__close {
+  display: grid; place-items: center; width: 30px; height: 30px; border-radius: 999px;
+  background: transparent; color: rgba(255,255,255,.6); border: 0; cursor: pointer; transition: color .2s ease, background .2s ease;
+}
+.app-download-bar__close:hover { color: #fff; background: rgba(255,255,255,.15); }
+.app-download-bar__close svg { width: 16px; height: 16px; }

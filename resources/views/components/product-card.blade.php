@@ -1,152 +1,120 @@
-@props(['product'])
-
 @php
-    $variant = $product->defaultVariant;
-    $inventory = $variant?->inventory;
-    $inStock = $inventory && $inventory->available() > 0;
-    $hasSale = $variant && $variant->sale_price && (float) $variant->sale_price < (float) $variant->price;
-    $salePercent = $hasSale ? round((1 - $variant->sale_price / $variant->price) * 100) : 0;
-    $roundedRating = round((float) ($product->rating_avg ?? 0));
-    $reviewCount = (int) ($product->review_count ?? $product->approvedReviews_count ?? 0);
-    $badge = $product->displayBadge();
-    $hover = ($product->relationLoaded('images') && $product->images->count() > 1)
-        ? $product->images->get(1)
-        : null;
-    $unit = ($variant?->unit_value ?? '') . ($variant?->unit_label ?? '');
-    $per = trim((string) $variant?->unit_label);
+    $primary = $product->primaryImage;
+    $img     = $primary?->path;
+    $hover   = $product->hoverImage();
+    $hoverPath = $hover?->path ?? null;
+    $variants = $product->relationLoaded('activeVariants')
+        ? $product->activeVariants
+        : $product->activeVariants()->limit(5)->get();
+    $default   = $product->defaultVariant;
+    $variant   = $default ?? $variants->first();
+    $inStock   = $variants->contains(fn ($v) => $v->inventory && $v->inventory->available() > 0);
+    $available = $variant && $variant->inventory && $variant->inventory->available() > 0;
+    $discount  = $product->discountPercent();
+    $rating    = $product->reviews_avg_rating ?? (float) ($product->rating_avg ?? 0);
+    $reviews   = $product->reviews_count ?? 0;
+    $sold      = (int) ($product->sold_count ?? 0);
+    $badge     = $product->displayBadge();
+    $unit      = $variant?->unit_label ?: ($variant && $variant->weight_grams ? $variant->weight_grams.' gm' : null);
+    $multi     = $variants->count() > 1;
+
+    $variantsJson = $variants->values()->map(fn ($v) => [
+        'id'        => $v->id,
+        'label'     => $v->name ?: ($v->weight_grams ? $v->weight_grams.' gm' : ''),
+        'image'     => $img ? asset('storage/'.$img) : null,
+        'price'     => (float) $v->price,
+        'sale'      => (float) $v->effectivePrice(),
+        'available' => $v->inventory && $v->inventory->available() > 0,
+    ])->toJson();
 @endphp
 
-<div class="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-cream-200 bg-white shadow-[0_2px_12px_-2px_rgba(12,131,31,0.06)] transition-all duration-300 hover:-translate-y-1 hover:border-forest-300 hover:shadow-[0_12px_32px_-8px_rgba(12,131,31,0.22)]">
-
-    {{-- Image area --}}
-    <a href="{{ route('shop.product', $product->slug) }}" class="relative block aspect-square w-full overflow-hidden bg-gradient-to-br from-[#FBF7EE] to-[#EEF5EC]">
-        @if($product->primaryImage)
-            <img
-                src="{{ asset('storage/'.$product->primaryImage->thumb_path) }}"
-                alt="{{ $product->primaryImage->alt_text ?: $product->name }}"
-                class="absolute inset-0 h-full w-full object-cover p-4 transition-all duration-500 group-hover:scale-[1.08] {{ $hover ? 'opacity-100' : '' }}"
-                loading="lazy"
-            >
-            @if($hover)
-                <img
-                    src="{{ asset('storage/'.$hover->thumb_path) }}"
-                    alt="{{ $product->name }}"
-                    class="absolute inset-0 z-[1] h-full w-full object-cover p-4 opacity-0 transition-all duration-500 group-hover:scale-[1.08] group-hover:opacity-100"
-                    loading="lazy"
-                >
-            @endif
-        @else
-            <div class="flex h-full items-center justify-center text-4xl text-gray-200">🌿</div>
+<article class="anv-card group relative flex h-full w-full flex-col overflow-hidden bg-white">
+    {{-- ═══ IMAGE · 1:1 · badges · hover swap · sold-out ═══ --}}
+    <a href="{{ route('shop.product', $product) }}" class="relative block aspect-square w-full overflow-hidden rounded-t-[14px] bg-leaf-50">
+        <img src="{{ $img ? asset('storage/'.$img) : asset('images/placeholder.png') }}" loading="lazy"
+             alt="{{ $product->name }}"
+             class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.05] group-hover:opacity-0">
+        @if($hoverPath && $hoverPath !== $img)
+            <img src="{{ asset('storage/'.$hoverPath) }}" alt="" loading="lazy"
+                 class="absolute inset-0 h-full w-full object-cover opacity-0 transition duration-500 group-hover:opacity-100">
         @endif
 
-        {{-- Top-left: discount / organic --}}
-        <div class="absolute left-2 top-2 z-[2] flex flex-col items-start gap-1">
-            @if($hasSale)
-                <span class="rounded-lg bg-clay-500 px-1.5 py-0.5 text-[10px] font-extrabold leading-none text-white shadow-sm">{{ $salePercent }}% OFF</span>
-            @elseif($product->is_organic)
-                <span class="rounded-lg bg-emerald-600 px-1.5 py-0.5 text-[10px] font-extrabold leading-none text-white shadow-sm">ORGANIC</span>
-            @endif
-        </div>
-
-        {{-- Top-right: status badge --}}
+        @if($discount > 0)
+            <span class="anv-badge-tag absolute left-2 top-2 rounded-md bg-gold-300 px-1.5 py-1 text-[10px] font-extrabold text-anv-600 shadow-sm">{{ $discount }}% OFF</span>
+        @endif
         @if($badge)
-            <div class="absolute right-2 top-2 z-[2]">
-                <span class="rounded-full bg-white/95 px-2 py-0.5 text-[10px] font-extrabold leading-none tracking-wide text-[#0C831F] shadow-sm ring-1 ring-forest-200">{{ $badge }}</span>
-            </div>
+            <span class="anv-badge-tag absolute right-2 top-2 rounded-md bg-anv-600 px-2 py-1 text-[10px] font-bold uppercase text-white shadow-sm">{{ $badge }}</span>
         @endif
-
-        {{-- Quick view hover overlay --}}
-        <div class="absolute inset-x-0 bottom-0 z-[2] flex translate-y-3 items-center justify-center p-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-            <span class="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-4 py-1.5 text-[11px] font-bold text-[#0C831F] shadow-lg ring-1 ring-black/5">
-                <x-lucide-eye class="h-3.5 w-3.5" />Quick View
+        @if(!$inStock)
+            <span class="absolute inset-0 grid place-items-center bg-white/60 backdrop-blur-[1px]">
+                <span class="rounded-md bg-anv-600 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-white">Sold Out</span>
             </span>
-        </div>
+        @endif
     </a>
 
-    {{-- Content area --}}
-    <div class="flex flex-1 flex-col px-3 pb-3 pt-2.5">
+    {{-- ═══ BODY ═══ --}}
+    <div class="flex flex-1 flex-col p-3">
+        <a href="{{ route('shop.product', $product) }}" class="block">
+            <h3 class="line-clamp-2 text-sm font-semibold leading-snug text-[#242424]">{{ $product->name }}</h3>
+        </a>
 
-        {{-- Category --}}
-        @if($product->category)
-            <a href="{{ route('shop.category', $product->category->slug) }}" class="text-[10px] font-bold uppercase tracking-wider text-charcoal-600/40 transition hover:text-forest-600">{{ $product->category->name }}</a>
-        @endif
-
-        {{-- Product name --}}
-        <a href="{{ route('shop.product', $product->slug) }}" class="mt-0.5 line-clamp-2 text-[13px] font-bold leading-tight text-charcoal-900 transition hover:text-forest-700">{{ $product->name }}</a>
-
-        {{-- Weight / unit --}}
-        @if($unit)
-            <span class="mt-1 text-[11px] font-medium text-charcoal-600/50">{{ $unit }}</span>
-        @endif
-
-        {{-- Rating --}}
-        <div class="mt-1.5 flex items-center gap-1">
-            <span class="inline-flex items-center gap-0.5 rounded-md bg-emerald-600 px-1.5 py-0.5 text-[10px] font-extrabold text-white">
-                {{ number_format((float) ($product->rating_avg ?? 0), 1, '.', '') }}<x-lucide-star class="h-2.5 w-2.5 fill-current" />
-            </span>
-            @if($reviewCount > 0)
-                <span class="text-[10px] font-medium text-charcoal-600/40">({{ $reviewCount }} reviews)</span>
-            @endif
-        </div>
-
-        {{-- Price + per unit --}}
-        <div class="mt-auto flex items-start justify-between gap-2 pt-2.5">
-            <div class="flex flex-col leading-none">
-                <div class="flex items-baseline gap-1.5">
-                    <span class="text-[15px] font-extrabold text-charcoal-900">₹{{ number_format($hasSale ? $variant->sale_price : ($variant?->price ?? 0)) }}</span>
-                    @if($hasSale)
-                        <span class="text-[11px] font-semibold text-charcoal-600/40 line-through">₹{{ number_format($variant->price) }}</span>
-                    @endif
-                </div>
-                @if($per)
-                    <span class="mt-0.5 text-[10px] font-medium text-charcoal-600/40">/ {{ $per }}</span>
-                @endif
+        @if($rating > 0)
+            <div class="mt-1 flex items-center gap-1 text-xs">
+                <span class="inline-flex items-center gap-0.5 font-bold text-gold-500">
+                    <svg viewBox="0 0 20 20" fill="#FFC107" class="h-3.5 w-3.5"><path d="M10 1.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8L10 15.3 4.7 17.6l1-5.8L1.5 7.7l5.9-.9z"/></svg>
+                    {{ number_format($rating, 1) }}
+                </span>
+                <span class="text-[#9AA79F]">({{ $reviews }} reviews)</span>
             </div>
+        @endif
 
-            {{-- Add / Quantity / Out of Stock --}}
-            @if($inStock)
-                <div x-data class="shrink-0">
-                    {{-- ADD button (when not in cart) --}}
-                    <button
-                        type="button"
-                        x-show="$store.cart.qtyOf({{ $variant->id }}) === 0"
-                        @click="$store.cart.add({{ $variant->id }})"
-                        class="inline-flex h-9 items-center gap-1 rounded-xl border-2 border-forest-600 bg-forest-600 px-3.5 text-[12px] font-extrabold uppercase tracking-wide text-white shadow-sm transition active:scale-90 hover:bg-forest-700"
-                    >
-                        <x-lucide-plus class="h-3.5 w-3.5" />Add
-                    </button>
-
-                    {{-- Quantity stepper (when in cart) --}}
-                    <div
-                        x-show="$store.cart.qtyOf({{ $variant->id }}) > 0"
-                        x-cloak
-                        class="flex items-center overflow-hidden rounded-xl border-2 border-forest-600 bg-white shadow-sm"
-                    >
-                        <button
-                            type="button"
-                            @click="$store.cart.setQty({{ $variant->id }}, $store.cart.items[{{ $variant->id }}], $store.cart.qtyOf({{ $variant->id }}) - 1)"
-                            class="flex h-9 w-8 items-center justify-center text-forest-700 transition hover:bg-forest-50"
-                        >
-                            <x-lucide-minus class="h-3.5 w-3.5" />
-                        </button>
-                        <span class="flex h-9 w-7 items-center justify-center text-[13px] font-extrabold text-forest-700" x-text="$store.cart.qtyOf({{ $variant->id }})"></span>
-                        <button
-                            type="button"
-                            @click="$store.cart.setQty({{ $variant->id }}, $store.cart.items[{{ $variant->id }}], $store.cart.qtyOf({{ $variant->id }}) + 1)"
-                            class="flex h-9 w-8 items-center justify-center text-forest-700 transition hover:bg-forest-50"
-                        >
-                            <x-lucide-plus class="h-3.5 w-3.5" />
-                        </button>
-                    </div>
-                </div>
-            @else
-                <span class="shrink-0 rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-gray-400">Sold out</span>
+        <div class="mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <span class="text-base font-extrabold text-[#242424]">₹{{ number_format($variant?->effectivePrice() ?? $product->basePrice(), 0) }}</span>
+            @if($variant && $variant->price > $variant->effectivePrice())
+                <s class="text-xs text-[#9AA79F]">₹{{ number_format($variant->price, 0) }}</s>
+            @endif
+            @if($unit)
+                <span class="text-[11px] font-medium text-[#6B7E73]">/{{ $unit }}</span>
             @endif
         </div>
 
-        {{-- Promo note (admin-manageable) --}}
+        @if($sold > 0)
+            <div class="anv-qty-sold mt-1.5 inline-flex w-fit items-center gap-1 rounded-full bg-[#FFF6DB] px-2 py-0.5 text-[10px] font-bold text-gold-600">🔥 {{ $sold }} sold in last 7 days</div>
+        @endif
+
         @if($product->promo_note)
-            <p class="mt-2 rounded-lg bg-forest-50 px-2 py-1 text-[10px] font-semibold leading-snug text-forest-700">{{ $product->promo_note }}</p>
+            <p class="mt-1 text-[11px] font-semibold text-anv-500">{{ $product->promo_note }}</p>
+        @endif
+
+        {{-- ═══ QUICK-ADD / STEPPER ═══ --}}
+        @if(!$inStock)
+            <button type="button" @click.prevent="$dispatch('open-notify', {name: {{ json_encode($product->name) }}, slug: {{ json_encode($product->slug) }}})"
+                    class="anv-badge-tag mt-3 w-full rounded-full border-2 border-[#CF9726] py-1.5 text-xs font-extrabold uppercase tracking-wider text-[#CF9726] transition hover:bg-[#CF9726] hover:text-white">
+                Notify Me
+            </button>
+        @elseif($multi)
+            <button type="button" @click.prevent="$dispatch('open-variant', { variants: {{ $variantsJson }}, name: {{ json_encode($product->name) }} })"
+                    class="mt-3 flex w-full items-center justify-center gap-1.5 rounded-full border-2 border-anv-600 py-1.5 text-xs font-extrabold uppercase tracking-wide text-anv-600 transition hover:bg-anv-600 hover:text-white">
+                ADD
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="h-4 w-4"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            </button>
+        @else
+            @php $vid = $variant->id; @endphp
+            <div class="mt-3 flex items-center rounded-full border-2 border-anv-600 {{ $available ? '' : 'pointer-events-none opacity-40' }}"
+                 x-data="anvStepper('{{ $vid }}', {{ $available ? '1' : '0' }})"
+                 :style="qty>0 && 'background:#235A49;border-color:#235A49'">
+                <button type="button" @click.prevent="window.AnvCart.plus('{{ $vid }}')"
+                        class="flex-1 py-1.5 text-center text-xs font-extrabold uppercase tracking-wide text-anv-600" :class="qty>0?'text-white':'text-anv-600'">
+                    ADD<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="mx-auto mt-0.5 h-3.5 w-3.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                </button>
+                <template x-if="qty > 0">
+                    <button type="button" @click.prevent="window.AnvCart.minus('{{ $vid }}')" class="px-3 py-1.5 text-lg font-bold leading-none text-white">−</button>
+                </template>
+                <span x-show="qty>0" x-text="qty" class="text-sm font-bold text-white" x-cloak></span>
+                <template x-if="qty > 0">
+                    <button type="button" @click.prevent="window.AnvCart.plus('{{ $vid }}')" class="px-3 py-1.5 text-lg font-bold leading-none text-white">+</button>
+                </template>
+            </div>
         @endif
     </div>
-</div>
+</article>

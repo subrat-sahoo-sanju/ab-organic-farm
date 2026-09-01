@@ -6,7 +6,7 @@
 @endphp
 {{-- Live Notifications Bell + Dropdown + Popups + Sound --}}
 <div x-data="notificationManager()"
-     x-init="init('{{ $notifFront }}', '{{ $notifFresh }}', '{{ $notifRead }}', '{{ $notifReadAll }}')"
+     x-init="boot('{{ $notifFront }}', '{{ $notifFresh }}', '{{ $notifRead }}', '{{ $notifReadAll }}')"
      @keydown.escape.window="open = false"
      class="relative">
 
@@ -149,7 +149,7 @@ function notificationManager() {
     readBase: '',
     readAllUrl: '',
 
-    init(front, fresh, readBase, readAll) {
+    boot(front, fresh, readBase, readAll) {
       this.frontUrl = front;
       this.freshUrl = fresh;
       this.readBase = readBase;

@@ -51,6 +51,22 @@ class SettingsController extends Controller
                 }
             }
 
+            // Section images (desktop + mobile) — upload to storage/sections.
+            $images = $config['images'] ?? [];
+            $images['alt'] = $payload['image_alt'] ?? ($images['alt'] ?? '');
+            $imageKeys = ['desktop' => 'image_desktop', 'mobile' => 'image_mobile'];
+            foreach ($imageKeys as $slot => $field) {
+                $images[$slot] = $payload[$field.'_existing'] ?? ($images[$slot] ?? '');
+                if ($request->hasFile("sections.{$id}.{$field}")) {
+                    $file = $request->file("sections.{$id}.{$field}");
+                    $path = $file->store('sections', 'public');
+                    if ($path) {
+                        $images[$slot] = $path;
+                    }
+                }
+            }
+            $config['images'] = $images;
+
             $section->update([
                 'title' => $payload['title'] ?? '',
                 'subtitle' => $payload['subtitle'] ?? '',
@@ -156,12 +172,32 @@ class SettingsController extends Controller
                 'title' => 'Footer Content',
                 'keys' => [
                     ['key' => 'footer.tagline', 'label' => 'Footer Tagline'],
-                    ['key' => 'footer.payment_title', 'label' => 'Payment Block Title'],
-                    ['key' => 'footer.payment_text', 'label' => 'Payment Block Text'],
-                    ['key' => 'footer.shop_title', 'label' => 'Shop Column Title'],
-                    ['key' => 'footer.account_title', 'label' => 'Account Column Title'],
-                    ['key' => 'footer.links_shop', 'label' => 'Shop Links', 'type' => 'json', 'json_schema' => 'link_list'],
-                    ['key' => 'footer.links_account', 'label' => 'Account Links', 'type' => 'json', 'json_schema' => 'link_list'],
+                    ['key' => 'footer.address', 'label' => 'Corporate Office Address'],
+                    ['key' => 'footer.links_services', 'label' => 'Services Links', 'type' => 'json', 'json_schema' => 'link_list'],
+                    ['key' => 'footer.links_policies', 'label' => 'Policies Links', 'type' => 'json', 'json_schema' => 'link_list'],
+                    ['key' => 'footer.socials', 'label' => 'Social Links (icon: facebook|instagram|twitter|youtube)', 'type' => 'json', 'json_schema' => 'link_list'],
+                    ['key' => 'store.contact_link', 'label' => 'Contact Link'],
+                ],
+            ],
+            'display' => [
+                'title' => 'Site Display',
+                'keys' => [
+                    ['key' => 'display.announcement_items', 'label' => 'Announcement Bar Messages (JSON array of strings)', 'type' => 'json', 'json_schema' => 'tags'],
+                    ['key' => 'display.app_download_enabled', 'label' => 'App Download Bar: Enable', 'type' => 'boolean'],
+                    ['key' => 'display.app_download_heading', 'label' => 'App Download Bar: Heading'],
+                    ['key' => 'display.app_download_sub', 'label' => 'App Download Bar: Subline'],
+                    ['key' => 'display.app_download_url2', 'label' => 'App Download Bar: Download Link (URL)'],
+                    ['key' => 'display.app_store_url', 'label' => 'Footer App Store URL'],
+                    ['key' => 'display.app_download_url', 'label' => 'Footer Play Store URL'],
+                    ['key' => 'display.rewards_enabled', 'label' => 'Rewards Bar: Enable', 'type' => 'boolean'],
+                    ['key' => 'display.rewards_mainline', 'label' => 'Rewards Bar: Mainline Text'],
+                    ['key' => 'display.rewards_coins', 'label' => 'Rewards Bar: Coin Count (number)'],
+                    ['key' => 'display.rewards_subline', 'label' => 'Rewards Popup: Subline'],
+                    ['key' => 'display.rewards_items', 'label' => 'Rewards Popup: Earn Items', 'type' => 'json', 'json_schema' => 'rewards'],
+                    ['key' => 'display.whatsapp_enabled', 'label' => 'WhatsApp Widget: Enable', 'type' => 'boolean'],
+                    ['key' => 'display.whatsapp_number', 'label' => 'WhatsApp Widget: Number (with country code)'],
+                    ['key' => 'display.whatsapp_message', 'label' => 'WhatsApp Widget: Pre-filled Message'],
+                    ['key' => 'display.bottom_nav', 'label' => 'Mobile Bottom Nav (JSON list)', 'type' => 'json', 'json_schema' => 'nav_items'],
                 ],
             ],
         ];

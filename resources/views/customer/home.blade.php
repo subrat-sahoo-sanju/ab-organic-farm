@@ -3,7 +3,7 @@
 @section('content')
 
 {{-- ========== ANVESHAN-STYLE SECTION-DRIVEN HOMEPAGE ========== --}}
-<div class="bg-[#FDFBF7]">
+<div class="bg-leaf-50">
     @foreach($homeSections as $section)
         @php
             $key = str_replace('-', '_', $section->key);

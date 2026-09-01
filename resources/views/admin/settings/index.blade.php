@@ -61,6 +61,21 @@
                                 </div>
                               </template>
 
+                              <template x-if="schema === 'rewards'">
+                                <div class="space-y-2">
+                                  <input type="text" x-model="row.title" class="adm-input" placeholder="Earn item title (e.g. Sign up)">
+                                  <input type="text" x-model="row.points" class="adm-input" placeholder="Points (e.g. 50 pts)">
+                                </div>
+                              </template>
+
+                              <template x-if="schema === 'nav_items'">
+                                <div class="space-y-2">
+                                  <input type="text" x-model="row.label" class="adm-input" placeholder="Label (Home / Deal / Combos / Account)">
+                                  <input type="text" x-model="row.icon" class="adm-input" placeholder="Icon (home / leaf / badge-percent / shopping-bag / user)">
+                                  <input type="text" x-model="row.url" class="adm-input" placeholder="URL">
+                                </div>
+                              </template>
+
                               <template x-if="schema === 'feat_items'">
                                 <div class="space-y-2">
                                   <select x-model="row.icon" class="adm-input">
@@ -122,7 +137,7 @@
   </form>
 
   {{-- ═══ HOMEPAGE SECTIONS MANAGER ═══ --}}
-  <form action="{{ route('admin.settings.sections') }}" method="POST" x-show="activeTab === 'sections'" x-cloak>
+  <form action="{{ route('admin.settings.sections') }}" method="POST" enctype="multipart/form-data" x-show="activeTab === 'sections'" x-cloak>
     @csrf
     <div class="adm-section p-6 space-y-4">
       <h3 class="adm-section-title">Homepage Sections</h3>
@@ -192,6 +207,36 @@
               </div>
             @endif
           </div>
+
+          @if(in_array($s->key, ['hero','native_ingredients','quality','logo_slider','trust_badges','app_download','focus_oils','focus_ghee']))
+            <div class="mt-3 border-t border-gray-100 pt-3">
+              <p class="text-xs font-bold uppercase tracking-wide text-gray-400 mb-2">Section Images</p>
+              <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                @php $imgs = $cfg['images'] ?? []; @endphp
+                <div>
+                  <label class="adm-label">Desktop Image</label>
+                  @if(!empty($imgs['desktop']))
+                    <img src="{{ asset('storage/'.$imgs['desktop']) }}" class="mb-1 h-16 w-full rounded-lg object-cover">
+                  @endif
+                  <input type="file" name="sections[{{ $s->id }}][image_desktop]" class="adm-input !py-1.5 text-xs" accept="image/*">
+                  <input type="hidden" name="sections[{{ $s->id }}][image_desktop_existing]" value="{{ $imgs['desktop'] ?? '' }}">
+                </div>
+                <div>
+                  <label class="adm-label">Mobile Image</label>
+                  @if(!empty($imgs['mobile']))
+                    <img src="{{ asset('storage/'.$imgs['mobile']) }}" class="mb-1 h-16 w-full rounded-lg object-cover">
+                  @endif
+                  <input type="file" name="sections[{{ $s->id }}][image_mobile]" class="adm-input !py-1.5 text-xs" accept="image/*">
+                  <input type="hidden" name="sections[{{ $s->id }}][image_mobile_existing]" value="{{ $imgs['mobile'] ?? '' }}">
+                </div>
+                <div>
+                  <label class="adm-label">Alt / Custom</label>
+                  <input type="text" name="sections[{{ $s->id }}][image_alt]" value="{{ $imgs['alt'] ?? '' }}" placeholder="Alt text" class="adm-input text-xs">
+                </div>
+              </div>
+              <p class="mt-1 text-[11px] text-gray-400">Upload new images to replace the defaults. Leave blank to keep current.</p>
+            </div>
+          @endif
         </div>
       @endforeach
 
@@ -209,7 +254,7 @@
 <script>
 function jsonEditor(schema, initial) {
   let rows = [];
-  if (schema === 'tags' || schema === 'link_list' || schema === 'feat_items' || schema === 'promo_cards') {
+  if (schema === 'tags' || schema === 'link_list' || schema === 'feat_items' || schema === 'promo_cards' || schema === 'rewards' || schema === 'nav_items') {
     try {
       const arr = typeof initial === 'string' ? JSON.parse(initial) : initial;
       if (Array.isArray(arr)) {
@@ -218,6 +263,8 @@ function jsonEditor(schema, initial) {
           const obj = item || {};
           if (schema === 'link_list') return { label: obj.label || '', url: obj.url || '' };
           if (schema === 'feat_items') return { icon: obj.icon || 'leaf', title: obj.title || '', text: obj.text || '' };
+          if (schema === 'rewards') return { title: obj.title || '', points: obj.points || '' };
+          if (schema === 'nav_items') return { label: obj.label || '', icon: obj.icon || '', url: obj.url || '' };
           if (schema === 'promo_cards') return {
             color: obj.color || 'green', badge: obj.badge || '', title: obj.title || '',
             subtitle: obj.subtitle || '', code: obj.code || '', cta: obj.cta || '', link: obj.link || '',
@@ -233,6 +280,8 @@ function jsonEditor(schema, initial) {
     if (schema === 'tags') return rows.map(r => r.value || '').filter(v => v !== '');
     if (schema === 'link_list') return rows.map(r => ({ label: r.label, url: r.url })).filter(r => r.label || r.url);
     if (schema === 'feat_items') return rows.map(r => ({ icon: r.icon, title: r.title, text: r.text })).filter(r => r.title || r.text);
+    if (schema === 'rewards') return rows.map(r => ({ title: r.title, points: r.points })).filter(r => r.title || r.points);
+    if (schema === 'nav_items') return rows.map(r => ({ label: r.label, icon: r.icon, url: r.url })).filter(r => r.label || r.url);
     if (schema === 'promo_cards') return rows.map(r => r).filter(r => r.title || r.subtitle);
     return rows;
   };
@@ -250,6 +299,8 @@ function emptyRow(schema) {
   if (schema === 'tags') return { value: '' };
   if (schema === 'link_list') return { label: '', url: '' };
   if (schema === 'feat_items') return { icon: 'leaf', title: '', text: '' };
+  if (schema === 'rewards') return { title: '', points: '' };
+  if (schema === 'nav_items') return { label: '', icon: '', url: '' };
   if (schema === 'promo_cards') return { color: 'green', badge: '', title: '', subtitle: '', code: '', cta: '', link: '' };
   return {};
 }
