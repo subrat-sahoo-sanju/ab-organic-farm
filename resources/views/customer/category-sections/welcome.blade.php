@@ -39,29 +39,37 @@
             @endif
         </div>
 
-        {{-- Category tabs --}}
         @if($tabCategories->count())
-        <div x-data="categoryTabs('cat-welcome-grid', '{{ $tabCategories->first()['key'] ?? '' }}')">
+        {{-- Admin-configured tabs; each tab has its own product rail, switched client-side --}}
+        <div x-data="welcomeRail('cat-welcome-{{ rand(1000,9999) }}', '{{ $tabCategories->first()['key'] ?? '' }}')">
             <div class="cat-welcome-tabs" x-ref="rail">
-                <template x-for="tab in {{ json_encode($tabCategories->map(fn($t) => ['key'=>$t['key'],'title'=>$t['title'],'icon'=>$t['inactive_icon'],'active_icon'=>$t['active_icon'] ?? $t['inactive_icon'],'url'=>$t['see_all'] ?? '#'])->toArray()) }}" :key="tab.key">
-                    <button type="button" @click="pick(tab, $el)" :class="active === tab.key ? 'active' : ''" class="cat-tab-item">
+                @foreach($tabCategories as $t)
+                    <button type="button"
+                        @click="pick('{{ $t['key'] }}', $el)"
+                        :class="active === '{{ $t['key'] }}' ? 'active' : ''"
+                        class="cat-tab-item">
                         <div class="cat-tab-icon">
-                            <img :src="active === tab.key ? tab.active_icon : tab.icon" :alt="tab.title" loading="eager">
+                            <img src="{{ $t['inactive_icon'] }}" :src="active === '{{ $t['key'] }}' ? '{{ $t['active_icon'] ?? $t['inactive_icon'] }}' : '{{ $t['inactive_icon'] }}'" :alt="'{{ addslashes($t['title']) }}'" loading="eager">
                         </div>
-                        <span class="cat-tab-label" x-text="tab.title"></span>
+                        <span class="cat-tab-label">{{ $t['title'] }}</span>
                     </button>
-                </template>
+                @endforeach
             </div>
+            <div x-ref="indicator" class="h-0.5 bg-anv-600 rounded-full transition-all duration-300" style="opacity:0;position:relative;margin-top:6px;left:0"></div>
 
-            <div id="cat-welcome-grid" class="cat-products-scroll mt-6">
-                @forelse($allProducts as $product)
-                    <div class="cat-product-card">
-                        <x-product-card :product="$product" />
-                    </div>
-                @empty
-                    <div class="w-full py-10 text-center text-sm text-charcoal-600/50">Products coming soon.</div>
-                @endforelse
-            </div>
+            {{-- Product rails (one per tab) --}}            @foreach($tabCategories as $t)
+                <div x-show="active === '{{ $t['key'] }}'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                     id="cat-rail-{{ $loop->index }}" class="cat-products-scroll mt-6">
+                    @php $tabProducts = $t['products'] ?? collect(); @endphp
+                    @forelse($tabProducts as $product)
+                        <div class="cat-product-card">
+                            <x-product-card :product="$product" />
+                        </div>
+                    @empty
+                        <div class="w-full py-10 text-center text-sm text-charcoal-600/50">No products in this tab yet.</div>
+                    @endforelse
+                </div>
+            @endforeach
         </div>
         @else
             {{-- Fallback: no tabs, just products --}}

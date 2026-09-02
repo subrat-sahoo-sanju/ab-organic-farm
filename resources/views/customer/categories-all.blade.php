@@ -9,7 +9,9 @@
     @foreach($categories as $category)
       <a href="{{ route('shop.category', $category->slug) }}" class="group relative overflow-hidden rounded-2xl border border-sage/20 bg-white shadow-sm transition hover:shadow-md hover:border-forest">
         <div class="aspect-[4/3] bg-forest/5 p-8 flex items-center justify-center">
-          @if($category->image_path)
+          @if($category->card_image)
+            <img src="{{ asset('storage/'.$category->card_image) }}" alt="{{ $category->name }}" class="h-full w-full object-cover">
+          @elseif($category->image_path)
             <img src="{{ asset('storage/'.$category->image_path) }}" alt="{{ $category->name }}" class="h-12 w-12 rounded-xl object-cover">
           @else
             <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#0C831F]/10 text-2xl leading-none">{{ $category->icon ?? '🌱' }}</span>

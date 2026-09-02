@@ -87,8 +87,10 @@ class MarketingSeeder extends Seeder
             'per_user_limit' => 2,
         ]);
         if ($gheeCoupon = Coupon::where('code', 'GHEE50')->first()) {
-            $oils = Category::where('slug', 'oils-ghee')->first();
-            $gheeCoupon->categories()->sync([$oils->id]);
+            $oils = Category::where('slug', 'ghee')->first();
+            if ($oils) {
+                $gheeCoupon->categories()->sync([$oils->id]);
+            }
         }
 
         // ---- Banners ----
@@ -96,7 +98,7 @@ class MarketingSeeder extends Seeder
             'placement' => 'hero',
             'subtitle' => 'Certified organic essentials delivered from partner farms to your doorstep.',
             'button_text' => 'Shop Organic Products',
-            'button_url' => '/categories/fruits-vegetables',
+            'button_url' => '/categories/all',
             'sort_order' => 0,
         ]);
 
@@ -104,7 +106,7 @@ class MarketingSeeder extends Seeder
             'placement' => 'promotional',
             'subtitle' => 'Up to 12% off wood-pressed oils & A2 ghee.',
             'button_text' => 'Grab the deal',
-            'button_url' => '/categories/oils-ghee',
+            'button_url' => '/categories/ghee',
             'sort_order' => 1,
         ]);
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class CategoryController extends Controller
@@ -138,7 +139,7 @@ class CategoryController extends Controller
             $key = "section_{$index}";
 
             match ($type) {
-                'welcome' => $data[$key] = $this->getWelcomeData($rootCategories),
+                'welcome' => $data[$key] = $this->getWelcomeData($rootCategories, $section),
                 'featured_products' => $data[$key] = $this->getFeaturedProducts($category, $section),
                 'cross_sell' => $data[$key] = $this->getCrossSellProducts($category, $section),
                 default => null,
@@ -149,37 +150,107 @@ class CategoryController extends Controller
     }
 
     /**
-     * Build tab data for the Welcome section — root categories as tabs
-     * with top-selling products from each.
+     * Build tab data for the Welcome section.
+     *
+     * Admin can fully configure tabs (title, icon, per-tab products) via the
+     * section's `config.tabs` array. Each tab may specify `product_ids` to pin
+     * specific products; if empty, top-selling products from that tab's linked
+     * root category are used.
      */
-    protected function getWelcomeData($rootCategories): array
+    protected function getWelcomeData($rootCategories, array $section): array
     {
+        $config = $section['config'] ?? [];
+        $configured = $config['tabs'] ?? [];
+
         $tabs = [];
         $allProducts = collect();
 
-        foreach ($rootCategories as $cat) {
-            $products = Product::published()
-                ->inCategoryTree($cat)
-                ->with(['primaryImage', 'defaultVariant.inventory', 'category'])
-                ->orderByDesc('sold_count')
-                ->limit(12)
-                ->get();
+        if (!empty($configured)) {
+            foreach ($configured as $tab) {
+                $title = trim($tab['title'] ?? '');
+                $key = trim($tab['key'] ?? '') ?: Str::slug($title ?: ('tab-'.count($tabs)));
+                $icon = $tab['icon'] ?? '';
+                $activeIcon = $tab['active_icon'] ?? $icon;
+                $productIds = is_array($tab['product_ids'] ?? null)
+                    ? array_values(array_filter(array_map('intval', $tab['product_ids'])))
+                    : array_values(array_filter(array_map('intval',
+                        preg_split('/[\s,]+/', (string) ($tab['product_ids'] ?? ''))
+                    )));
 
-            $tabs[] = [
-                'key' => $cat->slug,
-                'title' => $cat->name,
-                'active_icon' => $cat->image_path ? asset('storage/' . $cat->image_path) : asset('images/nav/nav-category.svg'),
-                'inactive_icon' => $cat->image_path ? asset('storage/' . $cat->image_path) : asset('images/nav/nav-category.svg'),
-                'see_all' => route('shop.category', $cat->slug),
-            ];
+                $products = $productIds
+                    ? Product::published()
+                        ->whereIn('id', $productIds)
+                        ->with(['primaryImage', 'defaultVariant.inventory', 'category'])
+                        ->get()
+                    : $this->welcomeAutoProducts($tab, $rootCategories, $title);
 
-            $allProducts = $allProducts->merge($products);
+                $tabs[] = [
+                    'key' => $key,
+                    'title' => $title,
+                    'active_icon' => $activeIcon ? asset('storage/' . ltrim($activeIcon, '/')) : asset('images/nav/nav-category.svg'),
+                    'inactive_icon' => $icon ? asset('storage/' . ltrim($icon, '/')) : asset('images/nav/nav-category.svg'),
+                    'see_all' => $tab['see_all'] ?? (($tab['category_slug'] ?? '') ? route('shop.category', $tab['category_slug']) : '#'),
+                    'products' => $products,
+                ];
+
+                $allProducts = $allProducts->merge($products);
+            }
+        } else {
+            // Fallback: root categories as tabs with top-selling products each.
+            foreach ($rootCategories as $cat) {
+                $products = Product::published()
+                    ->inCategoryTree($cat)
+                    ->with(['primaryImage', 'defaultVariant.inventory', 'category'])
+                    ->orderByDesc('sold_count')
+                    ->limit(12)
+                    ->get();
+
+                $tabs[] = [
+                    'key' => $cat->slug,
+                    'title' => $cat->name,
+                    'active_icon' => $cat->image_path ? asset('storage/' . $cat->image_path) : asset('images/nav/nav-category.svg'),
+                    'inactive_icon' => $cat->image_path ? asset('storage/' . $cat->image_path) : asset('images/nav/nav-category.svg'),
+                    'see_all' => route('shop.category', $cat->slug),
+                    'products' => $products,
+                ];
+
+                $allProducts = $allProducts->merge($products);
+            }
         }
 
         return [
             'tabs' => $tabs,
-            'products' => $allProducts->unique('id')->take(20),
+            'products' => $allProducts->unique('id')
+                ->sortByDesc('sold_count')
+                ->take(20),
         ];
+    }
+
+    /**
+     * Auto-select products for a configured tab that has no pinned product_ids:
+     * first try the linked category slug, then top-selling products across the store.
+     */
+    protected function welcomeAutoProducts(array $tab, $rootCategories, string $title)
+    {
+        $categorySlug = $tab['category_slug'] ?? null;
+        if ($categorySlug) {
+            $category = $rootCategories->firstWhere('slug', $categorySlug);
+            if ($category) {
+                return Product::published()
+                    ->inCategoryTree($category)
+                    ->with(['primaryImage', 'defaultVariant.inventory', 'category'])
+                    ->orderByDesc('sold_count')
+                    ->limit(12)
+                    ->get();
+            }
+        }
+
+        // Fallback: top products across the whole catalog (tab title only).
+        return Product::published()
+            ->with(['primaryImage', 'defaultVariant.inventory', 'category'])
+            ->orderByDesc('sold_count')
+            ->limit(12)
+            ->get();
     }
 
     /**

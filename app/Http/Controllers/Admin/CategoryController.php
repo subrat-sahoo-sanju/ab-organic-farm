@@ -32,6 +32,9 @@ class CategoryController extends Controller
         if ($request->hasFile('image')) {
             $data['image_path'] = $this->storedImage($request, 'image', 800, 800);
         }
+        if ($request->hasFile('card_image_file')) {
+            $data['card_image'] = $this->storedImage($request, 'card_image_file', 800, 800);
+        }
         if ($request->hasFile('banner_image_file')) {
             $data['banner_image'] = $this->storedImage($request, 'banner_image_file', 2400, 700);
         }
@@ -57,6 +60,9 @@ class CategoryController extends Controller
 
         if ($request->hasFile('image')) {
             $data['image_path'] = $this->storedImage($request, 'image', 800, 800);
+        }
+        if ($request->hasFile('card_image_file')) {
+            $data['card_image'] = $this->storedImage($request, 'card_image_file', 800, 800);
         }
         if ($request->hasFile('banner_image_file')) {
             $data['banner_image'] = $this->storedImage($request, 'banner_image_file', 2400, 700);
@@ -109,6 +115,15 @@ class CategoryController extends Controller
 
     protected function validated(Request $request, ?int $ignoreId = null): array
     {
+        // The admin form submits sections/banner_images as JSON strings; decode to arrays
+        // before validating so the array rules pass and downstream handlers get arrays.
+        foreach (['sections', 'banner_images'] as $jsonField) {
+            if ($request->has($jsonField) && is_string($input = $request->input($jsonField))) {
+                $decoded = json_decode($input, true);
+                $request->merge([$jsonField => is_array($decoded) ? $decoded : []]);
+            }
+        }
+
         return $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'parent_id' => ['nullable', 'integer', 'exists:categories,id'],
@@ -120,6 +135,7 @@ class CategoryController extends Controller
             'seo_title' => ['nullable', 'string', 'max:190'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
+            'card_image_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
             'banner_heading' => ['nullable', 'string', 'max:190'],
             'banner_subheading' => ['nullable', 'string', 'max:300'],
             'banner_image_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
@@ -176,11 +192,27 @@ class CategoryController extends Controller
 
         return array_map(function ($sec) {
             // Convert product_ids_str comma-separated string to array
-            if (!empty($sec['product_ids_str'])) {
+            if (isset($sec['product_ids_str'])) {
+                $sec['config'] = $sec['config'] ?? [];
                 $sec['config']['product_ids'] = array_filter(array_map('intval',
                     explode(',', $sec['product_ids_str'])
                 ));
                 unset($sec['product_ids_str']);
+            }
+            // Normalize welcome-section tabs (nested product_ids pulses stay as strings
+            // in the form and are converted here to arrays).
+            if (($sec['type'] ?? null) === 'welcome') {
+                $sec['config'] = $sec['config'] ?? [];
+                if (isset($sec['config']['tabs']) && is_array($sec['config']['tabs'])) {
+                    foreach ($sec['config']['tabs'] as $i => $tab) {
+                        if (isset($tab['product_ids_str'])) {
+                            $sec['config']['tabs'][$i]['product_ids'] = array_values(array_filter(array_map('intval',
+                                preg_split('/[\s,]+/', (string) $tab['product_ids_str'])
+                            )));
+                            unset($sec['config']['tabs'][$i]['product_ids_str']);
+                        }
+                    }
+                }
             }
             // Ensure config exists
             $sec['config'] = $sec['config'] ?? [];

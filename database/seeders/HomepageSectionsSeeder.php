@@ -23,12 +23,11 @@ class HomepageSectionsSeeder extends Seeder
                 'product_count' => 12,
                 'tabs' => [
                     ['title' => 'All', 'key' => 'all', 'type' => 'all', 'active_icon' => 'images/nav/nav-all-active.svg', 'inactive_icon' => 'images/nav/nav-all.svg'],
-                    ['title' => 'Ghee', 'key' => 'ghee', 'type' => 'keyword', 'value' => 'ghee', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-ghee-active.svg', 'inactive_icon' => 'images/nav/nav-ghee.svg'],
-                    ['title' => 'Oils', 'key' => 'oils', 'type' => 'keyword', 'value' => 'oil', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-oils-active.svg', 'inactive_icon' => 'images/nav/nav-oils.svg'],
-                    ['title' => 'Atta', 'key' => 'atta', 'type' => 'category', 'value' => 'atta-flours', 'active_icon' => 'images/nav/nav-atta-active.svg', 'inactive_icon' => 'images/nav/nav-atta.svg'],
-                    ['title' => 'Combos', 'key' => 'combos', 'type' => 'keyword', 'value' => 'combo', 'fallback' => ['type' => 'categories', 'values' => ['oils-ghee', 'atta-flours']], 'active_icon' => 'images/nav/nav-combos-active.svg', 'inactive_icon' => 'images/nav/nav-combos.svg'],
+                    ['title' => 'Ghee', 'key' => 'ghee', 'type' => 'category', 'value' => 'ghee', 'active_icon' => 'images/nav/nav-ghee-active.svg', 'inactive_icon' => 'images/nav/nav-ghee.svg'],
+                    ['title' => 'Oil', 'key' => 'oil', 'type' => 'category', 'value' => 'oil', 'active_icon' => 'images/nav/nav-oils-active.svg', 'inactive_icon' => 'images/nav/nav-oils.svg'],
+                    ['title' => 'Atta', 'key' => 'atta', 'type' => 'category', 'value' => 'atta', 'active_icon' => 'images/nav/nav-atta-active.svg', 'inactive_icon' => 'images/nav/nav-atta.svg'],
+                    ['title' => 'Combos', 'key' => 'combos', 'type' => 'keyword', 'value' => 'combo', 'fallback' => ['type' => 'categories', 'values' => ['ghee', 'oil', 'atta']], 'active_icon' => 'images/nav/nav-combos-active.svg', 'inactive_icon' => 'images/nav/nav-combos.svg'],
                     ['title' => 'Deal', 'key' => 'deal', 'type' => 'deal', 'active_icon' => 'images/nav/nav-deal-active.svg', 'inactive_icon' => 'images/nav/nav-deal.svg'],
-                    ['title' => 'Superfoods', 'key' => 'superfoods', 'type' => 'categories', 'values' => ['dry-fruits-nuts', 'healthy-snacks'], 'active_icon' => 'images/nav/nav-superfoods-active.svg', 'inactive_icon' => 'images/nav/nav-superfoods.svg'],
                 ],
             ]],
 
@@ -86,12 +85,12 @@ class HomepageSectionsSeeder extends Seeder
             ['key' => 'focus_oils', 'title' => 'Product in Focus:', 'subtitle' => 'Explore Our Cold-Pressed Oils', 'sort_order' => 35, 'config' => [
                 'product_count' => 8,
                 'tabs' => [
-                    ['title' => 'Groundnut', 'key' => 'groundnut', 'type' => 'keyword', 'value' => 'groundnut', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-groundnut-active.svg', 'inactive_icon' => 'images/nav/nav-groundnut.svg'],
-                    ['title' => 'Mustard', 'key' => 'mustard', 'type' => 'keyword', 'value' => 'mustard oil', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-mustard-active.svg', 'inactive_icon' => 'images/nav/nav-mustard.svg'],
-                    ['title' => 'Sunflower', 'key' => 'sunflower', 'type' => 'keyword', 'value' => 'sunflower', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-sunflower-active.svg', 'inactive_icon' => 'images/nav/nav-sunflower.svg'],
-                    ['title' => 'Olive', 'key' => 'olive', 'type' => 'keyword', 'value' => 'olive', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-olive-active.svg', 'inactive_icon' => 'images/nav/nav-olive.svg'],
-                    ['title' => 'Coconut', 'key' => 'coconut', 'type' => 'keyword', 'value' => 'coconut oil', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-coconut-active.svg', 'inactive_icon' => 'images/nav/nav-coconut.svg'],
-                    ['title' => 'Sesame', 'key' => 'sesame', 'type' => 'keyword', 'value' => 'sesame', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-sesame-active.svg', 'inactive_icon' => 'images/nav/nav-sesame.svg'],
+                    ['title' => 'Groundnut', 'key' => 'groundnut', 'type' => 'keyword', 'value' => 'groundnut', 'fallback' => ['type' => 'category', 'value' => 'oil'], 'active_icon' => 'images/nav/nav-groundnut-active.svg', 'inactive_icon' => 'images/nav/nav-groundnut.svg'],
+                    ['title' => 'Mustard', 'key' => 'mustard', 'type' => 'keyword', 'value' => 'mustard oil', 'fallback' => ['type' => 'category', 'value' => 'oil'], 'active_icon' => 'images/nav/nav-mustard-active.svg', 'inactive_icon' => 'images/nav/nav-mustard.svg'],
+                    ['title' => 'Sunflower', 'key' => 'sunflower', 'type' => 'keyword', 'value' => 'sunflower', 'fallback' => ['type' => 'category', 'value' => 'oil'], 'active_icon' => 'images/nav/nav-sunflower-active.svg', 'inactive_icon' => 'images/nav/nav-sunflower.svg'],
+                    ['title' => 'Olive', 'key' => 'olive', 'type' => 'keyword', 'value' => 'olive', 'fallback' => ['type' => 'category', 'value' => 'oil'], 'active_icon' => 'images/nav/nav-olive-active.svg', 'inactive_icon' => 'images/nav/nav-olive.svg'],
+                    ['title' => 'Coconut', 'key' => 'coconut', 'type' => 'keyword', 'value' => 'coconut oil', 'fallback' => ['type' => 'category', 'value' => 'oil'], 'active_icon' => 'images/nav/nav-coconut-active.svg', 'inactive_icon' => 'images/nav/nav-coconut.svg'],
+                    ['title' => 'Sesame', 'key' => 'sesame', 'type' => 'keyword', 'value' => 'sesame', 'fallback' => ['type' => 'category', 'value' => 'oil'], 'active_icon' => 'images/nav/nav-sesame-active.svg', 'inactive_icon' => 'images/nav/nav-sesame.svg'],
                 ],
             ]],
 
@@ -100,7 +99,7 @@ class HomepageSectionsSeeder extends Seeder
                 'product_count' => 8,
                 'tabs' => [
                     ['title' => 'Gir', 'key' => 'gir', 'type' => 'keyword', 'value' => 'gir', 'fallback' => ['type' => 'keyword', 'value' => 'ghee'], 'active_icon' => 'images/nav/nav-gir-active.svg', 'inactive_icon' => 'images/nav/nav-gir.svg'],
-                    ['title' => 'Desi Cow', 'key' => 'desi-cow', 'type' => 'keyword', 'value' => 'ghee', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-desi-active.svg', 'inactive_icon' => 'images/nav/nav-desi.svg'],
+                    ['title' => 'Desi Cow', 'key' => 'desi-cow', 'type' => 'keyword', 'value' => 'ghee', 'fallback' => ['type' => 'category', 'value' => 'ghee'], 'active_icon' => 'images/nav/nav-desi-active.svg', 'inactive_icon' => 'images/nav/nav-desi.svg'],
                     ['title' => 'Buffalo', 'key' => 'buffalo', 'type' => 'keyword', 'value' => 'buffalo', 'fallback' => ['type' => 'keyword', 'value' => 'ghee'], 'active_icon' => 'images/nav/nav-buffalo-active.svg', 'inactive_icon' => 'images/nav/nav-buffalo.svg'],
                     ['title' => 'Combo', 'key' => 'ghee-combo', 'type' => 'keyword', 'value' => 'combo', 'fallback' => ['type' => 'keyword', 'value' => 'ghee'], 'active_icon' => 'images/nav/nav-combo-active.svg', 'inactive_icon' => 'images/nav/nav-combo.svg'],
                 ],

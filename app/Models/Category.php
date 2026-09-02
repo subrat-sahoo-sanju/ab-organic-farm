@@ -10,7 +10,7 @@ class Category extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'parent_id', 'name', 'slug', 'description', 'image_path', 'icon',
+        'parent_id', 'name', 'slug', 'description', 'image_path', 'card_image', 'icon',
         'sort_order', 'is_active', 'is_featured', 'seo_title', 'meta_description',
         'banner_heading', 'banner_subheading', 'banner_image', 'banner_images',
         'banner_cta_text', 'banner_cta_url', 'banner_bg_color',

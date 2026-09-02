@@ -124,6 +124,37 @@ if (!window.__tabGridRegistered) {
       },
     }));
 
+    // Category welcome intro: admin-configured tabs each with their own pre-rendered
+    // product rail. Switches the visible rail client-side (no lazy fetch needed).
+    Alpine.data('welcomeRail', (railId, initialKey) => ({
+      active: initialKey,
+      init() {
+        // Defer the sliding-indicator placement until the DOM has settled.
+        let tries = 0;
+        const tryShow = () => {
+          const btn = this.$refs.rail?.querySelector('.cat-tab-item.active');
+          if (!btn) { if (tries++ < 25) setTimeout(tryShow, 60); return; }
+          const ind = this.$refs.indicator;
+          if (ind) {
+            ind.style.opacity = '1';
+            ind.style.width = btn.offsetWidth + 'px';
+            ind.style.transform = 'translateX(' + btn.offsetLeft + 'px)';
+          }
+        };
+        this.$nextTick(() => setTimeout(tryShow, 0));
+      },
+      pick(key, el) {
+        if (this.active === key || !el) return;
+        this.active = key;
+        const ind = this.$refs.indicator;
+        if (ind) {
+          ind.style.opacity = '1';
+          ind.style.width = el.offsetWidth + 'px';
+          ind.style.transform = 'translateX(' + el.offsetLeft + 'px)';
+        }
+      },
+    }));
+
     // Category product grid "Show More Products" (Load More): paginated AJAX append.
     // nextUrl / hasMore are read from data-* attributes to avoid quote-escaping issues
     // inside the HTML `x-data` attribute.

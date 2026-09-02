@@ -51,7 +51,7 @@
         <div class="app-download-bar__inner">
             <div class="app-download-bar__left">
                 <div class="app-download-bar__icon">
-                    <img src="{{ asset('storage/'.setting('display.app_icon', 'sections/app-icon.jpg')) }}" alt="App icon" width="44" height="44" loading="eager">
+                    <img src="{{ asset('storage/'.(setting('display.app_icon', '') ?: 'sections/app-icon.jpg')) }}" alt="App icon" width="44" height="44" loading="eager">
                 </div>
                 <div class="app-download-bar__divider"></div>
                 <div class="app-download-bar__text">

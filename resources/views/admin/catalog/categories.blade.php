@@ -209,6 +209,22 @@
           <p class="mt-1 text-[11px] adm-text-muted">Images are automatically resized to 800×800.</p>
         </div>
 
+        <div>
+          <label class="adm-label">Card Image <span class="adm-text-muted font-normal">(thumbnail shown on category cards, 800×800)</span></label>
+          <input type="file" name="card_image_file" accept="image/jpeg,image/png,image/webp,image/svg" @change="previewCardImage($event)" class="adm-input">
+          <template x-if="form.card_image && !cardImagePreview">
+            <div class="mt-2 h-16 w-16 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+              <img :src="'{{ asset('storage/') }}/' + form.card_image" class="h-full w-full object-contain">
+            </div>
+          </template>
+          <template x-if="cardImagePreview">
+            <div class="mt-2 h-16 w-16 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+              <img :src="cardImagePreview" class="h-full w-full object-contain">
+            </div>
+          </template>
+          <p class="mt-1 text-[11px] adm-text-muted">This image appears on the category card/thumbnail. Leave empty to use the main image.</p>
+        </div>
+
         <div class="flex gap-6">
           <label class="flex items-center gap-2 text-sm adm-text-primary">
             <input type="checkbox" name="is_active" value="1" x-model="form.is_active" class="accent-forest">
@@ -385,6 +401,59 @@
                   </div>
 
                   {{-- Type-specific config --}}
+                  {{-- Welcome Intro: admin-controlled tabs + per-tab products --}}
+                  <template x-if="sec.type === 'welcome'">
+                    <div>
+                      <div class="mb-2 flex items-center justify-between">
+                        <span class="text-xs font-semibold text-charcoal/70">Tabs (each tab shows its own products)</span>
+                        <button type="button" @click="addWelcomeTab(sec)" class="inline-flex items-center gap-1 text-xs font-semibold text-anv-600 hover:text-anv-700">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                          Add Tab
+                        </button>
+                      </div>
+                      <div class="space-y-2">
+                        <template x-for="(tab, ti) in (sec.config.tabs || [])" :key="ti">
+                          <div class="rounded-lg border border-gray-200 bg-white p-2">
+                            <div class="flex items-center gap-2">
+                              <span class="flex-1 truncate text-[11px] font-bold text-charcoal/70" x-text="tab.title || '(untitled tab)'"></span>
+                              <button type="button" @click="removeWelcomeTab(sec, ti)" class="text-gray-400 hover:text-red-500">&times;</button>
+                            </div>
+                            <div class="mt-2 grid gap-2 sm:grid-cols-2">
+                              <div>
+                                <label class="adm-label">Tab Title (heading)</label>
+                                <input type="text" x-model="tab.title" class="adm-input" placeholder="e.g. Everyday Staples">
+                              </div>
+                              <div>
+                                <label class="adm-label">Key <span class="adm-text-muted font-normal">(unique, letters/numbers/-)</span></label>
+                                <input type="text" x-model="tab.key" class="adm-input" placeholder="e.g. staples">
+                              </div>
+                              <div>
+                                <label class="adm-label">Icon URL <span class="adm-text-muted font-normal">(storage path, optional)</span></label>
+                                <input type="text" x-model="tab.icon" class="adm-input" placeholder="e.g. categories/fruits.png">
+                              </div>
+                              <div>
+                                <label class="adm-label">Active Icon URL <span class="adm-text-muted font-normal">(optional)</span></label>
+                                <input type="text" x-model="tab.active_icon" class="adm-input" placeholder="Optional, falls back to icon">
+                              </div>
+                              <div>
+                                <label class="adm-label">Linked Category Slug <span class="adm-text-muted font-normal">(for auto-picks / See All)</span></label>
+                                <input type="text" x-model="tab.category_slug" class="adm-input" placeholder="e.g. pulses-dal">
+                              </div>
+                              <div>
+                                <label class="adm-label">Product IDs <span class="adm-text-muted font-normal">(comma separated)</span></label>
+                                <input type="text" x-model="tab.product_ids_str" class="adm-input" placeholder="e.g. 1, 3, 7 (empty = auto)">
+                              </div>
+                            </div>
+                            <p class="mt-1 text-[10px] adm-text-muted">Leave Product IDs empty to auto-pick top sellers from the linked category (or store-wide).</p>
+                          </div>
+                        </template>
+                        <template x-if="!(sec.config.tabs || []).length">
+                          <p class="rounded border border-dashed border-gray-300 bg-gray-50 p-2 text-[11px] text-gray-500">No tabs yet. Click “Add Tab” to build this welcome section.</p>
+                        </template>
+                      </div>
+                    </div>
+                  </template>
+
                   {{-- Promo Banner --}}
                   <template x-if="sec.type === 'promo_banner'">
                     <div class="space-y-2">
@@ -533,6 +602,7 @@ function categoryManager() {
     deleteName: '',
     editingId: null,
     imagePreview: null,
+    cardImagePreview: null,
     bannerPreview: null,
     brandLogoPreview: null,
     bannerImagesPreview: [],
@@ -545,6 +615,7 @@ function categoryManager() {
       is_active: true,
       is_featured: false,
       image_path: '',
+      card_image: '',
       banner_heading: '',
       banner_subheading: '',
       banner_image: '',
@@ -559,12 +630,13 @@ function categoryManager() {
     openCreate() {
       this.editingId = null;
       this.imagePreview = null;
+      this.cardImagePreview = null;
       this.bannerPreview = null;
       this.brandLogoPreview = null;
       this.bannerImagesPreview = [];
         this.form = {
         name: '', parent_id: '', description: '', icon: '', sort_order: 0,
-        is_active: true, is_featured: false, image_path: '',
+        is_active: true, is_featured: false, image_path: '', card_image: '',
         banner_heading: '', banner_subheading: '', banner_image: '',
         banner_cta_text: '', banner_cta_url: '', banner_bg_color: '#00584b',
         brand_logo: '', brand_name: '', banner_images: [], sections: [],
@@ -574,6 +646,7 @@ function categoryManager() {
     openEdit(cat) {
       this.editingId = cat.id;
       this.imagePreview = null;
+      this.cardImagePreview = null;
       this.bannerPreview = null;
       this.brandLogoPreview = null;
       this.bannerImagesPreview = [];
@@ -582,12 +655,27 @@ function categoryManager() {
         sections = typeof cat.sections === 'string' ? JSON.parse(cat.sections) : (cat.sections || []);
       } catch(e) { sections = []; }
       // Ensure each section has config object and product_ids_str
-      sections = sections.map(s => ({
-        ...s,
-        config: s.config || {},
-        visible: s.visible !== false,
-        product_ids_str: (s.config?.product_ids || []).join(', '),
-      }));
+      sections = sections.map(s => {
+        let out = {
+          ...s,
+          config: s.config || {},
+          visible: s.visible !== false,
+          product_ids_str: (s.config?.product_ids || []).join(', '),
+        };
+        // Welcome tabs: expose per-tab product_ids as editable strings
+        if (s.type === 'welcome' && Array.isArray(out.config.tabs)) {
+          out.config.tabs = out.config.tabs.map(t => ({
+            key: t.key || '',
+            title: t.title || '',
+            icon: t.icon || '',
+            active_icon: t.active_icon || '',
+            category_slug: t.category_slug || '',
+            see_all: t.see_all || '',
+            product_ids_str: (t.product_ids || []).join(', '),
+          }));
+        }
+        return out;
+      });
       this.form = {
         name: cat.name || '',
         parent_id: cat.parent_id || '',
@@ -597,6 +685,7 @@ function categoryManager() {
         is_active: cat.is_active,
         is_featured: cat.is_featured,
         image_path: cat.image_path || '',
+        card_image: cat.card_image || '',
         banner_heading: cat.banner_heading || '',
         banner_subheading: cat.banner_subheading || '',
         banner_image: cat.banner_image || '',
@@ -618,6 +707,10 @@ function categoryManager() {
     previewImage(e) {
       const f = e.target.files && e.target.files[0];
       this.imagePreview = f ? URL.createObjectURL(f) : null;
+    },
+    previewCardImage(e) {
+      const f = e.target.files && e.target.files[0];
+      this.cardImagePreview = f ? URL.createObjectURL(f) : null;
     },
     previewBanner(e) {
       const f = e.target.files && e.target.files[0];
@@ -660,7 +753,7 @@ function categoryManager() {
     },
     addSection(type) {
       const defaults = {
-        welcome: { title: 'Welcome to AB Organic', subtitle: 'Farm-fresh certified organic products, delivered to your doorstep.' },
+        welcome: { title: 'Welcome to AB Organic', subtitle: 'Farm-fresh certified organic products, delivered to your doorstep.', config: { tabs: [] } },
         featured_products: { title: 'Featured Products', subtitle: 'Our best sellers in this collection' },
         trust_badges: { title: 'Why Choose AB Organic?', subtitle: '', config: { items: [
           { title: '100% Certified Organic', text: 'Every product is lab-tested and certified', icon: 'leaf', image: '' },
@@ -681,6 +774,15 @@ function categoryManager() {
         config: d.config || {},
         product_ids_str: '',
       });
+    },
+    addWelcomeTab(sec) {
+      if (!sec.config.tabs) sec.config.tabs = [];
+      sec.config.tabs.push({ key: '', title: '', icon: '', active_icon: '', category_slug: '', see_all: '', product_ids_str: '' });
+      sec.config.tabs = [...sec.config.tabs];
+    },
+    removeWelcomeTab(sec, i) {
+      sec.config.tabs.splice(i, 1);
+      sec.config.tabs = [...sec.config.tabs];
     },
     removeSection(idx) {
       this.form.sections.splice(idx, 1);
