@@ -74,6 +74,11 @@ class CategoryController extends Controller
             'category' => $category,
             'products' => $products,
             'subcategories' => $category->children()->orderBy('sort_order')->get(),
+            'rootCategories' => Category::whereNull('parent_id')
+                ->where('is_active', true)
+                ->withCount('products')
+                ->orderBy('sort_order')
+                ->get(),
         ]);
     }
 }

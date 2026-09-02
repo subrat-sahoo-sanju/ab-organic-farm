@@ -30,7 +30,13 @@ class CategoryController extends Controller
         $data['slug'] = $this->uniqueSlug($data['name']);
 
         if ($request->hasFile('image')) {
-            $data['image_path'] = $this->storedImage($request);
+            $data['image_path'] = $this->storedImage($request, 'image', 800, 800);
+        }
+        if ($request->hasFile('banner_image_file')) {
+            $data['banner_image'] = $this->storedImage($request, 'banner_image_file', 2400, 700);
+        }
+        if ($request->hasFile('brand_logo_file')) {
+            $data['brand_logo'] = $this->storedImage($request, 'brand_logo_file', 400, 120);
         }
 
         Category::create($data);
@@ -48,7 +54,13 @@ class CategoryController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            $data['image_path'] = $this->storedImage($request);
+            $data['image_path'] = $this->storedImage($request, 'image', 800, 800);
+        }
+        if ($request->hasFile('banner_image_file')) {
+            $data['banner_image'] = $this->storedImage($request, 'banner_image_file', 2400, 700);
+        }
+        if ($request->hasFile('brand_logo_file')) {
+            $data['brand_logo'] = $this->storedImage($request, 'brand_logo_file', 400, 120);
         }
 
         // Prevent self/nested parent loops
@@ -104,6 +116,14 @@ class CategoryController extends Controller
             'seo_title' => ['nullable', 'string', 'max:190'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
+            'banner_heading' => ['nullable', 'string', 'max:190'],
+            'banner_subheading' => ['nullable', 'string', 'max:300'],
+            'banner_image_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'banner_cta_text' => ['nullable', 'string', 'max:80'],
+            'banner_cta_url' => ['nullable', 'string', 'max:500'],
+            'banner_bg_color' => ['nullable', 'string', 'max:20'],
+            'brand_logo_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
+            'brand_name' => ['nullable', 'string', 'max:120'],
         ]);
     }
 
@@ -119,9 +139,9 @@ class CategoryController extends Controller
         return $slug;
     }
 
-    /** Auto-adjust (center-crop) the category image to the recommended square slot. */
-    protected function storedImage(Request $request): ?string
+    /** Auto-adjust (center-crop) the uploaded image to the recommended dimensions. */
+    protected function storedImage(Request $request, string $field, int $w, int $h): ?string
     {
-        return app(ImageUtility::class)->processUpload($request->file('image'), 800, 800, 'categories');
+        return app(ImageUtility::class)->processUpload($request->file($field), $w, $h, 'categories');
     }
 }

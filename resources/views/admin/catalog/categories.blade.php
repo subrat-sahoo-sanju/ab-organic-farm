@@ -219,6 +219,83 @@
             Featured
           </label>
         </div>
+
+        {{-- ═══ BANNER SETTINGS ═══ --}}
+        <div class="border-t border-gray-200 pt-4">
+          <h4 class="mb-3 text-sm font-bold adm-text-primary flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+            Collection Banner
+          </h4>
+          <p class="mb-3 text-[11px] adm-text-muted">Controls the hero section shown at the top of this category page.</p>
+
+          <div class="space-y-3">
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div>
+                <label class="adm-label">Banner Heading</label>
+                <input type="text" name="banner_heading" x-model="form.banner_heading" class="adm-input" placeholder="e.g. Desi A2 Cow Ghee">
+              </div>
+              <div>
+                <label class="adm-label">Banner Subheading</label>
+                <input type="text" name="banner_subheading" x-model="form.banner_subheading" class="adm-input" placeholder="e.g. Traditional Bilona method">
+              </div>
+            </div>
+
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div>
+                <label class="adm-label">CTA Button Text</label>
+                <input type="text" name="banner_cta_text" x-model="form.banner_cta_text" class="adm-input" placeholder="e.g. Shop Now">
+              </div>
+              <div>
+                <label class="adm-label">CTA Button URL</label>
+                <input type="url" name="banner_cta_url" x-model="form.banner_cta_url" class="adm-input" placeholder="e.g. /collections/desi-ghee">
+              </div>
+            </div>
+
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div>
+                <label class="adm-label">Banner Background Color</label>
+                <div class="flex gap-2">
+                  <input type="color" name="banner_bg_color" x-model="form.banner_bg_color" class="h-9 w-12 cursor-pointer rounded border border-gray-200">
+                  <input type="text" x-model="form.banner_bg_color" class="adm-input flex-1" placeholder="#00584b">
+                </div>
+              </div>
+              <div>
+                <label class="adm-label">Brand Name</label>
+                <input type="text" name="brand_name" x-model="form.brand_name" class="adm-input" placeholder="e.g. AB Organic Farm">
+              </div>
+            </div>
+
+            <div>
+              <label class="adm-label">Banner Image <span class="adm-text-muted font-normal">(recommended 2400×700)</span></label>
+              <input type="file" name="banner_image_file" accept="image/jpeg,image/png,image/webp" @change="previewBanner($event)" class="adm-input">
+              <template x-if="form.banner_image && !bannerPreview">
+                <div class="mt-2 h-20 w-full overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+                  <img :src="'{{ asset('storage/') }}/' + form.banner_image" class="h-full w-full object-cover">
+                </div>
+              </template>
+              <template x-if="bannerPreview">
+                <div class="mt-2 h-20 w-full overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+                  <img :src="bannerPreview" class="h-full w-full object-cover">
+                </div>
+              </template>
+            </div>
+
+            <div>
+              <label class="adm-label">Brand Logo <span class="adm-text-muted font-normal">(displayed on banner)</span></label>
+              <input type="file" name="brand_logo_file" accept="image/jpeg,image/png,image/webp,image/svg" @change="previewBrandLogo($event)" class="adm-input">
+              <template x-if="form.brand_logo && !brandLogoPreview">
+                <div class="mt-2 h-10 w-24 overflow-hidden rounded border border-gray-200 bg-gray-50">
+                  <img :src="'{{ asset('storage/') }}/' + form.brand_logo" class="h-full w-full object-contain">
+                </div>
+              </template>
+              <template x-if="brandLogoPreview">
+                <div class="mt-2 h-10 w-24 overflow-hidden rounded border border-gray-200 bg-gray-50">
+                  <img :src="brandLogoPreview" class="h-full w-full object-contain">
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
       </form>
       <div class="adm-modal-footer">
         <button type="button" @click="showModal = false" class="adm-btn-outline">Cancel</button>
@@ -280,6 +357,8 @@ function categoryManager() {
     deleteName: '',
     editingId: null,
     imagePreview: null,
+    bannerPreview: null,
+    brandLogoPreview: null,
     form: {
       name: '',
       parent_id: '',
@@ -289,16 +368,34 @@ function categoryManager() {
       is_active: true,
       is_featured: false,
       image_path: '',
+      banner_heading: '',
+      banner_subheading: '',
+      banner_image: '',
+      banner_cta_text: '',
+      banner_cta_url: '',
+      banner_bg_color: '#00584b',
+      brand_logo: '',
+      brand_name: '',
     },
     openCreate() {
       this.editingId = null;
       this.imagePreview = null;
-      this.form = { name: '', parent_id: '', description: '', icon: '', sort_order: 0, is_active: true, is_featured: false, image_path: '' };
+      this.bannerPreview = null;
+      this.brandLogoPreview = null;
+      this.form = {
+        name: '', parent_id: '', description: '', icon: '', sort_order: 0,
+        is_active: true, is_featured: false, image_path: '',
+        banner_heading: '', banner_subheading: '', banner_image: '',
+        banner_cta_text: '', banner_cta_url: '', banner_bg_color: '#00584b',
+        brand_logo: '', brand_name: '',
+      };
       this.showModal = true;
     },
     openEdit(cat) {
       this.editingId = cat.id;
       this.imagePreview = null;
+      this.bannerPreview = null;
+      this.brandLogoPreview = null;
       this.form = {
         name: cat.name || '',
         parent_id: cat.parent_id || '',
@@ -308,6 +405,14 @@ function categoryManager() {
         is_active: cat.is_active,
         is_featured: cat.is_featured,
         image_path: cat.image_path || '',
+        banner_heading: cat.banner_heading || '',
+        banner_subheading: cat.banner_subheading || '',
+        banner_image: cat.banner_image || '',
+        banner_cta_text: cat.banner_cta_text || '',
+        banner_cta_url: cat.banner_cta_url || '',
+        banner_bg_color: cat.banner_bg_color || '#00584b',
+        brand_logo: cat.brand_logo || '',
+        brand_name: cat.brand_name || '',
       };
       this.showModal = true;
     },
@@ -319,6 +424,14 @@ function categoryManager() {
     previewImage(e) {
       const f = e.target.files && e.target.files[0];
       this.imagePreview = f ? URL.createObjectURL(f) : null;
+    },
+    previewBanner(e) {
+      const f = e.target.files && e.target.files[0];
+      this.bannerPreview = f ? URL.createObjectURL(f) : null;
+    },
+    previewBrandLogo(e) {
+      const f = e.target.files && e.target.files[0];
+      this.brandLogoPreview = f ? URL.createObjectURL(f) : null;
     },
   }
 }
