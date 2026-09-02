@@ -43,7 +43,7 @@ $inStock = $inventory && $inventory->available() > 0;
             <div class="mt-3 flex gap-2 overflow-x-auto pb-1">
               @foreach($images as $i => $image)
                 <button @click="activeImage = {{ $i }}" class="h-16 w-16 shrink-0 rounded-lg border-2 transition p-1 bg-white" :class="activeImage === {{ $i }} ? 'border-forest' : 'border-transparent hover:border-sage'">
-                  <img src="{{ asset('storage/'.$image->thumb_path) }}" alt="{{ $image->alt_text }}" class="h-full w-full object-contain">
+                  <img src="{{ $image->thumb_path ? asset('storage/'.$image->thumb_path) : asset('storage/'.$image->path) }}" alt="{{ $image->alt_text }}" class="h-full w-full object-contain">
                 </button>
               @endforeach
             </div>
@@ -185,6 +185,19 @@ function productPage() {
     }
   }
 }
+</script>
+
+<script>
+  (function () {
+    try {
+      var id = @js($product->id);
+      var list = JSON.parse(localStorage.getItem('ab_recent_views') || '[]');
+      if (!Array.isArray(list)) list = [];
+      list = list.filter(function (n) { return n !== id; });
+      list.unshift(id);
+      localStorage.setItem('ab_recent_views', JSON.stringify(list.slice(0, 12)));
+    } catch (e) {}
+  })();
 </script>
 
 @if($reviews->count())

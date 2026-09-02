@@ -56,6 +56,9 @@ class HomepageSectionsSeeder extends Seeder
                 ],
             ]],
 
+            // 3.5 · You were checking these out earlier — hidden until a visitor has product history
+            ['key' => 'recently_viewed', 'title' => 'You were checking these out earlier.', 'subtitle' => "Don't miss out; Complete your purchase Now.", 'sort_order' => 32, 'config' => ['product_count' => 12]],
+
             // 4 · Only Perfect Makes The Cut — blue-title carousel over full-width background
             ['key' => 'quality', 'title' => 'Only Perfect Makes The Cut', 'subtitle' => '', 'sort_order' => 40, 'config' => [
                 'bg_desktop' => 'sections/perfect-bg.svg',
@@ -92,13 +95,16 @@ class HomepageSectionsSeeder extends Seeder
                 ],
             ]],
 
-            // Product in Focus — reference ghee menu (Gir / Desi Cow / Buffalo / All), hidden by default
-            ['key' => 'focus_ghee', 'title' => 'Product in Focus:', 'subtitle' => 'Explore Our A2 Desi Ghee', 'sort_order' => 100, 'config' => [
+            // Product in Focus — reference ghee menu (Gir / Desi Cow / Buffalo / combo) after the oils menu
+            ['key' => 'focus_ghee', 'title' => 'Product in Focus:', 'subtitle' => 'Explore Our A2 Desi Ghee', 'sort_order' => 36, 'config' => [
                 'product_count' => 8,
                 'tabs' => [
-                    ['title' => 'A2 Desi Ghee', 'key' => 'desi-ghee', 'type' => 'keyword', 'value' => 'ghee', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-ghee-active.svg', 'inactive_icon' => 'images/nav/nav-ghee.svg'],
+                    ['title' => 'Gir', 'key' => 'gir', 'type' => 'keyword', 'value' => 'gir', 'fallback' => ['type' => 'keyword', 'value' => 'ghee'], 'active_icon' => 'images/nav/nav-gir-active.svg', 'inactive_icon' => 'images/nav/nav-gir.svg'],
+                    ['title' => 'Desi Cow', 'key' => 'desi-cow', 'type' => 'keyword', 'value' => 'ghee', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-desi-active.svg', 'inactive_icon' => 'images/nav/nav-desi.svg'],
+                    ['title' => 'Buffalo', 'key' => 'buffalo', 'type' => 'keyword', 'value' => 'buffalo', 'fallback' => ['type' => 'keyword', 'value' => 'ghee'], 'active_icon' => 'images/nav/nav-buffalo-active.svg', 'inactive_icon' => 'images/nav/nav-buffalo.svg'],
+                    ['title' => 'Combo', 'key' => 'ghee-combo', 'type' => 'keyword', 'value' => 'combo', 'fallback' => ['type' => 'keyword', 'value' => 'ghee'], 'active_icon' => 'images/nav/nav-combo-active.svg', 'inactive_icon' => 'images/nav/nav-combo.svg'],
                 ],
-            ], 'is_visible' => false],
+            ]],
             ['key' => 'best_sellers', 'title' => 'Best Sellers', 'subtitle' => 'Trusted by thousands of households', 'sort_order' => 110, 'config' => ['product_count' => 10], 'is_visible' => false],
             ['key' => 'trending', 'title' => 'Trending Now', 'subtitle' => 'What our community is loving right now', 'sort_order' => 120, 'config' => ['product_count' => 10], 'is_visible' => false],
             ['key' => 'new_arrivals', 'title' => 'New Arrivals', 'subtitle' => 'Just stocked, fresh off the farm', 'sort_order' => 130, 'config' => ['product_count' => 10], 'is_visible' => false],

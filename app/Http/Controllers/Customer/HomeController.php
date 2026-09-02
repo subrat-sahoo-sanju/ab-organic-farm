@@ -183,6 +183,24 @@ class HomeController extends Controller
         ]);
     }
 
+    /** Lazy-loaded recently viewed cards (reference 'You were checking these out earlier.' rail). */
+    public function recentViewedProductsApi(): JsonResponse
+    {
+        $ids = array_values(array_unique(array_filter(array_map('intval', explode(',', (string) request('ids', ''))))));
+        $ids = array_slice($ids, 0, 12);
+
+        if (! count($ids)) {
+            return response()->json(['html' => '', 'count' => 0]);
+        }
+
+        $byId = $this->rail()->whereIn('id', $ids)->get()->keyBy('id');
+        $products = collect($ids)->map(fn ($id) => $byId->get($id))->filter()->values();
+
+        $html = $products->map(fn ($p) => '<li class="rv-product-card">'.view('components.product-card', ['product' => $p])->render().'</li>')->implode('');
+
+        return response()->json(['html' => $html, 'count' => $products->count()]);
+    }
+
     /** Build the reference-style welcome tabs (All / Ghee / Oils / Atta / Combos / Deal / Superfoods) + first-tab products. */
     protected function welcomeSection(array $config, int $count): array
     {
