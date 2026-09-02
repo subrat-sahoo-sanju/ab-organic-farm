@@ -274,8 +274,9 @@ Alpine.data('notifyModal', () => ({
 }))
 
 /* ── Cart drawer (slide-in mini-cart) ──────────────────────────────── */
-Alpine.data('cartDrawer', () => ({
+Alpine.data('cartDrawer', (freeAbove = 499) => ({
     open: false,
+    freeAbove,
     lines: [],
     total: 0,
     count: 0,

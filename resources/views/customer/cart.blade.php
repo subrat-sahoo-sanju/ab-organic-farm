@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'Your Basket — AB Organic Farm'])
+@extends('layouts.app', ['title' => 'Your Basket'])
 
 @section('content')
 <div class="min-h-screen bg-gray-50 pb-52 lg:pb-8" x-data="cartPage()" x-cloak>
@@ -120,7 +120,7 @@
 
             {{-- Free delivery progress --}}
             <div class="rounded-2xl border p-4 transition-all duration-300"
-              :class="grandTotal >= 500 ? 'border-[#0C831F]/20 bg-[#0C831F]/[0.03]' : 'border-[#0C831F]/20 bg-[#0C831F]/[0.03]'">
+              :class="grandTotal >= freeAbove ? 'border-[#0C831F]/20 bg-[#0C831F]/[0.03]' : 'border-[#0C831F]/20 bg-[#0C831F]/[0.03]'">
               <template x-if="freeRemaining > 0">
                 <div>
                   <div class="flex items-center gap-2 text-xs font-medium text-[#0C831F]">
@@ -212,7 +212,7 @@
                   <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
                 <p class="mt-2.5 text-center text-[11px] text-gray-300">
-                  Free delivery on orders above ₹500
+                  Free delivery on orders above ₹<span x-text="formatNum(freeAbove)"></span>
                 </p>
               </div>
             </div>

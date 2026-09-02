@@ -1,4 +1,4 @@
-<x-guest-layout title="Login — AB Organic Farm">
+<x-guest-layout title="Login">
     <div class="text-center lg:text-left">
         <h1 class="font-display text-2xl font-bold text-charcoal-800">Welcome back</h1>
         <p class="mt-1 text-sm text-charcoal-600/70">Log in to continue your organic journey.</p>

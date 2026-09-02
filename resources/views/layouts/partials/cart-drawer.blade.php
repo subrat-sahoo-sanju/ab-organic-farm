@@ -1,7 +1,7 @@
 {{-- ═══════════════════════════════════════════════════════════════
      CART DRAWER — slide-in mini-cart from right (Anveshan style)
 ═══════════════════════════════════════════════════════════════ --}}
-<div x-data="cartDrawer()" x-cloak class="fixed inset-0 z-[85]" x-show="open" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+<div x-data="cartDrawer({{ (float) setting('delivery.free_above', 499) }})" x-cloak class="fixed inset-0 z-[85]" x-show="open" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
   {{-- Overlay --}}
   <div class="absolute inset-0 bg-black/50" @click="close()" x-show="open" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"></div>
 
@@ -111,16 +111,16 @@
           <span class="text-lg font-extrabold text-anv-800" x-text="'₹' + total"></span>
         </div>
         {{-- Free delivery hint --}}
-        <div x-show="total < 499" x-cloak class="mb-3">
+        <div x-show="total < freeAbove" x-cloak class="mb-3">
           <div class="flex items-center justify-between text-[11px] text-charcoal-600/50">
-            <span>Add <b x-text="'₹' + (499 - total).toFixed(0)"></b> more for free delivery</span>
+            <span>Add <b x-text="'₹' + (freeAbove - total).toFixed(0)"></b> more for free delivery</span>
             <span class="font-semibold text-anv-600">Free</span>
           </div>
           <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-sage-100">
-            <div class="h-full rounded-full bg-gradient-to-r from-anv-500 to-anv-600 transition-all duration-500" :style="'width:' + Math.min(100, (total / 499) * 100) + '%'"></div>
+            <div class="h-full rounded-full bg-gradient-to-r from-anv-500 to-anv-600 transition-all duration-500" :style="'width:' + Math.min(100, (total / freeAbove) * 100) + '%'"></div>
           </div>
         </div>
-        <div x-show="total >= 499" x-cloak class="mb-3 flex items-center gap-1.5 text-[11px] font-semibold text-anv-600">
+        <div x-show="total >= freeAbove" x-cloak class="mb-3 flex items-center gap-1.5 text-[11px] font-semibold text-anv-600">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
           You've unlocked free delivery!
         </div>

@@ -220,6 +220,10 @@ class SettingsController extends Controller
             'footer' => [
                 'title' => 'Footer Content',
                 'keys' => [
+                    ['key' => 'footer.company_name', 'label' => 'Footer Company Name'],
+                    ['key' => 'footer.copyright', 'label' => 'Copyright Banner Text (e.g. AB Organic Farm Pvt. Ltd.)'],
+                    ['key' => 'footer.newsletter_heading', 'label' => 'Newsletter Heading'],
+                    ['key' => 'footer.newsletter_sub', 'label' => 'Newsletter Subtitle'],
                     ['key' => 'footer.tagline', 'label' => 'Footer Tagline'],
                     ['key' => 'footer.address', 'label' => 'Corporate Office Address'],
                     ['key' => 'footer.links_services', 'label' => 'Services Links', 'type' => 'json', 'json_schema' => 'link_list'],
@@ -232,6 +236,9 @@ class SettingsController extends Controller
                 'title' => 'Site Display',
                 'keys' => [
                     ['key' => 'display.announcement_items', 'label' => 'Announcement Bar Messages (JSON array of strings)', 'type' => 'json', 'json_schema' => 'tags'],
+                    ['key' => 'display.trust_pills', 'label' => 'Trust Pills (JSON: [{text, icon}])', 'type' => 'json', 'json_schema' => 'trust_pills'],
+                    ['key' => 'display.whatsapp_name', 'label' => 'WhatsApp Widget: Store Name'],
+                    ['key' => 'display.whatsapp_greeting', 'label' => 'WhatsApp Widget: Greeting Text'],
                     ['key' => 'display.app_download_enabled', 'label' => 'App Download Bar: Enable', 'type' => 'boolean'],
                     ['key' => 'display.app_icon', 'label' => 'App Download Bar: App Icon', 'type' => 'image'],
                     ['key' => 'display.app_download_heading', 'label' => 'App Download Bar: Heading'],

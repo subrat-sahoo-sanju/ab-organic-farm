@@ -18,7 +18,7 @@ class SettingsSeeder extends Seeder
             'store.email' => 'hello@verdurafarms.in',
             'store.address' => 'Plot 12, Green Valley Road, Bhubaneswar, Odisha 751001',
             'delivery.standard_charge' => '49',
-            'delivery.free_above' => '999',
+            'delivery.free_above' => '499',
             'delivery.min_order' => '199',
             'order.auto_confirm' => '0',
             'order.cancellation_window_hours' => '24',
@@ -31,6 +31,17 @@ class SettingsSeeder extends Seeder
             'social.instagram' => 'https://instagram.com/verdurafarms',
             'social.youtube' => '',
             'social.whatsapp' => '+91 94370 00000',
+            'display.trust_pills' => json_encode([
+                ['text' => '100% Certified Organic', 'icon' => 'shield-check'],
+                ['text' => 'Lab Tested', 'icon' => 'flask-conical'],
+                ['text' => 'Farm to Table', 'icon' => 'truck'],
+            ], JSON_UNESCAPED_SLASHES),
+            'footer.company_name' => 'AB Organic Farm',
+            'footer.copyright' => 'AB Organic Farm Pvt. Ltd.',
+            'footer.newsletter_heading' => 'Stay in the loop',
+            'footer.newsletter_sub' => 'Fresh offers & farm stories. No spam.',
+            'display.whatsapp_name' => 'AB Organic Farm',
+            'display.whatsapp_greeting' => 'Hi there! How can we help you today?',
         ];
 
         $defaults['display.nav_menu'] = json_encode([

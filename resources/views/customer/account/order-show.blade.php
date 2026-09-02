@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'Order '.$order->order_number.' — AB Organic Farm'])
+@extends('layouts.app', ['title' => 'Order '.$order->order_number])
 
 @section('content')
 <div class="min-h-screen bg-gray-50 pb-8">

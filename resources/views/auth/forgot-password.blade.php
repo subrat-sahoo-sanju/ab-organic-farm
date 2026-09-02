@@ -1,4 +1,4 @@
-<x-guest-layout title="Forgot password — AB Organic Farm">
+<x-guest-layout title="Forgot password">
     <h1 class="font-display text-2xl font-bold">Forgot your password?</h1>
     <p class="mt-1 text-sm text-charcoal-600/80">Enter your email and we'll send you a reset link.</p>
 

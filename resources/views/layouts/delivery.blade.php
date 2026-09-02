@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>{{ $title ?? 'Delivery' }} — AB Organic Farm</title>
+  <title>{{ $title ?? 'Delivery' }} — {{ setting('store.name') }}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
@@ -32,7 +32,7 @@
     <div class="flex h-16 shrink-0 items-center gap-3 border-b border-gray-200 px-5 dark:border-gray-800">
       <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600 text-sm font-bold text-white shadow-sm">AO</span>
       <div class="min-w-0">
-        <div class="truncate text-sm font-bold text-gray-900 dark:text-white">AB Organic Farm</div>
+        <div class="truncate text-sm font-bold text-gray-900 dark:text-white">{{ setting('store.name') }}</div>
         <div class="text-[10px] font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500">Delivery Portal</div>
       </div>
     </div>

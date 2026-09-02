@@ -1,5 +1,5 @@
 @php
-    $title = $section['title'] ?? 'Why Choose AB Organic?';
+    $title = $section['title'] ?? 'Why Choose '.setting('store.name').'?';
     $subtitle = $section['subtitle'] ?? '';
     $items = collect($section['config']['items'] ?? [])->filter(fn ($i) => !empty($i['title']))->take(4);
 @endphp

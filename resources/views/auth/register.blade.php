@@ -1,4 +1,4 @@
-<x-guest-layout title="Create account — AB Organic Farm">
+<x-guest-layout title="Create account">
     <h1 class="font-display text-2xl font-bold text-charcoal-800">Create your account</h1>
     <p class="mt-1 text-sm text-charcoal-600/80">Fresh organic products, one signup away.</p>
 

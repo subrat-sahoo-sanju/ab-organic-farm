@@ -1,4 +1,4 @@
-<x-guest-layout title="Reset password — AB Organic Farm">
+<x-guest-layout title="Reset password">
     <h1 class="font-display text-2xl font-bold">Choose a new password</h1>
 
     <form method="POST" action="{{ route('password.update') }}" class="mt-6 space-y-4">

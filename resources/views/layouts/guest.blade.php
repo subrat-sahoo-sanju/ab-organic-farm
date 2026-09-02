@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title ?? 'Welcome — AB Organic Farm' }}</title>
+    <title>{{ $title ? $title.' — '.setting('store.name') : setting('store.name') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -35,7 +35,7 @@
 
             {{-- Brand name --}}
             <h1 class="font-display text-4xl xl:text-5xl font-bold tracking-tight mb-3 animate-fade-up stagger-1">
-                AB Organic Farm
+                {{ setting('store.name') }}
             </h1>
 
             {{-- Tagline --}}
@@ -67,7 +67,7 @@
                 <span class="h-10 w-10 rounded-2xl bg-forest-600 grid place-items-center text-mint-300 shadow-card">
                     <x-lucide-leaf class="h-5 w-5"/>
                 </span>
-                AB Organic Farm
+                {{ setting('store.name') }}
             </a>
 
             {{-- Form card --}}

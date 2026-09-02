@@ -1,4 +1,4 @@
-@props(['title' => 'AB Organic Farm'])
+@props(['title' => null])
 
 <!DOCTYPE html>
 <html lang="en">
@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title }}</title>
+    <title>{{ $title ? $title.' — '.setting('store.name') : setting('store.name') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
@@ -23,8 +23,8 @@
 
 <div class="w-full max-w-md">
     <a href="/" class="flex items-center justify-center gap-2 mb-8 font-display text-2xl font-bold text-forest">
-        <span class="h-10 w-10 rounded-2xl bg-forest grid place-items-center text-white text-lg font-bold">A</span>
-        AB Organic Farm
+        <span class="h-10 w-10 rounded-2xl bg-forest grid place-items-center text-white text-lg font-bold">{{ strtoupper(substr(setting('store.name'), 0, 1)) }}</span>
+        {{ setting('store.name') }}
     </a>
 
     <div class="rounded-2xl bg-white shadow-lg ring-1 ring-sage/20 p-6 sm:p-8">

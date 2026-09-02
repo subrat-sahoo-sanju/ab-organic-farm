@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'AB Organic Farm — Organic Food Delivered Fresh to Your Door'])
+@extends('layouts.app', ['title' => setting('seo.title', 'Organic Food Delivered Fresh to Your Door')])
 
 @section('content')
 

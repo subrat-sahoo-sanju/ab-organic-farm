@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => $product->seo_title ?: $product->name . ' — AB Organic Farm'])
+@extends('layouts.app', ['title' => $product->seo_title ?: $product->name])
 
 @push('meta')
 <meta name="description" content="{{ $product->meta_description ?: Str::limit(strip_tags($product->short_description), 160) }}">
@@ -151,7 +151,7 @@ $inStock = $inventory && $inventory->available() > 0;
             <button disabled class="btn w-full bg-charcoal/10 text-charcoal/40 cursor-not-allowed btn-lg">Out of Stock</button>
           @endif
 
-          <p class="mt-4 text-center text-xs text-charcoal/40">✓ COD Available • Free delivery above ₹500</p>
+          <p class="mt-4 text-center text-xs text-charcoal/40">✓ COD Available • Free delivery above ₹{{ (float) setting('delivery.free_above', 499) }}</p>
         </form>
       </div>
 

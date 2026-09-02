@@ -1,6 +1,6 @@
 @php
     $items = collect($sec->config['items'] ?? [])->filter(fn ($i) => ! empty($i['title']))->take(4);
-    $heading = $sec->title ?: 'Why Choose Anveshan?';
+    $heading = $sec->title ?: setting('store.name').' — Why Choose Us?';
     $subtitle = (string) ($sec->subtitle ?? '');
 @endphp
 

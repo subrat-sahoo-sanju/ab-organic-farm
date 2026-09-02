@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'Search — AB Organic Farm'])
+@extends('layouts.app', ['title' => 'Search'])
 
 @section('content')
 <div class="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8" x-data="{ q: '{{ request('q') }}', recent: JSON.parse(localStorage.getItem('verdura_recent') || '[]') }">

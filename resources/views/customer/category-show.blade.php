@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => ($category->seo_title ?: $category->name) . ' — AB Organic Farm'])
+@extends('layouts.app', ['title' => $category->seo_title ?: $category->name])
 
 @section('meta')
 @if($category->meta_description)
@@ -20,7 +20,7 @@
     $bannerCta  = $category->banner_cta_text;
     $bannerUrl  = $category->banner_cta_url ?: '#';
     $brandLogo  = $category->brand_logo;
-    $brandName  = $category->brand_name ?: 'AB Organic';
+    $brandName  = $category->brand_name ?: setting('store.name');
     $bannerCarousel = $category->banner_images ?? [];
     $hasCarousel = count($bannerCarousel) > 0;
 @endphp

@@ -44,7 +44,7 @@
                             <span class="grid h-16 w-16 place-items-center overflow-hidden rounded-2xl bg-anv-600 shadow-md ring-2 ring-white">
                                 <img src="{{ $phoneSrc }}" alt="App icon" class="h-full w-full object-cover">
                             </span>
-                            <span class="text-[11px] font-extrabold text-anv-800">{{ $sec->title ?: 'AB Organic' }}</span>
+                            <span class="text-[11px] font-extrabold text-anv-800">{{ $sec->title ?: setting('store.name') }}</span>
                             <span class="flex gap-1">
                                 <span class="h-1.5 w-6 rounded-full bg-anv-600"></span>
                                 <span class="h-1.5 w-2 rounded-full bg-leaf-200"></span>

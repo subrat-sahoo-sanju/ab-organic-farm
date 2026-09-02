@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'AB Organic Farm' }}</title>
+    @php $sName = setting('store.name'); @endphp
+    <title>{{ !empty($title) ? (str_contains($title, $sName) ? $title : $title.' — '.$sName) : $sName }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800&family=Roboto+Slab:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -90,7 +91,7 @@
                         <img src="{{ asset('storage/'.$siteLogoWhite) }}" alt="{{ config('app.name', 'Store') }} logo" class="h-9 w-auto max-w-[180px] object-contain">
                     @else
                         <span class="h-8 w-8 rounded-lg bg-anv-600 text-white grid place-items-center"><x-lucide-leaf class="h-4 w-4"/></span>
-                        <span class="font-display text-base font-bold text-white">{{ setting('store.name', 'AB Organic Farm') }}</span>
+                        <span class="font-display text-base font-bold text-white">{{ setting('footer.company_name', setting('store.name', 'AB Organic Farm')) }}</span>
                     @endif
                 </div>
                 <p class="leading-relaxed text-white/50">{{ setting('footer.tagline', setting('store.tagline', 'Farm-fresh certified organic products, delivered to your doorstep.')) }}</p>
@@ -142,8 +143,8 @@
             </div>
 
             <div>
-                <h4 class="font-semibold text-white mb-4">Stay in the loop</h4>
-                <p class="text-white/50 text-xs mb-3">Fresh offers & farm stories. No spam.</p>
+                <h4 class="font-semibold text-white mb-4">{{ setting('footer.newsletter_heading', 'Stay in the loop') }}</h4>
+                <p class="text-white/50 text-xs mb-3">{{ setting('footer.newsletter_sub', 'Fresh offers & farm stories. No spam.') }}</p>
                 <form x-data="{ email: '', done: false }" @submit.prevent="fetch('/newsletter', { method:'POST', headers:{'X-Requested-With':'XMLHttpRequest','X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content, 'Content-Type':'application/json','Accept':'application/json'}, body: JSON.stringify({email}) }).then(r=>r.json()).then(()=>done=true); email=''">
                     <div class="flex rounded-full border border-white/25 bg-white/5 overflow-hidden">
                         <input x-model="email" type="email" required placeholder="Your email" class="flex-1 bg-transparent px-4 py-2.5 text-sm text-white placeholder:text-white/40 focus:outline-none">
@@ -166,7 +167,7 @@
 
         <div class="border-t border-white/10">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center text-xs text-white/40">
-                Corporate Office — {{ setting('footer.address', 'Sector 32, Gurugram') }} · &copy; {{ now()->year }} AB Organic Farm Pvt. Ltd.
+                Corporate Office — {{ setting('footer.address', 'Sector 32, Gurugram') }} · &copy; {{ now()->year }} {{ setting('footer.copyright', 'AB Organic Farm Pvt. Ltd.') }}
             </div>
         </div>
     </footer>
@@ -259,11 +260,11 @@
         <div x-show="open" x-cloak x-transition class="mb-3 w-72 rounded-2xl overflow-hidden shadow-2xl" style="background:#ECE5DD">
             <div class="bg-[#075E54] px-4 py-3 flex items-center gap-2 text-white">
                 <span class="grid h-8 w-8 place-items-center rounded-full bg-white/20 text-lg">🌿</span>
-                <div><p class="text-sm font-bold leading-tight">AB Organic Farm</p><p class="text-[10px] text-green-100">Online now</p></div>
+                <div><p class="text-sm font-bold leading-tight">{{ setting('display.whatsapp_name', setting('store.name', 'AB Organic Farm')) }}</p><p class="text-[10px] text-green-100">Online now</p></div>
             </div>
             <div class="p-3">
                 <div class="rounded-[15px] bg-white p-3 text-sm text-charcoal-800 shadow">
-                    Hi there 👋 How can we help you today?
+                    {{ setting('display.whatsapp_greeting', 'Hi there 👋 How can we help you today?') }}
                     <span class="mt-1 block text-right text-[9px] text-charcoal-600/40">12:00</span>
                 </div>
             </div>

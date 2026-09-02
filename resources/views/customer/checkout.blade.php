@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'Checkout — AB Organic Farm'])
+@extends('layouts.app', ['title' => 'Checkout'])
 
 @section('content')
 <div class="min-h-screen bg-gray-50 pb-44 lg:pb-8" x-data="checkoutPage()" x-init="init()">

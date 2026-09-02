@@ -1,7 +1,7 @@
 @php
-    $title = $section['title'] ?? 'Welcome to AB Organic';
+    $title = $section['title'] ?? 'Welcome to '.setting('store.name');
     $subtitle = $section['subtitle'] ?? 'Farm-fresh certified organic products, delivered to your doorstep.';
-    $brandName = $category->brand_name ?: 'AB Organic';
+    $brandName = $category->brand_name ?: setting('store.name');
     $tabCategories = collect($sectionTabs ?? []);
     $allProducts = $sectionData ?? collect();
 @endphp
@@ -75,21 +75,17 @@
         @endif
 
         {{-- Trust pills --}}
+        @php $trustPills = setting_json('display.trust_pills', []); @endphp
+        @if(count($trustPills))
         <div class="mt-8 flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-anv-600">
-            <span class="flex items-center gap-1.5">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
-                100% Certified Organic
-            </span>
-            <span class="h-1 w-1 rounded-full bg-anv-300"></span>
-            <span class="flex items-center gap-1.5">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
-                Lab Tested
-            </span>
-            <span class="h-1 w-1 rounded-full bg-anv-300"></span>
-            <span class="flex items-center gap-1.5">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
-                Farm to Table
-            </span>
+            @foreach($trustPills as $i => $pill)
+                @if($i > 0)<span class="h-1 w-1 rounded-full bg-anv-300"></span>@endif
+                <span class="flex items-center gap-1.5">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                    {{ $pill['text'] }}
+                </span>
+            @endforeach
         </div>
+        @endif
     </div>
 </section>

@@ -82,6 +82,20 @@
                                 </div>
                               </template>
 
+                              <template x-if="schema === 'trust_pills'">
+                                <div class="space-y-2">
+                                  <select x-model="row.icon" class="adm-input">
+                                    <option value="shield-check">Shield Check</option>
+                                    <option value="flask-conical">Flask / Lab</option>
+                                    <option value="truck">Truck</option>
+                                    <option value="leaf">Leaf</option>
+                                    <option value="sparkles">Sparkles</option>
+                                    <option value="heart">Heart</option>
+                                  </select>
+                                  <input type="text" x-model="row.text" class="adm-input" placeholder="Pill text (e.g. 100% Certified Organic)">
+                                </div>
+                              </template>
+
                               <template x-if="schema === 'nav_menu'">
                                 <div class="space-y-2">
                                   <input type="text" x-model="row.label" class="adm-input" placeholder="Label (e.g. A2 Ghee)">
@@ -324,7 +338,7 @@
 <script>
 function jsonEditor(schema, initial) {
   let rows = [];
-  if (schema === 'tags' || schema === 'link_list' || schema === 'feat_items' || schema === 'promo_cards' || schema === 'rewards' || schema === 'nav_items' || schema === 'nav_menu') {
+  if (schema === 'tags' || schema === 'link_list' || schema === 'feat_items' || schema === 'promo_cards' || schema === 'rewards' || schema === 'nav_items' || schema === 'nav_menu' || schema === 'trust_pills') {
     try {
       const arr = typeof initial === 'string' ? JSON.parse(initial) : initial;
       if (Array.isArray(arr)) {
@@ -334,6 +348,7 @@ function jsonEditor(schema, initial) {
           if (schema === 'link_list') return { label: obj.label || '', url: obj.url || '' };
           if (schema === 'feat_items') return { icon: obj.icon || 'leaf', title: obj.title || '', text: obj.text || '' };
           if (schema === 'rewards') return { title: obj.title || '', points: obj.points || '' };
+          if (schema === 'trust_pills') return { text: obj.text || '', icon: obj.icon || 'shield-check' };
           if (schema === 'nav_items') return { label: obj.label || '', icon: obj.icon || '', url: obj.url || '' };
           if (schema === 'nav_menu') return {
             label: obj.label || '', icon: obj.icon || '', url: obj.url || '',
@@ -356,6 +371,7 @@ function jsonEditor(schema, initial) {
     if (schema === 'link_list') return rows.map(r => ({ label: r.label, url: r.url })).filter(r => r.label || r.url);
     if (schema === 'feat_items') return rows.map(r => ({ icon: r.icon, title: r.title, text: r.text })).filter(r => r.title || r.text);
     if (schema === 'rewards') return rows.map(r => ({ title: r.title, points: r.points })).filter(r => r.title || r.points);
+    if (schema === 'trust_pills') return rows.map(r => ({ text: r.text, icon: r.icon })).filter(r => r.text);
     if (schema === 'nav_items') return rows.map(r => ({ label: r.label, icon: r.icon, url: r.url })).filter(r => r.label || r.url);
     if (schema === 'nav_menu') return rows.map(r => ({
       label: r.label, icon: r.icon, url: r.url, highlight: r.highlight,
@@ -380,6 +396,7 @@ function emptyRow(schema) {
   if (schema === 'link_list') return { label: '', url: '' };
   if (schema === 'feat_items') return { icon: 'leaf', title: '', text: '' };
   if (schema === 'rewards') return { title: '', points: '' };
+  if (schema === 'trust_pills') return { text: '', icon: 'shield-check' };
   if (schema === 'nav_items') return { label: '', icon: '', url: '' };
   if (schema === 'nav_menu') return { label: '', icon: '', url: '', highlight: false, children: [] };
   if (schema === 'promo_cards') return { color: 'green', badge: '', title: '', subtitle: '', code: '', cta: '', link: '' };

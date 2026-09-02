@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'Notifications — AB Organic Farm'])
+@extends('layouts.app', ['title' => 'Notifications'])
 
 @section('content')
 <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
