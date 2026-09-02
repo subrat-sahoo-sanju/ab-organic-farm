@@ -24,7 +24,7 @@ if (!window.__tabGridRegistered) {
       },
     }));
 
-// Reference "Welcome To" / "Product in Focus" menu: icon tabs + sliding indicator + lazy product grid.
+  // Reference "Welcome To" / "Product in Focus" menu: icon tabs + sliding indicator + lazy product grid.
     Alpine.data('welcomeTabs', (gridId, initialKey, tabs) => ({
       active: initialKey,
       loading: false,
@@ -95,6 +95,32 @@ if (!window.__tabGridRegistered) {
         grid?.classList.remove('opacity-40', 'pointer-events-none');
         this.loading = false;
         this.syncScrollbar();
+      },
+    }));
+
+    // Category page tabs (welcome/featured/cross-sell sections): switch active tab,
+    // lazy-load that category's products into the rail via the AJAX endpoint.
+    Alpine.data('categoryTabs', (gridId, initialKey) => ({
+      active: initialKey,
+      loading: false,
+      async pick(tab, el) {
+        if (this.loading || !el || !tab.url || tab.url === '#' || this.active === tab.key) return;
+        this.active = tab.key;
+        this.loading = true;
+        const grid = document.getElementById(gridId);
+        grid?.classList.add('opacity-40', 'pointer-events-none');
+        try {
+          const base = tab.url.replace(/\/+$/, '');
+          const r = await fetch(base + (base.includes('?') ? '&' : '?') + 'view=ajax', {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json' },
+          });
+          const d = await r.json();
+          if (grid) grid.innerHTML = d.html;
+        } catch (e) {
+          if (grid) grid.innerHTML = '';
+        }
+        grid?.classList.remove('opacity-40', 'pointer-events-none');
+        this.loading = false;
       },
     }));
   });

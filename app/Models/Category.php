@@ -12,7 +12,7 @@ class Category extends Model
     protected $fillable = [
         'parent_id', 'name', 'slug', 'description', 'image_path', 'icon',
         'sort_order', 'is_active', 'is_featured', 'seo_title', 'meta_description',
-        'banner_heading', 'banner_subheading', 'banner_image',
+        'banner_heading', 'banner_subheading', 'banner_image', 'banner_images',
         'banner_cta_text', 'banner_cta_url', 'banner_bg_color',
         'brand_logo', 'brand_name', 'sections',
     ];
@@ -23,6 +23,7 @@ class Category extends Model
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'sections' => 'array',
+            'banner_images' => 'array',
         ];
     }
 

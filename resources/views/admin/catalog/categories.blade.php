@@ -281,6 +281,26 @@
             </div>
 
             <div>
+              <label class="adm-label">Additional Banner Images <span class="adm-text-muted font-normal">(hero carousel — 2400×700 each)</span></label>
+              <input type="file" name="banner_images_files[]" accept="image/jpeg,image/png,image/webp" multiple @change="previewBannerImages($event)" class="adm-input">
+              <div class="mt-2 flex flex-wrap gap-2">
+                <template x-for="(img, i) in form.banner_images" :key="i">
+                  <div class="relative h-16 w-28 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+                    <img :src="img.startsWith('http') ? img : '{{ asset('storage/') }}/' + img" class="h-full w-full object-cover">
+                    <button type="button" @click="form.banner_images.splice(i, 1)" class="absolute top-0.5 right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white text-[10px]">&times;</button>
+                  </div>
+                </template>
+                <template x-for="(img, i) in bannerImagesPreview" :key="'p'+i">
+                  <div class="relative h-16 w-28 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+                    <img :src="img" class="h-full w-full object-cover">
+                  </div>
+                </template>
+              </div>
+              <p class="mt-1 text-[11px] adm-text-muted">Upload multiple images for a hero carousel. First image is the primary banner.</p>
+              <input type="hidden" name="banner_images" :value="JSON.stringify(form.banner_images)">
+            </div>
+
+            <div>
               <label class="adm-label">Brand Logo <span class="adm-text-muted font-normal">(displayed on banner)</span></label>
               <input type="file" name="brand_logo_file" accept="image/jpeg,image/png,image/webp,image/svg" @change="previewBrandLogo($event)" class="adm-input">
               <template x-if="form.brand_logo && !brandLogoPreview">
@@ -515,6 +535,7 @@ function categoryManager() {
     imagePreview: null,
     bannerPreview: null,
     brandLogoPreview: null,
+    bannerImagesPreview: [],
     form: {
       name: '',
       parent_id: '',
@@ -530,21 +551,23 @@ function categoryManager() {
       banner_cta_text: '',
       banner_cta_url: '',
       banner_bg_color: '#00584b',
-      brand_logo: '',
-      brand_name: '',
-      sections: [],
+        brand_logo: '',
+        brand_name: '',
+        banner_images: [],
+        sections: [],
     },
     openCreate() {
       this.editingId = null;
       this.imagePreview = null;
       this.bannerPreview = null;
       this.brandLogoPreview = null;
-      this.form = {
+      this.bannerImagesPreview = [];
+        this.form = {
         name: '', parent_id: '', description: '', icon: '', sort_order: 0,
         is_active: true, is_featured: false, image_path: '',
         banner_heading: '', banner_subheading: '', banner_image: '',
         banner_cta_text: '', banner_cta_url: '', banner_bg_color: '#00584b',
-        brand_logo: '', brand_name: '', sections: [],
+        brand_logo: '', brand_name: '', banner_images: [], sections: [],
       };
       this.showModal = true;
     },
@@ -553,6 +576,7 @@ function categoryManager() {
       this.imagePreview = null;
       this.bannerPreview = null;
       this.brandLogoPreview = null;
+      this.bannerImagesPreview = [];
       let sections = [];
       try {
         sections = typeof cat.sections === 'string' ? JSON.parse(cat.sections) : (cat.sections || []);
@@ -581,6 +605,7 @@ function categoryManager() {
         banner_bg_color: cat.banner_bg_color || '#00584b',
         brand_logo: cat.brand_logo || '',
         brand_name: cat.brand_name || '',
+        banner_images: cat.banner_images || [],
         sections: sections,
       };
       this.showModal = true;
@@ -601,6 +626,13 @@ function categoryManager() {
     previewBrandLogo(e) {
       const f = e.target.files && e.target.files[0];
       this.brandLogoPreview = f ? URL.createObjectURL(f) : null;
+    },
+    previewBannerImages(e) {
+      const files = e.target.files;
+      if (!files) return;
+      for (let i = 0; i < files.length; i++) {
+        this.bannerImagesPreview.push(URL.createObjectURL(files[i]));
+      }
     },
     // ─── Section Manager ───
     sectionTypes: [

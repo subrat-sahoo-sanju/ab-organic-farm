@@ -63,8 +63,10 @@ class CategoryController extends Controller
             ->withQueryString();
 
         if (request()->ajax()) {
+            $view = request('view') === 'ajax' ? 'customer.partials.product-carousel' : 'customer.partials.product-grid';
+
             return response()->json([
-                'html' => view('customer.partials.product-grid', ['products' => $products])->render(),
+                'html' => view($view, ['products' => $products])->render(),
                 'nextPageUrl' => $products->nextPageUrl(),
                 'hasMorePages' => $products->hasMorePages(),
             ]);
@@ -94,11 +96,18 @@ class CategoryController extends Controller
         $sections = $category->sections ?? [];
         $data = [];
 
+        // Pre-fetch root categories for tab data
+        $rootCategories = Category::whereNull('parent_id')
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get();
+
         foreach ($sections as $index => $section) {
             $type = $section['type'] ?? '';
             $key = "section_{$index}";
 
             match ($type) {
+                'welcome' => $data[$key] = $this->getWelcomeData($rootCategories),
                 'featured_products' => $data[$key] = $this->getFeaturedProducts($category, $section),
                 'cross_sell' => $data[$key] = $this->getCrossSellProducts($category, $section),
                 default => null,
@@ -106,6 +115,40 @@ class CategoryController extends Controller
         }
 
         return $data;
+    }
+
+    /**
+     * Build tab data for the Welcome section — root categories as tabs
+     * with top-selling products from each.
+     */
+    protected function getWelcomeData($rootCategories): array
+    {
+        $tabs = [];
+        $allProducts = collect();
+
+        foreach ($rootCategories as $cat) {
+            $products = Product::published()
+                ->inCategoryTree($cat)
+                ->with(['primaryImage', 'defaultVariant.inventory', 'category'])
+                ->orderByDesc('sold_count')
+                ->limit(12)
+                ->get();
+
+            $tabs[] = [
+                'key' => $cat->slug,
+                'title' => $cat->name,
+                'active_icon' => $cat->image_path ? asset('storage/' . $cat->image_path) : asset('images/nav/nav-category.svg'),
+                'inactive_icon' => $cat->image_path ? asset('storage/' . $cat->image_path) : asset('images/nav/nav-category.svg'),
+                'see_all' => route('shop.category', $cat->slug),
+            ];
+
+            $allProducts = $allProducts->merge($products);
+        }
+
+        return [
+            'tabs' => $tabs,
+            'products' => $allProducts->unique('id')->take(20),
+        ];
     }
 
     /**

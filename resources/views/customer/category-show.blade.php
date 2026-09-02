@@ -7,6 +7,8 @@
 @endsection
 
 @section('content')
+@include('customer.sections._tabs-js')
+
 {{-- ═══════════════════════════════════════════════════════════════
      HERO BANNER — full-width, admin-manageable per category
 ═══════════════════════════════════════════════════════════════ --}}
@@ -19,30 +21,82 @@
     $bannerUrl  = $category->banner_cta_url ?: '#';
     $brandLogo  = $category->brand_logo;
     $brandName  = $category->brand_name ?: 'AB Organic';
+    $bannerCarousel = $category->banner_images ?? [];
+    $hasCarousel = count($bannerCarousel) > 0;
 @endphp
 
-<div class="relative w-full overflow-hidden" style="background:{{ $bannerBg }}">
-  @if($bannerImg)
-    <img src="{{ asset('storage/'.$bannerImg) }}" alt="{{ $bannerH }}" class="absolute inset-0 h-full w-full object-cover" loading="eager">
-  @endif
+@if($hasCarousel)
+{{-- HERO CAROUSEL — multiple admin-manageable slides --}}
+<div x-data="{ slide: 0, total: {{ count($bannerCarousel) }} }" class="relative w-full overflow-hidden" style="background:{{ $bannerBg }}">
+  @foreach($bannerCarousel as $idx => $img)
+    <div x-show="slide === {{ $idx }}" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+         class="absolute inset-0">
+      <img src="{{ asset('storage/'.$img) }}" alt="{{ $bannerH }}" class="h-full w-full object-cover" loading="{{ $idx === 0 ? 'eager' : 'lazy' }}">
+    </div>
+  @endforeach
 
-  <div class="relative mx-auto flex max-w-7xl items-center px-4 py-10 sm:px-6 sm:py-14 lg:px-8 lg:py-16">
+  {{-- Gradient overlay --}}
+  <div class="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent"></div>
+
+  {{-- Content overlay --}}
+  <div class="relative mx-auto flex max-w-7xl items-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
     <div class="max-w-xl">
       @if($brandLogo || $brandName)
         <div class="mb-3 flex items-center gap-2">
           @if($brandLogo)
             <img src="{{ asset('storage/'.$brandLogo) }}" alt="{{ $brandName }}" class="h-8 w-auto object-contain">
           @endif
-          <span class="text-sm font-bold uppercase tracking-wider text-white/80">{{ $brandName }}</span>
+          <span class="text-xs font-bold uppercase tracking-[0.2em] text-white/80">{{ $brandName }}</span>
         </div>
       @endif
-
-      <h1 class="font-display text-3xl font-extrabold text-white sm:text-4xl lg:text-5xl">{{ $bannerH }}</h1>
-
+      <h1 class="font-display text-3xl font-extrabold text-white drop-shadow-lg sm:text-4xl lg:text-5xl">{{ $bannerH }}</h1>
       @if($bannerSub)
-        <p class="mt-3 max-w-md text-base text-white/80 sm:text-lg">{{ $bannerSub }}</p>
+        <p class="mt-3 max-w-md text-base text-white/85 sm:text-lg">{{ $bannerSub }}</p>
       @endif
+      @if($bannerCta && $bannerCta !== '#')
+        <a href="{{ $bannerUrl }}" class="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold shadow-lg transition hover:shadow-xl hover:scale-[1.02]" style="color:{{ $bannerBg }}">
+          {{ $bannerCta }}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      @endif
+    </div>
+  </div>
 
+  {{-- Carousel controls --}}
+  <template x-if="total > 1">
+    <div class="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-3">
+      @foreach($bannerCarousel as $idx => $_)
+        <button @click="slide = {{ $idx }}" class="h-2.5 w-2.5 rounded-full transition-all" :class="slide === {{ $idx }} ? 'bg-white w-6' : 'bg-white/50'"></button>
+      @endforeach
+    </div>
+  </template>
+
+  {{-- Auto-advance --}}
+  <template x-if="total > 1">
+    <div x-init="setInterval(() => { slide = (slide + 1) % total }, 5000)" x-cloak></div>
+  </template>
+</div>
+@else
+{{-- HERO SINGLE BANNER — fallback to single image --}}
+<div class="relative w-full overflow-hidden" style="background:{{ $bannerBg }}">
+  @if($bannerImg)
+    <img src="{{ asset('storage/'.$bannerImg) }}" alt="{{ $bannerH }}" class="absolute inset-0 h-full w-full object-cover" loading="eager">
+  @endif
+  <div class="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent"></div>
+  <div class="relative mx-auto flex max-w-7xl items-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+    <div class="max-w-xl">
+      @if($brandLogo || $brandName)
+        <div class="mb-3 flex items-center gap-2">
+          @if($brandLogo)
+            <img src="{{ asset('storage/'.$brandLogo) }}" alt="{{ $brandName }}" class="h-8 w-auto object-contain">
+          @endif
+          <span class="text-xs font-bold uppercase tracking-[0.2em] text-white/80">{{ $brandName }}</span>
+        </div>
+      @endif
+      <h1 class="font-display text-3xl font-extrabold text-white drop-shadow-lg sm:text-4xl lg:text-5xl">{{ $bannerH }}</h1>
+      @if($bannerSub)
+        <p class="mt-3 max-w-md text-base text-white/85 sm:text-lg">{{ $bannerSub }}</p>
+      @endif
       @if($bannerCta && $bannerCta !== '#')
         <a href="{{ $bannerUrl }}" class="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold shadow-lg transition hover:shadow-xl hover:scale-[1.02]" style="color:{{ $bannerBg }}">
           {{ $bannerCta }}
@@ -52,6 +106,7 @@
     </div>
   </div>
 </div>
+@endif
 
 {{-- ═══════════════════════════════════════════════════════════════
      CATEGORY ICON NAV — horizontal circular icons
@@ -92,9 +147,15 @@
         $secData = $sectionData["section_{$idx}"] ?? collect();
     @endphp
     @if($secVisible && view()->exists("customer.category-sections.{$secType}"))
+      @php
+          $sectionPayload = $sectionData["section_{$idx}"] ?? [];
+          $sectionProducts = is_array($sectionPayload) ? ($sectionPayload['products'] ?? collect()) : $sectionPayload;
+          $sectionTabs = is_array($sectionPayload) ? ($sectionPayload['tabs'] ?? []) : [];
+      @endphp
       @include("customer.category-sections.{$secType}", [
           'section' => $section,
-          'sectionData' => $secData,
+          'sectionData' => $sectionProducts,
+          'sectionTabs' => $sectionTabs,
       ])
     @endif
   @endforeach

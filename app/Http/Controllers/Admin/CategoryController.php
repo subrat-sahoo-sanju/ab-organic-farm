@@ -39,6 +39,7 @@ class CategoryController extends Controller
             $data['brand_logo'] = $this->storedImage($request, 'brand_logo_file', 400, 120);
         }
         $data['sections'] = $this->normalizeSections($request);
+        $data['banner_images'] = $this->handleBannerImages($request);
 
         Category::create($data);
 
@@ -64,6 +65,7 @@ class CategoryController extends Controller
             $data['brand_logo'] = $this->storedImage($request, 'brand_logo_file', 400, 120);
         }
         $data['sections'] = $this->normalizeSections($request);
+        $data['banner_images'] = $this->handleBannerImages($request, $category->banner_images);
 
         // Prevent self/nested parent loops
         if ($data['parent_id'] && (int) $data['parent_id'] === $category->id) {
@@ -126,6 +128,9 @@ class CategoryController extends Controller
             'banner_bg_color' => ['nullable', 'string', 'max:20'],
             'brand_logo_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
             'brand_name' => ['nullable', 'string', 'max:120'],
+            'banner_images_files' => ['nullable', 'array'],
+            'banner_images_files.*' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'banner_images' => ['nullable', 'array'],
             'sections' => ['nullable', 'array'],
             'sections.*.type' => ['required_with:sections', 'string', 'in:welcome,featured_products,trust_badges,promo_banner,cross_sell'],
             'sections.*.title' => ['nullable', 'string', 'max:190'],
@@ -182,5 +187,41 @@ class CategoryController extends Controller
             $sec['visible'] = $sec['visible'] ?? true;
             return $sec;
         }, $sections);
+    }
+
+    /**
+     * Handle multiple banner image uploads for the hero carousel.
+     */
+    protected function handleBannerImages(Request $request, ?array $existing = null): ?array
+    {
+        $images = $existing ?? [];
+        $keptUrls = $request->input('banner_images', []);
+
+        // Remove deleted images from storage
+        if ($existing) {
+            foreach ($existing as $img) {
+                if (!in_array($img, $keptUrls)) {
+                    $path = public_path('storage/' . $img);
+                    if (file_exists($path)) {
+                        @unlink($path);
+                    }
+                }
+            }
+        }
+
+        // Keep only images that weren't deleted
+        $images = array_values(array_filter($images, fn($img) => in_array($img, $keptUrls)));
+
+        // Add new uploads
+        if ($request->hasFile('banner_images_files')) {
+            foreach ($request->file('banner_images_files') as $file) {
+                $uploaded = app(ImageUtility::class)->processUpload($file, 2400, 700, 'categories');
+                if ($uploaded) {
+                    $images[] = $uploaded;
+                }
+            }
+        }
+
+        return !empty($images) ? $images : null;
     }
 }
