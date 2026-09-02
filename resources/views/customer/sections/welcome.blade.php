@@ -4,7 +4,7 @@
   .menu-main-heading{font-size:1.9rem;font-weight:700;line-height:1.2;margin:0 0 .5rem;color:#235a49;text-align:center}
   .menu-subheading{font-size:1.9rem;font-weight:400;line-height:1.2;margin:0 0 2rem;color:#235a49;text-align:center}
   .menu-wrapper{position:relative;width:100%;overflow:hidden;padding:0;box-sizing:border-box}
-  .menu-collection-container{display:flex!important;overflow-x:auto;overflow-y:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:8px;margin:0;justify-content:flex-start;align-items:center;flex-wrap:nowrap;position:relative;padding-bottom:12px;padding-left:20px;padding-right:20px;min-height:80px;box-sizing:border-box}
+  .menu-collection-container{display:flex!important;overflow-x:auto;overflow-y:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:8px;margin:0 auto;justify-content:flex-start;align-items:center;flex-wrap:nowrap;position:relative;padding-bottom:12px;padding-left:20px;padding-right:20px;min-height:80px;max-width:max-content;box-sizing:border-box}
   .menu-nav-item{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;text-decoration:none;color:inherit;position:relative;min-width:clamp(50px,6vw,70px);max-width:clamp(60px,8vw,90px);white-space:nowrap;transition:transform .2s ease;background:none;border:none;cursor:pointer}
   .menu-nav-item.active{transform:translateY(-1px)}
   .menu-nav-icon{object-fit:contain!important;object-position:center;display:flex;align-items:center;justify-content:center;box-sizing:border-box;aspect-ratio:1/1;width:clamp(35px,4vw,50px);height:clamp(35px,4vw,50px);padding:clamp(4px,.5vw,6px);margin-bottom:clamp(1px,.1vw,2px);transition:all .3s cubic-bezier(.4,0,.2,1)}
