@@ -93,13 +93,22 @@ class MarketingSeeder extends Seeder
             }
         }
 
-        // ---- Banners ----
-        Banner::firstOrCreate(['title' => 'Good Food. Naturally Better.'], [
+        // ---- Banners (hero slider — managed via Admin → Marketing → Banners) ----
+        Banner::firstOrCreate(['title' => 'High Protein Atta'], [
             'placement' => 'hero',
-            'subtitle' => 'Certified organic essentials delivered from partner farms to your doorstep.',
-            'button_text' => 'Shop Organic Products',
+            'desktop_image' => 'sections/hero-desktop.webp',
+            'mobile_image' => 'sections/hero-mobile.webp',
+            'button_text' => 'Shop Now',
             'button_url' => '/categories/all',
             'sort_order' => 0,
+        ]);
+        Banner::firstOrCreate(['title' => 'Explore All Products'], [
+            'placement' => 'hero',
+            'desktop_image' => 'sections/hero2-desktop.webp',
+            'mobile_image' => 'sections/hero2-mobile.webp',
+            'button_text' => 'Shop Now',
+            'button_url' => '/categories/all',
+            'sort_order' => 1,
         ]);
 
         Banner::firstOrCreate(['title' => 'Cold-Pressed Oils Week'], [
