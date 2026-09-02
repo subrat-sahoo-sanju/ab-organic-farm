@@ -185,13 +185,18 @@
         <div class="grid grid-cols-5 h-16 text-[10px] font-semibold tracking-wide">
             @foreach($navItems as $ni)
                 @php $active = request()->url() === $ni['url'] || (($ni['label'] === 'Account') && request()->routeIs('account.*')); @endphp
-                <a href="{{ $ni['url'] }}" class="relative flex flex-col items-center justify-center gap-1 transition-colors {{ $active ? 'text-anv-600' : 'text-charcoal-600' }}">
+                @if($ni['label'] === 'Cart')
+                  <button type="button" class="relative flex flex-col items-center justify-center gap-1 text-charcoal-600" @click="window.dispatchEvent(new CustomEvent('anv:cart-drawer-open'))">
                     <x-lucide-{{ $ni['icon'] }} class="h-[22px] w-[22px]"/>
-                    @if($ni['label'] === 'Cart')
-                        <span x-text="$store.cart.count" x-show="$store.cart.count > 0" x-cloak class="absolute top-2 right-[calc(50%-18px)] h-4 min-w-4 px-1 rounded-full bg-anv-600 text-white text-[10px] font-bold grid place-items-center leading-none"></span>
-                    @endif
+                    <span x-text="$store.cart.count" x-show="$store.cart.count > 0" x-cloak class="absolute top-2 right-[calc(50%-18px)] h-4 min-w-4 px-1 rounded-full bg-anv-600 text-white text-[10px] font-bold grid place-items-center leading-none"></span>
                     <span>{{ $ni['label'] }}</span>
-                </a>
+                  </button>
+                @else
+                  <a href="{{ $ni['url'] }}" class="relative flex flex-col items-center justify-center gap-1 transition-colors {{ $active ? 'text-anv-600' : 'text-charcoal-600' }}">
+                    <x-lucide-{{ $ni['icon'] }} class="h-[22px] w-[22px]"/>
+                    <span>{{ $ni['label'] }}</span>
+                  </a>
+                @endif
             @endforeach
         </div>
     </nav>
@@ -360,6 +365,9 @@
             </div>
         </div>
     </div>
+
+    {{-- ═══ CART DRAWER (slide-in mini-cart from right) ═══ --}}
+    @include('layouts.partials.cart-drawer')
 
     <x-ui.toaster/>
 </body>

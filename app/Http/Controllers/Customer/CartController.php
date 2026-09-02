@@ -29,6 +29,49 @@ class CartController extends Controller
         ]);
     }
 
+    public function drawer(): \Illuminate\Http\JsonResponse
+    {
+        $cart = $this->carts->resolve(false);
+        if (! $cart) {
+            return response()->json(['ok' => true, 'lines' => [], 'total' => 0, 'count' => 0]);
+        }
+
+        $lines = $cart->items()
+            ->with(['variant', 'product', 'product.primaryImage'])
+            ->get()
+            ->map(function ($item) {
+                $img = $item->product?->primaryImage?->path;
+                $effective = (float) ($item->variant?->sale_price ?? $item->variant?->price ?? $item->price_at_add);
+                $list = (float) ($item->variant?->price ?? $item->price_at_add);
+
+                return [
+                    'id' => $item->id,
+                    'variant_id' => $item->product_variant_id,
+                    'name' => $item->product?->name ?? 'Product',
+                    'variant_name' => $item->variant?->name ?? '',
+                    'unit_label' => $item->variant?->unit_label ?? '',
+                    'image' => $img ? asset('storage/'.$img) : asset('images/placeholder.png'),
+                    'price' => round($effective, 2),
+                    'original_price' => round($list, 2),
+                    'quantity' => (int) $item->quantity,
+                    'line_total' => round($effective * $item->quantity, 2),
+                    'slug' => $item->product?->slug ?? '',
+                    'in_stock' => ($item->variant?->inventory->quantity ?? 0) > 0,
+                ];
+            })
+            ->values();
+
+        $total = $lines->sum('line_total');
+        $count = $lines->sum('quantity');
+
+        return response()->json([
+            'ok' => true,
+            'lines' => $lines,
+            'total' => round($total, 2),
+            'count' => (int) $count,
+        ]);
+    }
+
     public function state(): \Illuminate\Http\JsonResponse
     {
         $cart = $this->carts->resolve(false);

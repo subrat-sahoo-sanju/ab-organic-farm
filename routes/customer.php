@@ -18,6 +18,7 @@ Route::get('/api/recent-viewed/products', [Customer\HomeController::class, 'rece
 
 Route::get('/cart', [Customer\CartController::class, 'index'])->name('cart.index');
 Route::get('/cart/state', [Customer\CartController::class, 'state'])->name('cart.state');
+Route::get('/cart/drawer', [Customer\CartController::class, 'drawer'])->name('cart.drawer');
 Route::post('/cart/add', [Customer\CartController::class, 'add'])->name('cart.add');
 Route::patch('/cart/items/{item}', [Customer\CartController::class, 'update'])->name('cart.update');
 Route::delete('/cart/items/{item}', [Customer\CartController::class, 'remove'])->name('cart.remove');

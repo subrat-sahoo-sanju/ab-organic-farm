@@ -118,7 +118,10 @@ const adjustCart = async (variants, delta) => {
     const vid = String(variants)
     const qty = store.qtyOf(variants)
 
-    if (delta > 0 && qty === 0) flyToCart()
+    if (delta > 0 && qty === 0) {
+        flyToCart()
+        setTimeout(() => window.dispatchEvent(new CustomEvent('anv:cart-drawer-open')), 520)
+    }
     if (qty + delta <= 0) {
         const itemId = store.items[variants]
         if (itemId) {
@@ -267,6 +270,64 @@ Alpine.data('notifyModal', () => ({
         } finally {
             this.busy = false
         }
+    },
+}))
+
+/* ── Cart drawer (slide-in mini-cart) ──────────────────────────────── */
+Alpine.data('cartDrawer', () => ({
+    open: false,
+    lines: [],
+    total: 0,
+    count: 0,
+    loading: false,
+    init() {
+        window.addEventListener('anv:cart-drawer-open', () => this.loadAndOpen())
+        window.addEventListener('anv:cart-refresh', () => { if (this.open) this.loadDrawer() })
+    },
+    toggle() {
+        if (this.open) this.close()
+        else this.loadAndOpen()
+    },
+    async loadAndOpen() {
+        this.open = true
+        document.body.style.overflow = 'hidden'
+        await this.loadDrawer()
+    },
+    close() {
+        this.open = false
+        document.body.style.overflow = ''
+    },
+    async loadDrawer() {
+        this.loading = true
+        try {
+            const res = await fetch('/cart/drawer', { headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json' } })
+            if (!res.ok) return
+            const d = await res.json()
+            this.lines = d.lines || []
+            this.total = d.total || 0
+            this.count = d.count || 0
+        } catch (e) { /* ignore */ } finally {
+            this.loading = false
+        }
+    },
+    async setQty(line, delta) {
+        const newQty = line.quantity + delta
+        const store = Alpine.store('cart')
+        if (newQty <= 0) {
+            await store.removeItem(line.id)
+            this.lines = this.lines.filter(l => l.id !== line.id)
+        } else {
+            await store.setQty(line.variant_id, line.id, newQty)
+            await this.loadDrawer()
+        }
+        await store.load()
+    },
+    async remove(line) {
+        const store = Alpine.store('cart')
+        await store.removeItem(line.id)
+        this.lines = this.lines.filter(l => l.id !== line.id)
+        await store.load()
+        if (this.lines.length === 0) this.close()
     },
 }))
 
