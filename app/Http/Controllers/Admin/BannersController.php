@@ -27,8 +27,6 @@ class BannersController extends Controller
             'button_url' => ['nullable', 'string', 'max:190'],
             'desktop_image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:4096'],
             'placement' => ['nullable', 'in:hero,strip,category_top,promotional'],
-            'width' => ['nullable', 'integer', 'min:1', 'max:4000'],
-            'height' => ['nullable', 'integer', 'min:1', 'max:4000'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
             'show_text' => ['nullable', 'boolean'],
@@ -41,8 +39,6 @@ class BannersController extends Controller
 
         $data['is_active'] = $request->boolean('is_active');
         $data['show_text'] = $request->boolean('show_text');
-        $data['width'] = $data['width'] ?? null ?: null;
-        $data['height'] = $data['height'] ?? null ?: null;
 
         Banner::create($data);
 
@@ -58,8 +54,6 @@ class BannersController extends Controller
             'button_url' => ['nullable', 'string', 'max:190'],
             'desktop_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:4096'],
             'placement' => ['nullable', 'in:hero,strip,category_top,promotional'],
-            'width' => ['nullable', 'integer', 'min:1', 'max:4000'],
-            'height' => ['nullable', 'integer', 'min:1', 'max:4000'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
             'show_text' => ['nullable', 'boolean'],
@@ -67,8 +61,6 @@ class BannersController extends Controller
 
         $data['is_active'] = $request->boolean('is_active');
         $data['show_text'] = $request->boolean('show_text');
-        $data['width'] = $data['width'] ?? null ?: null;
-        $data['height'] = $data['height'] ?? null ?: null;
 
         if ($request->hasFile('desktop_image')) {
             $old = str_replace('storage/', '', $banner->desktop_image ?? '');

@@ -29,16 +29,20 @@
                x-transition:enter-start="opacity-0"
                x-transition:enter-end="opacity-100"
                class="block relative">
-                {{-- Desktop — full-bleed --}}
-                <img src="{{ $isHttp ? $slide['image'] : asset('storage/'.$slide['image']) }}"
-                     alt="{{ $slide['alt'] ?? '' }}"
-                     loading="{{ $idx === 0 ? 'eager' : 'lazy' }}"
-                     class="hidden w-full object-cover sm:block">
+                {{-- Desktop — full-bleed, fixed hero ratio so ANY upload looks clean --}}
+                <div class="hidden sm:block" style="height:min(520px, 32vw)">
+                    <img src="{{ $isHttp ? $slide['image'] : asset('storage/'.$slide['image']) }}"
+                         alt="{{ $slide['alt'] ?? '' }}"
+                         loading="{{ $idx === 0 ? 'eager' : 'lazy' }}"
+                         class="h-full w-full object-cover">
+                </div>
                 {{-- Mobile --}}
-                <img @if($isHttpM) src="{{ $slide['mobile'] }}" @else src="{{ asset('storage/'.$slide['mobile']) }}" @endif
-                     alt="{{ $slide['alt'] ?? '' }}"
-                     loading="{{ $idx === 0 ? 'eager' : 'lazy' }}"
-                     class="w-full object-cover sm:hidden">
+                <div class="sm:hidden" style="aspect-ratio: 16 / 9">
+                    <img @if($isHttpM) src="{{ $slide['mobile'] }}" @else src="{{ asset('storage/'.$slide['mobile']) }}" @endif
+                         alt="{{ $slide['alt'] ?? '' }}"
+                         loading="{{ $idx === 0 ? 'eager' : 'lazy' }}"
+                         class="h-full w-full object-cover">
+                </div>
 
                 {{-- Text overlay (only when show_text is on) --}}
                 @if($slide['show_text'])

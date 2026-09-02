@@ -87,7 +87,7 @@
         <div class="grid gap-4 sm:grid-cols-2">
           <div>
             <label class="adm-label">Placement *</label>
-            <select name="placement" x-model="form.placement" @change="applyRecommended()" required class="adm-input">
+            <select name="placement" x-model="form.placement" required class="adm-input">
               <option value="hero">Hero</option>
               <option value="strip">Strip</option>
               <option value="category_top">Category Top</option>
@@ -101,23 +101,6 @@
             @error('sort_order') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
           </div>
         </div>
-        <div class="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label class="adm-label">Image Width (px)</label>
-            <input type="number" name="width" x-model="form.width" min="1" :max="MAX" @input="checkDims()"
-              :class="errWidth ? 'adm-input !border-red-400' : 'adm-input'" class="adm-input">
-            <p x-show="errWidth" x-text="errWidth" class="mt-1 text-xs font-medium text-red-500"></p>
-          </div>
-          <div>
-            <label class="adm-label">Image Height (px)</label>
-            <input type="number" name="height" x-model="form.height" min="1" :max="MAX" @input="checkDims()"
-              :class="errHeight ? 'adm-input !border-red-400' : 'adm-input'" class="adm-input">
-            <p x-show="errHeight" x-text="errHeight" class="mt-1 text-xs font-medium text-red-500"></p>
-          </div>
-        </div>
-        <div x-show="dimsMsg"
-          :class="dimsOk ? 'border-green-200 bg-green-50 text-green-700' : 'border-red-200 bg-red-50 text-red-600'"
-          class="-mt-2 rounded-lg border px-3 py-2 text-[12px] leading-relaxed" x-html="dimsMsg"></div>
         <div>
           <label class="adm-label">Button Text</label>
           <input type="text" name="button_text" x-model="form.button_text" placeholder="Shop Now" class="adm-input">
@@ -130,7 +113,7 @@
         </div>
         <div>
           <label class="adm-label" x-text="editingId ? 'Desktop Image (leave empty to keep current)' : 'Desktop Image *'"></label>
-          <input type="file" name="desktop_image" accept="image/jpeg,image/png,image/webp,image/svg+xml" :required="!editingId" @change="previewFile($event, 'new')" class="adm-input">
+          <input type="file" name="desktop_image" accept="image/jpeg,image/png,image/webp,image/svg+xml" :required="!editingId" @change="previewFile($event)" class="adm-input">
           <template x-if="editingId && form.desktop_image && !newPreview">
             <div class="mt-2 h-16 w-32 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
               <img :src="'{{ asset('storage/') }}/' + form.desktop_image" class="h-full w-full object-cover">
@@ -138,25 +121,11 @@
           </template>
           <template x-if="newPreview">
             <div class="mt-2 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-2">
-              <div class="relative" :style="(form.width && form.height) ? 'aspect-ratio: ' + form.width + ' / ' + form.height : ''">
+              <div class="relative aspect-video">
                 <img :src="newPreview" class="h-full w-full object-contain rounded-md">
               </div>
               <p class="mt-1.5 text-[11px] adm-text-muted">
                 Selected file: <span x-text="newPreviewDims ? newPreviewDims[0] + ' × ' + newPreviewDims[1] + 'px' : '…'"></span>
-                <template x-if="newPreview && newPreviewDims">
-                  <span>
-                    ·
-                    <template x-if="!form.width || !form.height">
-                      <strong class="text-green-600">full image will be kept · auto-adjusts on the site</strong>
-                    </template>
-                    <template x-else-if="newPreviewDims[0] !== +form.width || newPreviewDims[1] !== +form.height">
-                      <strong class="text-amber-600">will be auto-cropped to <span x-text="form.width + '×' + form.height"></span></strong>
-                    </template>
-                    <template x-else>
-                      <strong class="text-green-600">already the exact size</strong>
-                    </template>
-                  </span>
-                </template>
               </p>
             </div>
           </template>
@@ -185,12 +154,6 @@
 
 <script>
 function bannerManager() {
-  const recommended = {
-    hero: [1600, 500],
-    strip: [1200, 150],
-    category_top: [1200, 220],
-    promotional: [1200, 400],
-  };
   return {
     showModal: false,
     editingId: null,
@@ -200,69 +163,12 @@ function bannerManager() {
       title: '',
       subtitle: '',
       placement: 'hero',
-      width: '',
-      height: '',
       sort_order: 0,
       button_text: '',
       button_url: '',
       desktop_image: '',
       is_active: true,
       show_text: true,
-    },
-    applyRecommended() {
-      const r = recommended[this.form.placement] || recommended.promotional;
-      // Blank by default so the full uploaded image is kept (auto-fit on the site).
-      // Only crop when the admin enters explicit Width & Height.
-      this.form.width = '';
-      this.form.height = '';
-      this.checkDims();
-    },
-    MAX: 4000,
-    errWidth: '',
-    errHeight: '',
-    dimsMsg: '',
-    dimsOk: true,
-    checkDims() {
-      const MAX = this.MAX;
-      const hasW = this.form.width !== '' && this.form.width !== null;
-      const hasH = this.form.height !== '' && this.form.height !== null;
-      const w = hasW ? Number(this.form.width) : null;
-      const h = hasH ? Number(this.form.height) : null;
-      const validNum = (v) => Number.isInteger(v) && v >= 1;
-      const tooBig = (v) => validNum(v) && v > MAX;
-      const isNum = (v) => hasW && v !== null && v !== '' && !Number.isNaN(v);
-
-      let wMsg = '', hMsg = '', wOk = true, hOk = true, dimsOk = true;
-
-      if (hasW) {
-        if (!isNum(w) || !validNum(w)) { wMsg = 'Enter a whole number ≥ 1'; wOk = false; }
-        else if (tooBig(w)) { wMsg = 'Too large — maximum ' + MAX + 'px'; wOk = false; }
-      }
-      if (hasH) {
-        if (!isNum(h) || !validNum(h)) { hMsg = 'Enter a whole number ≥ 1'; hOk = false; }
-        else if (tooBig(h)) { hMsg = 'Too large — maximum ' + MAX + 'px'; hOk = false; }
-      }
-
-      if (hasW !== hasH) {
-        dimsMsg = 'Enter <strong>both</strong> Width and Height for an exact crop, or leave <strong>both blank</strong> to keep the full image.';
-        dimsOk = false;
-      } else if (!hasW && !hasH) {
-        dimsMsg = 'Keeping the <strong>full image</strong> — the site auto-adjusts the banner to your image, nothing is cropped.';
-      } else if (wOk && hOk) {
-        const r = recommended[this.form.placement] || recommended.promotional;
-        if (w === r[0] && h === r[1]) {
-          dimsMsg = '<strong class="text-green-600">Perfect</strong> — that is the ideal size for this placement.';
-        } else {
-          dimsMsg = 'Will be <strong>cropped to ' + w + '×' + h + 'px</strong> · recommended <strong>' + r[0] + '×' + r[1] + 'px</strong> for ' + this.form.placement + '.';
-        }
-      } else {
-        dimsOk = false;
-      }
-
-      this.errWidth = wMsg;
-      this.errHeight = hMsg;
-      this.dimsOk = dimsOk && wOk && hOk;
-      this.dimsMsg = dimsMsg;
     },
     previewFile(ev) {
       const f = ev.target.files && ev.target.files[0];
@@ -284,8 +190,7 @@ function bannerManager() {
       this.editingId = null;
       this.newPreview = '';
       this.newPreviewDims = null;
-      this.form = { title: '', subtitle: '', placement: 'hero', width: '', height: '', sort_order: 0, button_text: '', button_url: '', desktop_image: '', is_active: true, show_text: true };
-      this.checkDims();
+      this.form = { title: '', subtitle: '', placement: 'hero', sort_order: 0, button_text: '', button_url: '', desktop_image: '', is_active: true, show_text: true };
       this.showModal = true;
     },
     openEdit(banner) {
@@ -296,8 +201,6 @@ function bannerManager() {
         title: banner.title || '',
         subtitle: banner.subtitle || '',
         placement: banner.placement || 'hero',
-        width: banner.width || '',
-        height: banner.height || '',
         sort_order: banner.sort_order || 0,
         button_text: banner.button_text || '',
         button_url: banner.button_url || '',
@@ -305,7 +208,6 @@ function bannerManager() {
         is_active: banner.is_active,
         show_text: banner.show_text !== false,
       };
-      this.checkDims();
       this.showModal = true;
     }
   }
