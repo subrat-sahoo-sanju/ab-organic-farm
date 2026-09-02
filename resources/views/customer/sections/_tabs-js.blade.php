@@ -98,5 +98,31 @@ if (!window.__tabGridRegistered) {
       },
     }));
   });
+
+  // Standalone horizontal rail (combo/superfoods etc.): custom scrollbar thumb synced to a scrollable grid.
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('railScroll', () => ({
+      init() {
+        this.$nextTick(() => {
+          const grid = this.$refs.grid;
+          const thumb = this.$refs.thumb;
+          const track = thumb ? thumb.parentElement : null;
+          if (!grid || !thumb || !track) return;
+          const sync = () => {
+            const trackW = track.clientWidth;
+            const scrollable = grid.scrollWidth - grid.clientWidth;
+            const ratio = scrollable > 0 ? trackW / grid.scrollWidth : 1;
+            thumb.style.width = Math.max(20, trackW * ratio) + 'px';
+            thumb.style.left = scrollable > 0
+              ? (grid.scrollLeft / scrollable) * (trackW - thumb.offsetWidth) + 'px'
+              : '0px';
+          };
+          grid.addEventListener('scroll', sync, { passive: true });
+          new ResizeObserver(sync).observe(grid);
+          sync();
+        });
+      },
+    }));
+  });
 }
 </script>

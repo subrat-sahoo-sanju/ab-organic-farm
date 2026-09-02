@@ -28,9 +28,9 @@
     ])->toJson();
 @endphp
 
-<article class="anv-card group relative flex h-full w-full flex-col overflow-hidden bg-white">
+<article class="anv-card group relative flex h-full w-full flex-col overflow-hidden rounded-xl bg-white shadow-[0_2px_12px_-8px_rgba(36,36,36,.18)] transition-shadow duration-300 hover:shadow-[0_16px_36px_-16px_rgba(35,90,73,.35)]">
     {{-- ═══ IMAGE · 1:1 · badges · hover swap · sold-out ═══ --}}
-    <a href="{{ route('shop.product', $product) }}" class="relative block aspect-square w-full overflow-hidden rounded-t-[10px] bg-[#f3f3f3]">
+    <a href="{{ route('shop.product', $product) }}" class="relative block aspect-square w-full overflow-hidden rounded-t-[12px] bg-[#f3f3f3]">
         <img src="{{ $img ? asset('storage/'.$img) : asset('images/placeholder.png') }}" loading="lazy"
              alt="{{ $product->name }}"
              class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.05] group-hover:opacity-0">
@@ -53,7 +53,7 @@
     </a>
 
     {{-- ═══ BODY — ADD on top (reference order) ═══ --}}
-    <div class="flex flex-1 flex-col p-3">
+    <div class="flex flex-1 flex-col p-2.5">
 
         {{-- ═══ QUICK-ADD / STEPPER ═══ --}}
         @if(!$inStock)
@@ -101,7 +101,7 @@
         @endif
 
         <div class="mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-            <span class="text-base font-extrabold text-[#242424]">₹{{ number_format($variant?->effectivePrice() ?? $product->basePrice(), 0) }}</span>
+            <span class="text-[15px] font-extrabold text-[#235A49]">₹{{ number_format($variant?->effectivePrice() ?? $product->basePrice(), 0) }}</span>
             @if($variant && $variant->price > $variant->effectivePrice())
                 <s class="text-xs text-[#9AA79F]">₹{{ number_format($variant->price, 0) }}</s>
             @endif

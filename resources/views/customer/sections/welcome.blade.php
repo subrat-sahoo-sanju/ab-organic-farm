@@ -13,6 +13,8 @@
   .sliding-indicator{position:absolute;bottom:0;left:0;height:4px;background:#235a49!important;border-radius:2px 2px 0 0;transition:transform .3s cubic-bezier(.4,0,.2,1),width .3s cubic-bezier(.4,0,.2,1),opacity .2s ease;z-index:1;opacity:0;box-shadow:0 -1px 3px #235a4933;min-width:20px!important;visibility:visible!important;pointer-events:none}
   .menu-product-grid{display:flex!important;flex-direction:row!important;overflow-x:auto!important;overflow-y:hidden!important;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:16px;margin:0;padding:0 20px;justify-content:flex-start!important;align-items:stretch;flex-wrap:nowrap!important;width:100%;box-sizing:border-box;transition:opacity .3s ease}
   .menu-product-grid .menu-grid-item{flex:0 0 180px;width:180px;min-width:180px;max-width:180px;display:block!important;position:relative!important}
+  @media (min-width:750px){.menu-product-grid .menu-grid-item{flex-basis:220px;width:220px;min-width:220px;max-width:220px}}
+  @media (min-width:1025px){.menu-product-grid .menu-grid-item{flex-basis:260px;width:260px;min-width:260px;max-width:260px}}
 </style>
 
 @php

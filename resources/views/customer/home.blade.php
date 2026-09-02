@@ -21,10 +21,6 @@
 <style>
   .scrollbar-none { scrollbar-width: none; -ms-overflow-style: none; }
   .scrollbar-none::-webkit-scrollbar { display: none; }
-  .rail-scroll { scroll-behavior: smooth; }
-  .rail-scroll::-webkit-scrollbar { height: 4px; }
-  .rail-scroll::-webkit-scrollbar-track { background: transparent; }
-  .rail-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 9999px; }
 </style>
 
 @endsection
