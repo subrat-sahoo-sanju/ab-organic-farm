@@ -10,11 +10,42 @@ use Illuminate\View\View;
 
 class CategoryController extends Controller
 {
-    public function all(): View
+    public function categories(): View
     {
         return view('customer.categories-all', [
             'categories' => Category::whereNull('parent_id')
                 ->withCount('products')
+                ->orderBy('sort_order')
+                ->get(),
+        ]);
+    }
+
+    public function all(): View|\Illuminate\Http\JsonResponse
+    {
+        $perPage = 15;
+        $catSlug = request('cat');
+        $category = $catSlug ? Category::where('slug', $catSlug)->first() : null;
+
+        $products = Product::query()
+            ->published()
+            ->when($category, fn (Builder $q) => $q->inCategoryTree($category))
+            ->with(['primaryImage', 'defaultVariant.inventory', 'category'])
+            ->orderByDesc('sold_count')
+            ->paginate($perPage)
+            ->withQueryString();
+
+        if (request()->ajax() && request('page', 1) > 1) {
+            return response()->json([
+                'html' => view('customer.partials.product-grid', ['products' => $products])->render(),
+                'nextPageUrl' => $products->nextPageUrl(),
+                'hasMorePages' => $products->hasMorePages(),
+            ]);
+        }
+
+        return view('customer.all-products', [
+            'products' => $products,
+            'rootCategories' => Category::whereNull('parent_id')
+                ->where('is_active', true)
                 ->orderBy('sort_order')
                 ->get(),
         ]);

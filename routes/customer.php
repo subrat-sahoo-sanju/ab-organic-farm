@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Customer;
 
 Route::get('/', [Customer\HomeController::class, 'index'])->name('shop.index');
-Route::get('/categories/all', [Customer\CategoryController::class, 'all'])->name('shop.categories');
+Route::get('/categories/all', [Customer\CategoryController::class, 'all'])->name('shop.all');
+Route::get('/categories', [Customer\CategoryController::class, 'categories'])->name('shop.categories');
 Route::get('/categories/{category:slug}', [Customer\CategoryController::class, 'show'])->name('shop.category');
 Route::get('/products/{product:slug}', [Customer\ProductController::class, 'show'])->name('shop.product');
 Route::get('/search', [Customer\SearchController::class, 'results'])->name('shop.search');

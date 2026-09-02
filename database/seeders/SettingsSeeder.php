@@ -50,7 +50,7 @@ class SettingsSeeder extends Seeder
             ['label' => 'Wood-Pressed Oils', 'icon' => 'nav-oils', 'url' => '/categories/oils-ghee', 'highlight' => false, 'children' => []],
             ['label' => 'Atta', 'icon' => 'nav-atta', 'url' => '/categories/atta-flours', 'highlight' => false, 'children' => []],
             ['label' => 'Hot Deals', 'icon' => 'nav-deal', 'url' => '/search?q=deal', 'highlight' => true, 'children' => []],
-            ['label' => 'Shop', 'icon' => 'nav-category', 'url' => '/categories/all', 'highlight' => false, 'children' => [
+            ['label' => 'Shop', 'icon' => 'nav-category', 'url' => '/categories', 'highlight' => false, 'children' => [
                 ['label' => 'Superfoods', 'url' => '/search?q=superfood'],
                 ['label' => 'Healthy Gifting', 'url' => '/categories/all'],
                 ['label' => 'Shop Under ₹499', 'url' => '/search?q=under 499'],
