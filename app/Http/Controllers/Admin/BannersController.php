@@ -26,7 +26,6 @@ class BannersController extends Controller
             'button_text' => ['nullable', 'string', 'max:64'],
             'button_url' => ['nullable', 'string', 'max:190'],
             'desktop_image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:4096'],
-            'mobile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:4096'],
             'placement' => ['nullable', 'in:hero,strip,category_top,promotional'],
             'width' => ['nullable', 'integer', 'min:1', 'max:4000'],
             'height' => ['nullable', 'integer', 'min:1', 'max:4000'],
@@ -38,9 +37,6 @@ class BannersController extends Controller
         $placement = $data['placement'] ?? 'hero';
         if ($request->hasFile('desktop_image')) {
             $data['desktop_image'] = $this->storedImage($request, 'desktop_image', $placement);
-        }
-        if ($request->hasFile('mobile_image')) {
-            $data['mobile_image'] = $this->storedImage($request, 'mobile_image', $placement.'_mobile');
         }
 
         $data['is_active'] = $request->boolean('is_active');
@@ -61,7 +57,6 @@ class BannersController extends Controller
             'button_text' => ['nullable', 'string', 'max:64'],
             'button_url' => ['nullable', 'string', 'max:190'],
             'desktop_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:4096'],
-            'mobile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:4096'],
             'placement' => ['nullable', 'in:hero,strip,category_top,promotional'],
             'width' => ['nullable', 'integer', 'min:1', 'max:4000'],
             'height' => ['nullable', 'integer', 'min:1', 'max:4000'],
@@ -86,17 +81,6 @@ class BannersController extends Controller
             unset($data['desktop_image']);
         }
 
-        if ($request->hasFile('mobile_image')) {
-            $old = str_replace('storage/', '', $banner->mobile_image ?? '');
-            if ($old && \Storage::disk('public')->exists($old)) {
-                \Storage::disk('public')->delete($old);
-            }
-            $placement = $banner->placement ?? ($data['placement'] ?? 'hero');
-            $data['mobile_image'] = $this->storedImage($request, 'mobile_image', $placement.'_mobile');
-        } else {
-            unset($data['mobile_image']);
-        }
-
         $banner->update($data);
 
         return back()->with('success', 'Banner updated.');
@@ -104,11 +88,9 @@ class BannersController extends Controller
 
     public function destroy(Banner $banner): RedirectResponse
     {
-        foreach (['desktop_image', 'mobile_image'] as $field) {
-            $old = str_replace('storage/', '', $banner->{$field} ?? '');
-            if ($old && \Storage::disk('public')->exists($old)) {
-                \Storage::disk('public')->delete($old);
-            }
+        $old = str_replace('storage/', '', $banner->desktop_image ?? '');
+        if ($old && \Storage::disk('public')->exists($old)) {
+            \Storage::disk('public')->delete($old);
         }
         $banner->delete();
         return back()->with('success', 'Banner deleted.');
