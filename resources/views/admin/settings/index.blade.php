@@ -196,10 +196,21 @@
               <input type="number" name="sections[{{ $s->id }}][product_count]" value="{{ $cfg['product_count'] ?? '' }}" min="1" max="24" class="adm-input">
             </div>
 
-            @if(str_starts_with($s->key, 'focus_') || $s->key === 'welcome')
+            @if(str_starts_with($s->key, 'focus_'))
               <div class="sm:col-span-2">
                 <label class="adm-label">Focus Tabs (category slugs, comma separated — blank = auto)</label>
                 <input type="text" name="sections[{{ $s->id }}][tabs]" value="{{ implode(', ', $cfg['tabs'] ?? []) }}" placeholder="e.g. desi-cow-ghee, bilona-a2-ghee" class="adm-input">
+              </div>
+            @endif
+
+            @if($s->key === 'welcome')
+              <div class="sm:col-span-3">
+                <label class="adm-label">Welcome Menu Tabs (JSON — All / Ghee / Oils / Atta / Combos / Deal / Superfoods)</label>
+                <textarea name="sections[{{ $s->id }}][tabs_json]" rows="9" class="adm-input !font-mono !text-xs">{{ json_encode($cfg['tabs'] ?? '', JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) }}</textarea>
+                <p class="text-[11px] text-gray-400">
+                  Format: <code>[{"title":"Ghee","key":"ghee","type":"keyword","value":"ghee","active_icon":"images/nav/nav-ghee-active.svg","inactive_icon":"images/nav/nav-ghee.svg"}].</code><br>
+                  <code>type</code>: <code>all</code> | <code>deal</code> (sale items) | <code>category</code> (<code>value</code> = category slug) | <code>categories</code> (<code>values</code> = slug list) | <code>keyword</code> (<code>value</code> = name text). Optional <code>fallback</code> = same object, used when a tab has no products. Icon paths are relative to <code>public/</code>.
+                </p>
               </div>
             @endif
 

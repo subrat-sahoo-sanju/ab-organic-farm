@@ -102,16 +102,9 @@ class HomeController extends Controller
             }
 
             if ($key === 'welcome') {
-                $data[$key] = $this->attachSoldCount($this->rail()->take($count)->get());
-
-                $configuredTabs = $config['tabs'] ?? null;
-                if (is_array($configuredTabs) && count(array_filter($configuredTabs))) {
-                    $tabs[$key] = Category::whereIn('slug', array_filter($configuredTabs))->where('is_active', true)
-                        ->orderBy('sort_order')->get()->values();
-                }
-                if (empty($tabs[$key])) {
-                    $tabs[$key] = $this->rootCategories(7);
-                }
+                [$welcomeTabs, $welcomeProducts] = $this->welcomeSection($config, $count);
+                $data[$key] = $this->attachSoldCount($welcomeProducts);
+                $tabs[$key] = $welcomeTabs;
             }
 
             if ($key === 'promotional_banners') {
@@ -163,6 +156,146 @@ class HomeController extends Controller
         $html = view('components.product-card-grid', ['products' => $products])->render();
 
         return response()->json(['html' => $html, 'count' => $products->count(), 'hasMore' => false]);
+    }
+
+    /** Lazy-loaded product grid for a welcome menu tab (reference 'Welcome To' menu). */
+    public function welcomeTabApi(): JsonResponse
+    {
+        $fallback = null;
+        $rawFallback = (string) request('fallback', '');
+        if ($rawFallback !== '') {
+            $decoded = json_decode($rawFallback, true);
+            if (is_array($decoded)) {
+                $fallback = $decoded;
+            }
+        }
+
+        $tab = [
+            'type' => (string) request('type', 'all'),
+            'value' => (string) request('value', ''),
+            'values' => array_values(array_filter(array_map('trim', explode(',', (string) request('values', ''))))),
+            'fallback' => $fallback,
+        ];
+        $limit = (int) request('limit', 12);
+
+        $products = $this->attachSoldCount($this->resolveTabProducts($tab, $limit));
+
+        return response()->json([
+            'html' => view('components.product-card-grid', ['products' => $products])->render(),
+            'count' => $products->count(),
+        ]);
+    }
+
+    /** Build the reference-style welcome tabs (All / Ghee / Oils / Atta / Combos / Deal / Superfoods) + first-tab products. */
+    protected function welcomeSection(array $config, int $count): array
+    {
+        $tabs = [];
+        $raw = $config['tabs'] ?? null;
+
+        if (is_array($raw) && count($raw)) {
+            foreach (array_values($raw) as $item) {
+                if (is_string($item)) { // legacy: plain category slug
+                    $slug = trim($item);
+                    $tabs[] = $this->welcomeTab([
+                        'title' => ucwords(str_replace('-', ' ', $slug)),
+                        'key' => $slug,
+                        'type' => 'category',
+                        'value' => $slug,
+                    ], $count);
+                    continue;
+                }
+                $tabs[] = $this->welcomeTab($item ?? [], $count);
+            }
+        }
+
+        if (! count($tabs)) {
+            foreach ($this->rootCategories(7) as $cat) {
+                $tabs[] = $this->welcomeTab([
+                    'title' => $cat->name,
+                    'key' => 'tab-'.$cat->id,
+                    'type' => 'category',
+                    'value' => $cat->slug,
+                ], $count);
+            }
+        }
+
+        $first = $tabs[0] ?? null;
+
+        return [$tabs, $first ? $this->resolveTabProducts($first, $count) : collect()];
+    }
+
+    protected function welcomeTab(array $t, int $count): array
+    {
+        $title = $t['title'] ?? 'Tab';
+        $type = $t['type'] ?? 'all';
+        $key = \Illuminate\Support\Str::slug($t['key'] ?? $title);
+
+        return [
+            'key' => $key ?: 'tab-'.random_int(100, 999),
+            'title' => $title,
+            'type' => $type,
+            'url' => route('api.welcome-tab', array_filter([
+                'type' => $type,
+                'value' => $t['value'] ?? null,
+                'values' => ! empty($t['values']) ? implode(',', $t['values']) : null,
+                'fallback' => ! empty($t['fallback']) ? json_encode($t['fallback']) : null,
+                'limit' => $count,
+            ])),
+            'active_icon' => ! empty($t['active_icon']) ? asset($t['active_icon']) : null,
+            'inactive_icon' => ! empty($t['inactive_icon']) ? asset($t['inactive_icon']) : null,
+            'fallback' => $t['fallback'] ?? null,
+        ];
+    }
+
+    /** Products for one welcome tab type: all | deal | category | categories | keyword (+ optional fallback). */
+    protected function resolveTabProducts(array $tab, int $count)
+    {
+        $type = $tab['type'] ?? 'all';
+        $limit = max(1, min((int) $count, 100));
+        $query = $this->rail();
+
+        switch ($type) {
+            case 'all':
+                break;
+            case 'deal':
+                $query->whereHas('defaultVariant', fn ($v) => $v->whereNotNull('sale_price')->whereColumn('sale_price', '<', 'price'));
+                break;
+            case 'category':
+                $cat = ! empty($tab['value'])
+                    ? Category::where('slug', $tab['value'])->where('is_active', true)->first()
+                    : null;
+                if (! $cat) {
+                    return collect();
+                }
+                $query->whereIn('category_id', $cat->descendantIds());
+                break;
+            case 'categories':
+                $cats = Category::whereIn('slug', array_values(array_filter((array) ($tab['values'] ?? []))))
+                    ->where('is_active', true)->get();
+                if (! $cats->count()) {
+                    return collect();
+                }
+                $ids = collect($cats)->flatMap(fn ($c) => $c->descendantIds())->unique()->values();
+                $query->whereIn('category_id', $ids);
+                break;
+            case 'keyword':
+                $term = $tab['value'] ?? '';
+                if ($term === '') {
+                    return collect();
+                }
+                $query->where('name', 'like', '%'.$term.'%');
+                break;
+            default:
+                return collect();
+        }
+
+        $products = $query->take($limit)->get();
+
+        if ($products->isEmpty() && ! empty($tab['fallback']) && is_array($tab['fallback'])) {
+            $products = $this->resolveTabProducts($tab['fallback'], $count);
+        }
+
+        return $products;
     }
 
     public function brandProductsApi(Brand $brand): JsonResponse

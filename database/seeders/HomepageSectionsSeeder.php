@@ -18,6 +18,20 @@ class HomepageSectionsSeeder extends Seeder
                 ],
             ]],
 
+            // 2 · Welcome To Anveshan — icon tab menu (All/Ghee/Oils/Atta/Combos/Deal/Superfoods) + lazy product grid
+            ['key' => 'welcome', 'title' => 'Welcome To AB Organic Farm!', 'subtitle' => "You're One Step Closer to Purity", 'sort_order' => 15, 'config' => [
+                'product_count' => 12,
+                'tabs' => [
+                    ['title' => 'All', 'key' => 'all', 'type' => 'all', 'active_icon' => 'images/nav/nav-all-active.svg', 'inactive_icon' => 'images/nav/nav-all.svg'],
+                    ['title' => 'Ghee', 'key' => 'ghee', 'type' => 'keyword', 'value' => 'ghee', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-ghee-active.svg', 'inactive_icon' => 'images/nav/nav-ghee.svg'],
+                    ['title' => 'Oils', 'key' => 'oils', 'type' => 'keyword', 'value' => 'oil', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-oils-active.svg', 'inactive_icon' => 'images/nav/nav-oils.svg'],
+                    ['title' => 'Atta', 'key' => 'atta', 'type' => 'category', 'value' => 'atta-flours', 'active_icon' => 'images/nav/nav-atta-active.svg', 'inactive_icon' => 'images/nav/nav-atta.svg'],
+                    ['title' => 'Combos', 'key' => 'combos', 'type' => 'keyword', 'value' => 'combo', 'fallback' => ['type' => 'categories', 'values' => ['oils-ghee', 'atta-flours']], 'active_icon' => 'images/nav/nav-combos-active.svg', 'inactive_icon' => 'images/nav/nav-combos.svg'],
+                    ['title' => 'Deal', 'key' => 'deal', 'type' => 'deal', 'active_icon' => 'images/nav/nav-deal-active.svg', 'inactive_icon' => 'images/nav/nav-deal.svg'],
+                    ['title' => 'Superfoods', 'key' => 'superfoods', 'type' => 'categories', 'values' => ['dry-fruits-nuts', 'healthy-snacks'], 'active_icon' => 'images/nav/nav-superfoods-active.svg', 'inactive_icon' => 'images/nav/nav-superfoods.svg'],
+                ],
+            ]],
+
             // 2 · Why Choose Anveshan (90×90 icon grid)
             ['key' => 'trust_badges', 'title' => 'Why Choose Anveshan?', 'subtitle' => 'The Anveshan difference', 'sort_order' => 20, 'config' => [
                 'product_count' => null,
@@ -65,7 +79,6 @@ class HomepageSectionsSeeder extends Seeder
             ['key' => 'testimonials', 'title' => 'What Do Our Customers Say', 'subtitle' => '', 'sort_order' => 70, 'config' => ['product_count' => 8]],
 
             // Not on the reference homepage — kept for admin, hidden by default.
-            ['key' => 'welcome', 'title' => 'Welcome to AB Organic Farm!', 'subtitle' => "You're one step closer to purity. Tap a category to explore.", 'sort_order' => 80, 'config' => ['product_count' => 12, 'tabs' => null], 'is_visible' => false],
             ['key' => 'focus_oils', 'title' => 'Product in Focus: Explore Our Cold-Pressed Oils', 'subtitle' => 'Groundnut · Mustard · Sunflower · Olive · Coconut · Sesame', 'sort_order' => 90, 'config' => ['product_count' => 8, 'tabs' => null], 'is_visible' => false],
             ['key' => 'focus_ghee', 'title' => 'Product in Focus: Explore Our A2 Desi Ghee', 'subtitle' => 'Bilona-churned, made with patience', 'sort_order' => 100, 'config' => ['product_count' => 8, 'tabs' => null], 'is_visible' => false],
             ['key' => 'best_sellers', 'title' => 'Best Sellers', 'subtitle' => 'Trusted by thousands of households', 'sort_order' => 110, 'config' => ['product_count' => 10], 'is_visible' => false],

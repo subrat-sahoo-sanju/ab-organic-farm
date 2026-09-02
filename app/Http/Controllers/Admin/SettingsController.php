@@ -38,6 +38,11 @@ class SettingsController extends Controller
                 $config['tabs'] = array_values(array_filter(array_map('trim', explode(',', $payload['tabs']))));
             }
 
+            if (array_key_exists('tabs_json', $payload)) {
+                $decoded = json_decode((string) $payload['tabs_json'], true);
+                $config['tabs'] = is_array($decoded) ? array_values($decoded) : [];
+            }
+
             if (array_key_exists('android_url', $payload)) {
                 $config['android_url'] = $payload['android_url'];
             }

@@ -2,6 +2,8 @@
 
 @section('content')
 
+@include('customer.sections._tabs-js')
+
 {{-- ========== ANVESHAN-STYLE SECTION-DRIVEN HOMEPAGE ========== --}}
 <div class="bg-leaf-50">
     @foreach($homeSections as $section)
