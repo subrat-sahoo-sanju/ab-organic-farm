@@ -4,9 +4,19 @@
     $imgs = $cfg['images'] ?? [];
     $banners = $data ?? collect();
 
-    // Slides from admin `slides` config → else single legacy image → else hero banners.
+    // Slides come from hero-placement banners (admin → Marketing → Banners) first,
+    // then fall back to the legacy `slides`/image config when none are set.
     $slides = [];
-    if (! empty($cfg['slides']) && is_array($cfg['slides'])) {
+    $bannerSlides = collect($banners)->filter(fn ($b) => $b->desktop_image)->map(fn ($b) => [
+        'image'  => $b->desktop_image,
+        'mobile' => $b->mobile_image ?? $b->desktop_image,
+        'alt'    => $b->title ?? ($sec->title ?? ''),
+        'url'    => $b->button_url ?? '',
+    ])->values()->all();
+
+    if (count($bannerSlides)) {
+        $slides = $bannerSlides;
+    } elseif (! empty($cfg['slides']) && is_array($cfg['slides'])) {
         $slides = collect($cfg['slides'])->map(fn ($s) => [
             'image'  => $s['desktop'] ?? null,
             'mobile' => $s['mobile'] ?? ($s['desktop'] ?? null),
@@ -20,15 +30,6 @@
             'alt'    => $imgs['alt'] ?? $sec->title,
             'url'    => $imgs['url'] ?? '',
         ];
-    } else {
-        foreach ($banners as $b) {
-            $slides[] = [
-                'image'  => $b->desktop_image,
-                'mobile' => $b->mobile_image ?? $b->desktop_image,
-                'alt'    => $b->alt_text ?? $sec->title ?? '',
-                'url'    => $b->button_url ?? '',
-            ];
-        }
     }
     if (empty($slides)) {
         $slides[] = ['image' => 'sections/hero-desktop.webp', 'mobile' => 'sections/hero-mobile.webp', 'alt' => $sec->title ?? 'Hero', 'url' => route('shop.categories')];
