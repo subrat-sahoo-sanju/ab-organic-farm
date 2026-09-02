@@ -4,10 +4,14 @@
     $banners = $data ?? collect();
 
     $slides = collect($banners)->filter(fn ($b) => $b->desktop_image)->map(fn ($b) => [
-        'image'  => $b->desktop_image,
-        'mobile' => $b->mobile_image ?? $b->desktop_image,
-        'alt'    => $b->title ?? ($sec->title ?? ''),
-        'url'    => $b->button_url ?? '',
+        'image'      => $b->desktop_image,
+        'mobile'     => $b->mobile_image ?? $b->desktop_image,
+        'alt'        => $b->title ?? ($sec->title ?? ''),
+        'url'        => $b->button_url ?? '',
+        'title'      => $b->title ?? '',
+        'subtitle'   => $b->subtitle ?? '',
+        'button_text'=> $b->button_text ?? '',
+        'show_text'  => (bool) ($b->show_text ?? true),
     ])->values()->all();
 @endphp
 
@@ -24,17 +28,33 @@
                x-transition:enter="transition-opacity duration-700"
                x-transition:enter-start="opacity-0"
                x-transition:enter-end="opacity-100"
-               class="block">
-                {{-- Desktop — 2400×735 intrinsic ratio --}}
+               class="block relative">
+                {{-- Desktop — full-bleed --}}
                 <img src="{{ $isHttp ? $slide['image'] : asset('storage/'.$slide['image']) }}"
                      alt="{{ $slide['alt'] ?? '' }}"
                      loading="{{ $idx === 0 ? 'eager' : 'lazy' }}"
                      class="hidden w-full object-cover sm:block">
-                {{-- Mobile — 1200×796 intrinsic ratio --}}
+                {{-- Mobile --}}
                 <img @if($isHttpM) src="{{ $slide['mobile'] }}" @else src="{{ asset('storage/'.$slide['mobile']) }}" @endif
                      alt="{{ $slide['alt'] ?? '' }}"
                      loading="{{ $idx === 0 ? 'eager' : 'lazy' }}"
                      class="w-full object-cover sm:hidden">
+
+                {{-- Text overlay (only when show_text is on) --}}
+                @if($slide['show_text'])
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                    <div class="absolute inset-x-0 bottom-0 p-5 sm:p-8 md:p-10">
+                        @if($slide['subtitle'])
+                            <span class="mb-1.5 inline-block rounded-full bg-[#74C9A1]/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white sm:text-xs">{{ $slide['subtitle'] }}</span>
+                        @endif
+                        @if($slide['title'])
+                            <h2 class="font-display text-xl font-extrabold text-white sm:text-2xl md:text-3xl">{{ $slide['title'] }}</h2>
+                        @endif
+                        @if($slide['button_text'])
+                            <span class="mt-2 inline-flex items-center gap-1 text-sm font-bold text-[#74C9A1] transition group-hover:text-white sm:text-base">{{ $slide['button_text'] }}<x-lucide-arrow-right class="h-4 w-4"/></span>
+                        @endif
+                    </div>
+                @endif
             </a>
         @endforeach
     </div>
