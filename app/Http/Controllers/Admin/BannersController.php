@@ -45,8 +45,8 @@ class BannersController extends Controller
 
         $data['is_active'] = $request->boolean('is_active');
         $data['show_text'] = $request->boolean('show_text');
-        $data['width'] = $data['width'] ?: null;
-        $data['height'] = $data['height'] ?: null;
+        $data['width'] = $data['width'] ?? null ?: null;
+        $data['height'] = $data['height'] ?? null ?: null;
 
         Banner::create($data);
 
@@ -72,8 +72,8 @@ class BannersController extends Controller
 
         $data['is_active'] = $request->boolean('is_active');
         $data['show_text'] = $request->boolean('show_text');
-        $data['width'] = $data['width'] ?: null;
-        $data['height'] = $data['height'] ?: null;
+        $data['width'] = $data['width'] ?? null ?: null;
+        $data['height'] = $data['height'] ?? null ?: null;
 
         if ($request->hasFile('desktop_image')) {
             $old = str_replace('storage/', '', $banner->desktop_image ?? '');
