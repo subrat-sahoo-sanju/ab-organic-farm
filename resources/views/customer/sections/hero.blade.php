@@ -1,39 +1,14 @@
 @php
-    // Reference-style full-bleed hero: fixed aspect-ratio slides, dots + arrows.
-    $cfg = $sec->config ?? [];
-    $imgs = $cfg['images'] ?? [];
+    // Hero slider — slides come ONLY from active hero-placement banners
+    // managed in Admin → Marketing → Banners. No fallback to old config.
     $banners = $data ?? collect();
 
-    // Slides come from hero-placement banners (admin → Marketing → Banners) first,
-    // then fall back to the legacy `slides`/image config when none are set.
-    $slides = [];
-    $bannerSlides = collect($banners)->filter(fn ($b) => $b->desktop_image)->map(fn ($b) => [
+    $slides = collect($banners)->filter(fn ($b) => $b->desktop_image)->map(fn ($b) => [
         'image'  => $b->desktop_image,
         'mobile' => $b->mobile_image ?? $b->desktop_image,
         'alt'    => $b->title ?? ($sec->title ?? ''),
         'url'    => $b->button_url ?? '',
     ])->values()->all();
-
-    if (count($bannerSlides)) {
-        $slides = $bannerSlides;
-    } elseif (! empty($cfg['slides']) && is_array($cfg['slides'])) {
-        $slides = collect($cfg['slides'])->map(fn ($s) => [
-            'image'  => $s['desktop'] ?? null,
-            'mobile' => $s['mobile'] ?? ($s['desktop'] ?? null),
-            'alt'    => $s['alt'] ?? ($sec->title ?? ''),
-            'url'    => $s['url'] ?? '',
-        ])->filter(fn ($s) => $s['image'])->values()->all();
-    } elseif (! empty($imgs['desktop'])) {
-        $slides[] = [
-            'image'  => $imgs['desktop'],
-            'mobile' => $imgs['mobile'] ?? $imgs['desktop'],
-            'alt'    => $imgs['alt'] ?? $sec->title,
-            'url'    => $imgs['url'] ?? '',
-        ];
-    }
-    if (empty($slides)) {
-        $slides[] = ['image' => 'sections/hero-desktop.webp', 'mobile' => 'sections/hero-mobile.webp', 'alt' => $sec->title ?? 'Hero', 'url' => route('shop.categories')];
-    }
 @endphp
 
 @if(count($slides))
