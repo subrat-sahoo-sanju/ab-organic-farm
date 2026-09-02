@@ -24,11 +24,23 @@ class ProductImageController extends Controller
 
     public function reorder(Request $request, Product $product): RedirectResponse
     {
-        foreach ($request->validate(['order' => ['required', 'array']])['order'] as $position => $imageId) {
+        $data = $request->validate(['order' => ['required', 'array']])['order'];
+        foreach ($data as $position => $imageId) {
             ProductImage::where('product_id', $product->id)->whereKey($imageId)->update(['sort_order' => $position]);
         }
 
         return back()->with('success', 'Image order saved.');
+    }
+
+    /** Mark an image as the primary (main) image for the product. */
+    public function setPrimary(Request $request, Product $product, ProductImage $image): RedirectResponse
+    {
+        abort_unless($image->product_id === $product->id, 404);
+
+        $product->images()->update(['is_primary' => false]);
+        $image->update(['is_primary' => true]);
+
+        return back()->with('success', 'Primary image updated.');
     }
 
     public function destroy(ProductImage $image): RedirectResponse
@@ -48,7 +60,12 @@ class ProductImageController extends Controller
         return back()->with('success', 'Image removed.');
     }
 
-    /** Persist uploaded files + assign primary if none exists yet. */
+    /**
+     * Persist uploaded files + assign primary if none exists yet.
+     *
+     * Paths are stored WITHOUT a "storage/" prefix so they resolve correctly
+     * via `asset('storage/'.$image->path)` everywhere.
+     */
     public function saveUploads(Request $request, Product $product): void
     {
         $hasPrimary = $product->images()->where('is_primary', true)->exists();
@@ -59,15 +76,18 @@ class ProductImageController extends Controller
                 continue;
             }
             $path = app(ImageUtility::class)->processUpload($file, 1000, 1000, "products/{$product->id}");
+            if (! $path) {
+                continue;
+            }
 
-            $product->images()->create([
-                'path' => 'storage/'.$path,
-                'thumb_path' => 'storage/'.$path,
+            $image = $product->images()->create([
+                'path' => $path,
+                'thumb_path' => $path,
                 'alt_text' => $product->name,
                 'sort_order' => $nextSort++,
-                'is_primary' => ! $hasPrimary && $nextSort === 1,
+                'is_primary' => ! $hasPrimary,
             ]);
-            $hasPrimary = $hasPrimary || ($nextSort === 2);
+            $hasPrimary = $hasPrimary || $image->is_primary;
         }
 
         // Guarantee at least one primary

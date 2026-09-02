@@ -77,12 +77,15 @@ class HomepageSectionsSeeder extends Seeder
                 'android_url' => '#',
                 'ios_url' => '#',
             ], 'is_visible' => false],
+
+            // Promotional banner strips managed from Admin → Banners (placement "Promotional")
+            ['key' => 'promotional_banners', 'title' => 'Promotions & Deals', 'subtitle' => '', 'sort_order' => 45, 'config' => ['product_count' => null], 'is_visible' => false],
         ];
 
         $seen = collect($sections)->pluck('key');
 
         // Remove obsolete keys no longer used by the live layout.
-        HomepageSection::whereNotIn('key', $seen)->whereIn('key', ['deals', 'organic_picks', 'recommended', 'promotional_banners', 'categories', 'cta'])->delete();
+        HomepageSection::whereNotIn('key', $seen)->whereIn('key', ['deals', 'organic_picks', 'recommended', 'categories', 'cta'])->delete();
 
         foreach ($sections as $section) {
             HomepageSection::updateOrCreate(

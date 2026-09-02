@@ -162,6 +162,22 @@
           </template>
           @error('desktop_image') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
         </div>
+        <div>
+          <label class="adm-label" x-text="editingId ? 'Mobile Image (optional)' : 'Mobile Image (optional)'"></label>
+          <input type="file" name="mobile_image" accept="image/jpeg,image/png,image/webp,image/svg+xml" @change="previewFile($event, 'mobile')" class="adm-input">
+          <template x-if="editingId && form.mobile_image && !mobilePreview">
+            <div class="mt-2 h-16 w-12 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+              <img :src="'{{ asset('storage/') }}/' + form.mobile_image" class="h-full w-full object-cover">
+            </div>
+          </template>
+          <template x-if="mobilePreview">
+            <div class="mt-2 h-16 w-12 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-0.5">
+              <img :src="mobilePreview" class="h-full w-full object-cover rounded-md">
+            </div>
+          </template>
+          <p class="mt-1 text-[11px] adm-text-muted">Optional portrait/narrow variant used on mobile and for promotional strips.</p>
+          @error('mobile_image') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+        </div>
         <div class="flex gap-6">
           <label class="flex items-center gap-2 text-sm">
             <input type="checkbox" name="is_active" value="1" x-model="form.is_active" class="accent-forest">
@@ -196,6 +212,7 @@ function bannerManager() {
     editingId: null,
     newPreview: '',
     newPreviewDims: null,
+    mobilePreview: '',
     form: {
       title: '',
       subtitle: '',
@@ -206,6 +223,7 @@ function bannerManager() {
       button_text: '',
       button_url: '',
       desktop_image: '',
+      mobile_image: '',
       is_active: true,
       show_text: true,
     },
@@ -266,9 +284,18 @@ function bannerManager() {
     },
     previewFile(ev) {
       const f = ev.target.files && ev.target.files[0];
-      if (!f) { this.newPreview = ''; this.newPreviewDims = null; return; }
+      const key = ev.target.name === 'mobile_image' ? 'mobile' : 'desktop';
+      if (!f) {
+        if (key === 'mobile') { this.mobilePreview = ''; }
+        else { this.newPreview = ''; this.newPreviewDims = null; }
+        return;
+      }
       const reader = new FileReader();
       reader.onload = (e) => {
+        if (key === 'mobile') {
+          this.mobilePreview = e.target.result;
+          return;
+        }
         this.newPreview = e.target.result;
         const img = new Image();
         img.onload = () => { this.newPreviewDims = [img.naturalWidth, img.naturalHeight]; };
@@ -280,7 +307,8 @@ function bannerManager() {
       this.editingId = null;
       this.newPreview = '';
       this.newPreviewDims = null;
-      this.form = { title: '', subtitle: '', placement: 'hero', width: '', height: '', sort_order: 0, button_text: '', button_url: '', desktop_image: '', is_active: true, show_text: true };
+      this.mobilePreview = '';
+      this.form = { title: '', subtitle: '', placement: 'hero', width: '', height: '', sort_order: 0, button_text: '', button_url: '', desktop_image: '', mobile_image: '', is_active: true, show_text: true };
       this.checkDims();
       this.showModal = true;
     },
@@ -288,6 +316,7 @@ function bannerManager() {
       this.editingId = banner.id;
       this.newPreview = '';
       this.newPreviewDims = null;
+      this.mobilePreview = '';
       this.form = {
         title: banner.title || '',
         subtitle: banner.subtitle || '',
@@ -298,6 +327,7 @@ function bannerManager() {
         button_text: banner.button_text || '',
         button_url: banner.button_url || '',
         desktop_image: banner.desktop_image || '',
+        mobile_image: banner.mobile_image || '',
         is_active: banner.is_active,
         show_text: banner.show_text !== false,
       };

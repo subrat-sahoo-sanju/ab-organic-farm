@@ -100,7 +100,7 @@
         </div>
         <div id="variants-container" class="space-y-3"
              x-data="{
-               variants: {{ Js::from($product->exists ? $product->variants()->with('inventory')->orderBy('sort_order')->get()->map(fn($v) => ['id'=>$v->id,'sku'=>$v->sku,'name'=>$v->name,'price'=>$v->price,'sale_price'=>$v->sale_price,'stock'=>$v->inventory->stock ?? 0,'low_stock_threshold'=>$v->inventory->low_stock_threshold ?? 10,'is_active'=>$v->is_active,'is_default'=>$v->is_default]) : [['sku'=>old('sku', substr(strtoupper(md5(Str::slug(old('name','')))),0,10)), 'name'=>'Default', 'price'=>old('regular_price', 0), 'sale_price'=>null, 'stock'=>0, 'low_stock_threshold'=>10, 'is_active'=>1, 'is_default'=>1]]) }})">
+               variants: {{ Js::from($product->exists ? $product->variants()->with('inventory')->orderBy('sort_order')->get()->map(fn($v) => ['id'=>$v->id,'sku'=>$v->sku,'name'=>$v->name,'price'=>$v->price,'sale_price'=>$v->sale_price,'stock'=>$v->inventory->stock ?? 0,'low_stock_threshold'=>$v->inventory->low_stock_threshold ?? 10,'is_active'=>$v->is_active,'is_default'=>$v->is_default]) : [['sku'=>old('sku', substr(strtoupper(md5(Str::slug(old('name','')))),0,10)), 'name'=>'Default', 'price'=>old('regular_price', 0), 'sale_price'=>null, 'stock'=>0, 'low_stock_threshold'=>10, 'is_active'=>1, 'is_default'=>1]]) }} }">
           <template x-for="(v, idx) in variants" :key="idx">
             <div class="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-2">
               <div class="flex items-center justify-between text-xs font-semibold adm-text-muted">
@@ -146,18 +146,29 @@
       <section class="adm-section space-y-4">
         <h2 class="adm-section-title">Images</h2>
         @if($product->exists && $product->images->count())
-          <div class="grid grid-cols-5 gap-3">
+          <div
+            class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5"
+            x-data="imageManager()"
+            x-init="setImages(@js($product->images->sortBy('sort_order')->pluck('id')->values()->all()))"
+          >
             @foreach($product->images->sortBy('sort_order') as $image)
               <div class="group relative overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
                 <img src="{{ asset('storage/'.$image->path) }}" class="aspect-square w-full object-contain p-2">
-                @if($image->is_primary)<span class="absolute top-1 left-1 rounded bg-forest px-1.5 py-0.5 text-[9px] font-bold text-white">Primary</span>@endif
-                <form action="{{ route('admin.images.destroy', $image) }}" method="POST" class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition">
-                  @csrf @method('DELETE')
-                  <button type="submit" onclick="return confirm('Delete image?')" class="rounded-lg bg-red-600 px-3 py-1.5 text-xs font-bold text-white">Delete</button>
-                </form>
+                @if($image->is_primary)
+                  <span class="absolute top-1 left-1 rounded bg-forest px-1.5 py-0.5 text-[9px] font-bold text-white">Primary</span>
+                @endif
+                <div class="absolute inset-0 flex items-center justify-center gap-1.5 bg-black/55 opacity-0 group-hover:opacity-100 transition">
+                  @if(! $image->is_primary)
+                    <button type="button" @click="setPrimary({{ $image->id }})" class="rounded-lg bg-forest px-2 py-1.5 text-[10px] font-bold text-white hover:bg-forest/90">★ Primary</button>
+                  @endif
+                  <button type="button" @click="move({{ $image->id }}, -1)" class="rounded-lg bg-white px-2 py-1.5 text-[11px] font-bold text-charcoal hover:bg-sage/30">←</button>
+                  <button type="button" @click="move({{ $image->id }}, 1)" class="rounded-lg bg-white px-2 py-1.5 text-[11px] font-bold text-charcoal hover:bg-sage/30">→</button>
+                  <button type="button" @click="remove({{ $image->id }})" class="rounded-lg bg-red-600 px-2 py-1.5 text-[10px] font-bold text-white hover:bg-red-500">Delete</button>
+                </div>
               </div>
             @endforeach
           </div>
+          <p class="text-[11px] adm-text-muted">Slide order matters: the first image is the main photo, the second is the card "hover" photo. Use ← / → to reorder and ★ to set the primary image.</p>
         @endif
         <div>
           <label class="adm-label">Upload New Images (multi-select allowed)</label>
@@ -165,6 +176,53 @@
           <p class="mt-1 text-[11px] adm-text-muted">Uploaded images are automatically resized to 1000×1000.</p>
         </div>
       </section>
+
+      <script>
+        function imageManager() {
+          return {
+            order: [],
+            setImages(ids) { this.order = ids.slice(); },
+            moving: false,
+            async move(id, dir) {
+              if (this.moving) return;
+              const i = this.order.indexOf(id);
+              const j = i + dir;
+              if (i < 0 || j < 0 || j >= this.order.length) return;
+              this.moving = true;
+              [this.order[i], this.order[j]] = [this.order[j], this.order[i]];
+              await this.saveOrder();
+            },
+            async saveOrder() {
+              const form = new FormData();
+              form.append('_token', @js(csrf_token()));
+              this.order.forEach((id, pos) => form.append(`order[${pos}]`, id));
+              try {
+                await fetch('{{ route('admin.products.images.order', $product) }}', { method: 'POST', body: form, 'X-Requested-With': 'XMLHttpRequest' });
+              } finally {
+                window.location.reload();
+              }
+            },
+            async setPrimary(id) {
+              const form = new FormData();
+              form.append('_token', @js(csrf_token()));
+              await fetch('{{ route('admin.products.images.primary', [$product, ':id']) }}'.replace(':id', id), {
+                method: 'POST', body: form,
+              });
+              window.location.reload();
+            },
+            async remove(id) {
+              if (!confirm('Delete this image?')) return;
+              const form = new FormData();
+              form.append('_token', @js(csrf_token()));
+              form.append('_method', 'DELETE');
+              await fetch('{{ route('admin.images.destroy', ':id') }}'.replace(':id', id), {
+                method: 'POST', body: form,
+              });
+              window.location.reload();
+            },
+          };
+        }
+      </script>
 
       <section class="adm-section space-y-4">
         <h2 class="adm-section-title">SEO</h2>

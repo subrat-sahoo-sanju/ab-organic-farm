@@ -54,7 +54,7 @@
                 <div class="relative w-full group">
                     <x-lucide-search class="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-charcoal-600/40 group-focus-within:text-anv-600 transition-colors"/>
                     <input type="search" name="q" value="{{ request('q') }}"
-                           placeholder="Find your favorite items"
+                           placeholder="{{ setting('home.search_placeholder', 'Find your favorite items') }}"
                            class="w-full h-11 pl-11 pr-5 rounded-full border-2 border-sage-100 bg-leaf-50 text-sm placeholder:text-charcoal-600/40 focus:border-anv-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-anv-500/20 transition-all">
                 </div>
             </form>
@@ -113,7 +113,7 @@
                 <div class="relative w-full group">
                     <x-lucide-search class="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-charcoal-600/40 group-focus-within:text-anv-600 transition-colors"/>
                     <input type="search" name="q" value="{{ request('q') }}"
-                           placeholder="Find your favorite items"
+                           placeholder="{{ setting('home.search_placeholder', 'Find your favorite items') }}"
                            class="w-full h-11 pl-11 pr-5 rounded-full border-2 border-sage-100 bg-leaf-50 text-sm placeholder:text-charcoal-600/40 focus:border-anv-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-anv-500/20 transition-all">
                 </div>
             </form>
@@ -122,7 +122,7 @@
 
     {{-- ═══ APP DOWNLOAD BAR · full-width #00584b (reference: anveshan.farm) ═══ --}}
     @php
-        $dlHeading = setting('display.app_download_heading', 'Download the {{ config("app.name") }} App');
+        $dlHeading = setting('display.app_download_heading');
         $dlSub     = setting('display.app_download_sub', 'Unlock 17% OFF Exclusively on App');
         $dlUrl     = setting('display.app_download_url2', '#');
         $dlEnabled = setting('display.app_download_enabled', '1');
@@ -132,7 +132,7 @@
         <div class="app-download-bar__inner">
             <div class="app-download-bar__left">
                 <div class="app-download-bar__icon">
-                    <img src="{{ asset('images/app-icon.jpg') }}" alt="App icon" width="44" height="44" loading="eager">
+                    <img src="{{ asset('storage/'.setting('display.app_icon', 'sections/app-icon.jpg')) }}" alt="App icon" width="44" height="44" loading="eager">
                 </div>
                 <div class="app-download-bar__divider"></div>
                 <div class="app-download-bar__text">

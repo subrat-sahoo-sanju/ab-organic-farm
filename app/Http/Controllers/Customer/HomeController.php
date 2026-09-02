@@ -103,7 +103,19 @@ class HomeController extends Controller
 
             if ($key === 'welcome') {
                 $data[$key] = $this->attachSoldCount($this->rail()->take($count)->get());
-                $tabs[$key] = $this->rootCategories(7);
+
+                $configuredTabs = $config['tabs'] ?? null;
+                if (is_array($configuredTabs) && count(array_filter($configuredTabs))) {
+                    $tabs[$key] = Category::whereIn('slug', array_filter($configuredTabs))->where('is_active', true)
+                        ->orderBy('sort_order')->get()->values();
+                }
+                if (empty($tabs[$key])) {
+                    $tabs[$key] = $this->rootCategories(7);
+                }
+            }
+
+            if ($key === 'promotional_banners') {
+                $data[$key] = Banner::running()->where('placement', 'promotional')->orderBy('sort_order')->get();
             }
 
             if (str_starts_with($key, 'focus_')) {

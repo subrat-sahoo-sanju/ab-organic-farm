@@ -228,6 +228,7 @@ class SettingsController extends Controller
                 'keys' => [
                     ['key' => 'display.announcement_items', 'label' => 'Announcement Bar Messages (JSON array of strings)', 'type' => 'json', 'json_schema' => 'tags'],
                     ['key' => 'display.app_download_enabled', 'label' => 'App Download Bar: Enable', 'type' => 'boolean'],
+                    ['key' => 'display.app_icon', 'label' => 'App Download Bar: App Icon', 'type' => 'image'],
                     ['key' => 'display.app_download_heading', 'label' => 'App Download Bar: Heading'],
                     ['key' => 'display.app_download_sub', 'label' => 'App Download Bar: Subline'],
                     ['key' => 'display.app_download_url2', 'label' => 'App Download Bar: Download Link (URL)'],

@@ -30,6 +30,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'active'])
         Route::resource('products', Admin\ProductController::class)->except('show')->middleware('role:super_admin,admin');
         Route::post('/products/{product}/images', [Admin\ProductImageController::class, 'store'])->name('products.images.store');
         Route::post('/products/{product}/images/order', [Admin\ProductImageController::class, 'reorder'])->name('products.images.order');
+        Route::post('/products/{product}/images/{image}/primary', [Admin\ProductImageController::class, 'setPrimary'])->name('products.images.primary');
         Route::delete('/images/{image}', [Admin\ProductImageController::class, 'destroy'])->name('images.destroy');
         Route::post('/variants/{variant}/default', [Admin\ProductVariantController::class, 'makeDefault'])->name('variants.default');
 
