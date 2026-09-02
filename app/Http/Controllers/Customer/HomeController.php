@@ -112,12 +112,9 @@ class HomeController extends Controller
             }
 
             if (str_starts_with($key, 'focus_')) {
-                $cats = $this->focusCategories($key, $config);
-                $tabProducts = [];
-                foreach ($cats as $c) {
-                    $tabProducts[$c->id] = $this->attachSoldCount($this->inCategory($c)->take($count)->get());
-                }
-                $data[$key] = ['categories' => $cats, 'tabProducts' => $tabProducts, 'limit' => $count];
+                [$focusTabs, $focusProducts] = $this->focusSection($key, $config, $count);
+                $data[$key] = $this->attachSoldCount($focusProducts);
+                $tabs[$key] = $focusTabs;
             }
 
             if ($key === 'testimonials') {
@@ -190,36 +187,41 @@ class HomeController extends Controller
     protected function welcomeSection(array $config, int $count): array
     {
         $tabs = [];
+        $sources = [];
         $raw = $config['tabs'] ?? null;
 
         if (is_array($raw) && count($raw)) {
             foreach (array_values($raw) as $item) {
                 if (is_string($item)) { // legacy: plain category slug
                     $slug = trim($item);
-                    $tabs[] = $this->welcomeTab([
+                    $row = [
                         'title' => ucwords(str_replace('-', ' ', $slug)),
                         'key' => $slug,
                         'type' => 'category',
                         'value' => $slug,
-                    ], $count);
-                    continue;
+                    ];
+                } else {
+                    $row = is_array($item) ? $item : [];
                 }
-                $tabs[] = $this->welcomeTab($item ?? [], $count);
+                $sources[] = $row;
+                $tabs[] = $this->welcomeTab($row, $count);
             }
         }
 
         if (! count($tabs)) {
             foreach ($this->rootCategories(7) as $cat) {
-                $tabs[] = $this->welcomeTab([
+                $row = [
                     'title' => $cat->name,
                     'key' => 'tab-'.$cat->id,
                     'type' => 'category',
                     'value' => $cat->slug,
-                ], $count);
+                ];
+                $sources[] = $row;
+                $tabs[] = $this->welcomeTab($row, $count);
             }
         }
 
-        $first = $tabs[0] ?? null;
+        $first = $sources[0] ?? null;
 
         return [$tabs, $first ? $this->resolveTabProducts($first, $count) : collect()];
     }
@@ -241,10 +243,28 @@ class HomeController extends Controller
                 'fallback' => ! empty($t['fallback']) ? json_encode($t['fallback']) : null,
                 'limit' => $count,
             ])),
+            'see_all' => $this->tabSeeAllUrl($t),
             'active_icon' => ! empty($t['active_icon']) ? asset($t['active_icon']) : null,
             'inactive_icon' => ! empty($t['inactive_icon']) ? asset($t['inactive_icon']) : null,
             'fallback' => $t['fallback'] ?? null,
         ];
+    }
+
+    /** Destination of the reference 'See All' button for a menu tab. */
+    protected function tabSeeAllUrl(array $t): string
+    {
+        $type = $t['type'] ?? 'all';
+
+        if ($type === 'category' && ! empty($t['value'])) {
+            return route('shop.category', $t['value']);
+        }
+
+        if (in_array($type, ['keyword', 'categories']) && (! empty($t['value']) || ! empty($t['values']))) {
+            $term = $t['value'] ?? (($t['values'][0] ?? ''));
+            return route('shop.search', ['q' => $term]);
+        }
+
+        return route('shop.categories');
     }
 
     /** Products for one welcome tab type: all | deal | category | categories | keyword (+ optional fallback). */
@@ -291,8 +311,16 @@ class HomeController extends Controller
 
         $products = $query->take($limit)->get();
 
-        if ($products->isEmpty() && ! empty($tab['fallback']) && is_array($tab['fallback'])) {
-            $products = $this->resolveTabProducts($tab['fallback'], $count);
+        $fallback = $tab['fallback'] ?? null;
+        if (is_array($fallback)) {
+            if ($products->isEmpty()) {
+                $products = $this->resolveTabProducts($fallback, $count);
+            } elseif ($products->count() < $limit) {
+                $exclude = $products->pluck('id')->all();
+                $more = $this->resolveTabProducts($fallback, $limit - $products->count())
+                    ->reject(fn ($p) => in_array($p->id, $exclude));
+                $products = $products->merge($more);
+            }
         }
 
         return $products;
@@ -335,24 +363,45 @@ class HomeController extends Controller
         return Category::roots()->where('is_active', true)->orderBy('sort_order')->take($limit)->get();
     }
 
-    protected function focusCategories(string $key, array $config)
+    /** Build the reference 'Product in Focus' section: oil/ghee keyword tabs + first-tab products. */
+    protected function focusSection(string $key, array $config, int $count): array
     {
-        $configured = $config['tabs'] ?? null;
+        $tabs = [];
+        $sources = [];
+        $raw = $config['tabs'] ?? null;
 
-        if (is_array($configured) && count(array_filter($configured))) {
-            $cats = Category::whereIn('slug', array_filter($configured))->where('is_active', true)->get();
-            if ($cats->count()) {
-                return $cats->values();
+        if (is_array($raw) && count($raw)) {
+            foreach (array_values($raw) as $item) {
+                $row = is_string($item)
+                    ? ['title' => ucwords(str_replace('-', ' ', $item)), 'key' => $item, 'type' => 'keyword', 'value' => $item]
+                    : (is_array($item) ? $item : []);
+                $sources[] = $row;
+                $tabs[] = $this->welcomeTab($row, $count);
             }
         }
 
         $needle = str_contains($key, 'ghee') ? 'ghee' : 'oil';
 
-        return Category::where('is_active', true)
-            ->where('name', 'like', '%'.$needle.'%')
-            ->orderBy('sort_order')
-            ->take(6)
-            ->get();
+        if (! count($tabs)) {
+            $keywords = str_contains($key, 'ghee')
+                ? ['ghee']
+                : ['groundnut', 'mustard', 'sunflower', 'olive', 'coconut', 'sesame'];
+            foreach ($keywords as $term) {
+                $row = [
+                    'title' => ucwords($term),
+                    'key' => \Illuminate\Support\Str::slug($term),
+                    'type' => 'keyword',
+                    'value' => $term,
+                    'fallback' => ['type' => 'category', 'value' => 'oils-ghee'],
+                ];
+                $sources[] = $row;
+                $tabs[] = $this->welcomeTab($row, $count);
+            }
+        }
+
+        $first = $sources[0] ?? null;
+
+        return [$tabs, $first ? $this->resolveTabProducts($first, $count) : collect()];
     }
 
     /** Attach a "sold in last 7 days" total to a product collection (avoids N+1). */

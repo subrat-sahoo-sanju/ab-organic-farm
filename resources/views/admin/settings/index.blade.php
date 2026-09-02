@@ -197,9 +197,12 @@
             </div>
 
             @if(str_starts_with($s->key, 'focus_'))
-              <div class="sm:col-span-2">
-                <label class="adm-label">Focus Tabs (category slugs, comma separated — blank = auto)</label>
-                <input type="text" name="sections[{{ $s->id }}][tabs]" value="{{ implode(', ', $cfg['tabs'] ?? []) }}" placeholder="e.g. desi-cow-ghee, bilona-a2-ghee" class="adm-input">
+              <div class="sm:col-span-3">
+                <label class="adm-label">Focus Menu Tabs (JSON — {{ $s->key === 'focus_oils' ? 'Groundnut / Mustard / Sunflower / Olive / Coconut / Sesame' : 'Ghee' }} icon tabs)</label>
+                <textarea name="sections[{{ $s->id }}][tabs_json]" rows="9" class="adm-input !font-mono !text-xs">{{ json_encode($cfg['tabs'] ?? [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) }}</textarea>
+                <p class="text-[11px] text-gray-400">
+                  Same format as the Welcome menu: <code>[{"title":"Groundnut","key":"groundnut","type":"keyword","value":"groundnut","fallback":{"type":"category","value":"oils-ghee"},"active_icon":"images/nav/nav-groundnut-active.svg","inactive_icon":"images/nav/nav-groundnut.svg"}].</code> Blank = auto (oils/ghee keywords).
+                </p>
               </div>
             @endif
 

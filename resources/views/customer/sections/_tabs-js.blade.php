@@ -24,7 +24,7 @@ if (!window.__tabGridRegistered) {
       },
     }));
 
-    // Reference "Welcome To" menu: icon tabs + sliding indicator + lazy product grid.
+// Reference "Welcome To" / "Product in Focus" menu: icon tabs + sliding indicator + lazy product grid.
     Alpine.data('welcomeTabs', (gridId, initialKey, tabs) => ({
       active: initialKey,
       loading: false,
@@ -38,8 +38,12 @@ if (!window.__tabGridRegistered) {
             return;
           }
           this.moveToActive();
+          this.syncScrollbar();
         };
         this.$nextTick(() => setTimeout(tryShow, 0));
+      },
+      get activeTab() {
+        return this.tabs.find(t => t.key === this.active) || this.tabs[0] || null;
       },
       moveToActive() {
         const btn = this.$refs.rail?.querySelector('.menu-nav-item.active');
@@ -51,6 +55,28 @@ if (!window.__tabGridRegistered) {
         ind.style.opacity = '1';
         ind.style.width = el.offsetWidth + 'px';
         ind.style.transform = 'translateX(' + el.offsetLeft + 'px)';
+      },
+      initScrollbar(thumb) {
+        const grid = this.$gridEl = document.getElementById(gridId);
+        if (!grid || !thumb) return;
+        this.$thumb = thumb;
+        grid.addEventListener('scroll', () => this.syncScrollbar(), { passive: true });
+        new ResizeObserver(() => this.syncScrollbar()).observe(grid);
+        this.syncScrollbar();
+      },
+      syncScrollbar() {
+        const grid = this.$gridEl || document.getElementById(gridId);
+        const thumb = this.$thumb;
+        if (!grid || !thumb) return;
+        const track = thumb.parentElement;
+        if (!track) return;
+        const trackW = track.clientWidth;
+        const scrollable = grid.scrollWidth - grid.clientWidth;
+        const ratio = scrollable > 0 ? trackW / grid.scrollWidth : 1;
+        thumb.style.width = Math.max(20, trackW * ratio) + 'px';
+        thumb.style.left = scrollable > 0
+          ? (grid.scrollLeft / scrollable) * (trackW - thumb.offsetWidth) + 'px'
+          : '0px';
       },
       async pick(tab, el) {
         if (this.loading || !el || this.active === tab.key) return;
@@ -68,6 +94,7 @@ if (!window.__tabGridRegistered) {
         }
         grid?.classList.remove('opacity-40', 'pointer-events-none');
         this.loading = false;
+        this.syncScrollbar();
       },
     }));
   });

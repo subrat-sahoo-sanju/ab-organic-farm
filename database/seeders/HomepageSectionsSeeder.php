@@ -79,8 +79,26 @@ class HomepageSectionsSeeder extends Seeder
             ['key' => 'testimonials', 'title' => 'What Do Our Customers Say', 'subtitle' => '', 'sort_order' => 70, 'config' => ['product_count' => 8]],
 
             // Not on the reference homepage — kept for admin, hidden by default.
-            ['key' => 'focus_oils', 'title' => 'Product in Focus: Explore Our Cold-Pressed Oils', 'subtitle' => 'Groundnut · Mustard · Sunflower · Olive · Coconut · Sesame', 'sort_order' => 90, 'config' => ['product_count' => 8, 'tabs' => null], 'is_visible' => false],
-            ['key' => 'focus_ghee', 'title' => 'Product in Focus: Explore Our A2 Desi Ghee', 'subtitle' => 'Bilona-churned, made with patience', 'sort_order' => 100, 'config' => ['product_count' => 8, 'tabs' => null], 'is_visible' => false],
+            // Product in Focus — reference oils menu (Groundnut/Mustard/Sunflower/Olive/Coconut/Sesame icon tabs + horizontal rail + See All)
+            ['key' => 'focus_oils', 'title' => 'Product in Focus:', 'subtitle' => 'Explore Our Cold-Pressed Oils', 'sort_order' => 35, 'config' => [
+                'product_count' => 8,
+                'tabs' => [
+                    ['title' => 'Groundnut', 'key' => 'groundnut', 'type' => 'keyword', 'value' => 'groundnut', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-groundnut-active.svg', 'inactive_icon' => 'images/nav/nav-groundnut.svg'],
+                    ['title' => 'Mustard', 'key' => 'mustard', 'type' => 'keyword', 'value' => 'mustard oil', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-mustard-active.svg', 'inactive_icon' => 'images/nav/nav-mustard.svg'],
+                    ['title' => 'Sunflower', 'key' => 'sunflower', 'type' => 'keyword', 'value' => 'sunflower', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-sunflower-active.svg', 'inactive_icon' => 'images/nav/nav-sunflower.svg'],
+                    ['title' => 'Olive', 'key' => 'olive', 'type' => 'keyword', 'value' => 'olive', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-olive-active.svg', 'inactive_icon' => 'images/nav/nav-olive.svg'],
+                    ['title' => 'Coconut', 'key' => 'coconut', 'type' => 'keyword', 'value' => 'coconut oil', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-coconut-active.svg', 'inactive_icon' => 'images/nav/nav-coconut.svg'],
+                    ['title' => 'Sesame', 'key' => 'sesame', 'type' => 'keyword', 'value' => 'sesame', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-sesame-active.svg', 'inactive_icon' => 'images/nav/nav-sesame.svg'],
+                ],
+            ]],
+
+            // Product in Focus — reference ghee menu (Gir / Desi Cow / Buffalo / All), hidden by default
+            ['key' => 'focus_ghee', 'title' => 'Product in Focus:', 'subtitle' => 'Explore Our A2 Desi Ghee', 'sort_order' => 100, 'config' => [
+                'product_count' => 8,
+                'tabs' => [
+                    ['title' => 'A2 Desi Ghee', 'key' => 'desi-ghee', 'type' => 'keyword', 'value' => 'ghee', 'fallback' => ['type' => 'category', 'value' => 'oils-ghee'], 'active_icon' => 'images/nav/nav-ghee-active.svg', 'inactive_icon' => 'images/nav/nav-ghee.svg'],
+                ],
+            ], 'is_visible' => false],
             ['key' => 'best_sellers', 'title' => 'Best Sellers', 'subtitle' => 'Trusted by thousands of households', 'sort_order' => 110, 'config' => ['product_count' => 10], 'is_visible' => false],
             ['key' => 'trending', 'title' => 'Trending Now', 'subtitle' => 'What our community is loving right now', 'sort_order' => 120, 'config' => ['product_count' => 10], 'is_visible' => false],
             ['key' => 'new_arrivals', 'title' => 'New Arrivals', 'subtitle' => 'Just stocked, fresh off the farm', 'sort_order' => 130, 'config' => ['product_count' => 10], 'is_visible' => false],
