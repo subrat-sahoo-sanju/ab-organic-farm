@@ -181,7 +181,7 @@ class HomeController extends Controller
         $products = $this->attachSoldCount($this->resolveTabProducts($tab, $limit));
 
         return response()->json([
-            'html' => view('components.product-card-grid', ['products' => $products])->render(),
+            'html' => view('components.product-card-grid', ['products' => $products, 'itemClass' => 'menu-grid-item'])->render(),
             'count' => $products->count(),
         ]);
     }

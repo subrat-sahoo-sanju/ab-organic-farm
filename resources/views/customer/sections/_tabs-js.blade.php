@@ -30,10 +30,19 @@ if (!window.__tabGridRegistered) {
       loading: false,
       tabs,
       init() {
-        this.$nextTick(() => this.$nextTick(() => this.moveToActive()));
+        // Wait for x-for + :class to settle, then show the indicator under the active tab.
+        let tries = 0;
+        const tryShow = () => {
+          if (!this.$refs.rail || !this.$refs.rail.querySelector('.menu-nav-item.active')) {
+            if (tries++ < 25) setTimeout(tryShow, 60);
+            return;
+          }
+          this.moveToActive();
+        };
+        this.$nextTick(() => setTimeout(tryShow, 0));
       },
       moveToActive() {
-        const btn = this.$refs.rail?.querySelector('.anv-tab-btn.active');
+        const btn = this.$refs.rail?.querySelector('.menu-nav-item.active');
         if (btn) this.placeIndicator(btn);
       },
       placeIndicator(el) {
