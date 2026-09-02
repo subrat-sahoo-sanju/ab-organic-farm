@@ -14,12 +14,16 @@ class Category extends Model
         'sort_order', 'is_active', 'is_featured', 'seo_title', 'meta_description',
         'banner_heading', 'banner_subheading', 'banner_image',
         'banner_cta_text', 'banner_cta_url', 'banner_bg_color',
-        'brand_logo', 'brand_name',
+        'brand_logo', 'brand_name', 'sections',
     ];
 
     protected function casts(): array
     {
-        return ['is_active' => 'boolean', 'is_featured' => 'boolean'];
+        return [
+            'is_active' => 'boolean',
+            'is_featured' => 'boolean',
+            'sections' => 'array',
+        ];
     }
 
     public function parent()

@@ -38,6 +38,7 @@ class CategoryController extends Controller
         if ($request->hasFile('brand_logo_file')) {
             $data['brand_logo'] = $this->storedImage($request, 'brand_logo_file', 400, 120);
         }
+        $data['sections'] = $this->normalizeSections($request);
 
         Category::create($data);
 
@@ -62,6 +63,7 @@ class CategoryController extends Controller
         if ($request->hasFile('brand_logo_file')) {
             $data['brand_logo'] = $this->storedImage($request, 'brand_logo_file', 400, 120);
         }
+        $data['sections'] = $this->normalizeSections($request);
 
         // Prevent self/nested parent loops
         if ($data['parent_id'] && (int) $data['parent_id'] === $category->id) {
@@ -124,6 +126,12 @@ class CategoryController extends Controller
             'banner_bg_color' => ['nullable', 'string', 'max:20'],
             'brand_logo_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
             'brand_name' => ['nullable', 'string', 'max:120'],
+            'sections' => ['nullable', 'array'],
+            'sections.*.type' => ['required_with:sections', 'string', 'in:welcome,featured_products,trust_badges,promo_banner,cross_sell'],
+            'sections.*.title' => ['nullable', 'string', 'max:190'],
+            'sections.*.subtitle' => ['nullable', 'string', 'max:300'],
+            'sections.*.visible' => ['nullable', 'boolean'],
+            'sections.*.config' => ['nullable', 'array'],
         ]);
     }
 
@@ -143,5 +151,36 @@ class CategoryController extends Controller
     protected function storedImage(Request $request, string $field, int $w, int $h): ?string
     {
         return app(ImageUtility::class)->processUpload($request->file($field), $w, $h, 'categories');
+    }
+
+    /**
+     * Decode and normalize the sections JSON from the form.
+     * Converts product_ids_str to product_ids array for storage.
+     */
+    protected function normalizeSections(Request $request): ?array
+    {
+        $raw = $request->input('sections');
+        if (!$raw) {
+            return null;
+        }
+
+        $sections = is_string($raw) ? json_decode($raw, true) : $raw;
+        if (!is_array($sections)) {
+            return null;
+        }
+
+        return array_map(function ($sec) {
+            // Convert product_ids_str comma-separated string to array
+            if (!empty($sec['product_ids_str'])) {
+                $sec['config']['product_ids'] = array_filter(array_map('intval',
+                    explode(',', $sec['product_ids_str'])
+                ));
+                unset($sec['product_ids_str']);
+            }
+            // Ensure config exists
+            $sec['config'] = $sec['config'] ?? [];
+            $sec['visible'] = $sec['visible'] ?? true;
+            return $sec;
+        }, $sections);
     }
 }

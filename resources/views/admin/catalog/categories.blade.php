@@ -296,6 +296,162 @@
             </div>
           </div>
         </div>
+
+        {{-- ═══ PAGE SECTIONS BUILDER ═══ --}}
+        <div class="border-t border-gray-200 pt-4">
+          <h4 class="mb-3 text-sm font-bold adm-text-primary flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+            Page Sections
+          </h4>
+          <p class="mb-3 text-[11px] adm-text-muted">Add and arrange content sections on this category page. Drag to reorder.</p>
+
+          {{-- Section list --}}
+          <div class="space-y-2">
+            <template x-for="(sec, idx) in form.sections" :key="idx">
+              <div class="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                <div class="flex items-center gap-2">
+                  {{-- Drag handle --}}
+                  <button type="button" class="cursor-grab text-gray-400 hover:text-gray-600" title="Drag to reorder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                  </button>
+
+                  {{-- Type badge --}}
+                  <span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
+                        :class="{
+                          'bg-blue-100 text-blue-700': sec.type === 'welcome',
+                          'bg-green-100 text-green-700': sec.type === 'featured_products',
+                          'bg-amber-100 text-amber-700': sec.type === 'trust_badges',
+                          'bg-purple-100 text-purple-700': sec.type === 'promo_banner',
+                          'bg-rose-100 text-rose-700': sec.type === 'cross_sell',
+                          'bg-cyan-100 text-cyan-700': sec.type === 'subcategory_cards',
+                        }">
+                    <span x-text="sectionTypeLabel(sec.type)"></span>
+                  </span>
+
+                  {{-- Title preview --}}
+                  <span class="flex-1 truncate text-xs text-gray-600" x-text="sec.title || '(no title)'"></span>
+
+                  {{-- Move buttons --}}
+                  <button type="button" @click="moveSection(idx, -1)" :disabled="idx === 0" class="text-gray-400 hover:text-gray-600 disabled:opacity-30">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
+                  </button>
+                  <button type="button" @click="moveSection(idx, 1)" :disabled="idx === form.sections.length - 1" class="text-gray-400 hover:text-gray-600 disabled:opacity-30">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+
+                  {{-- Visibility toggle --}}
+                  <button type="button" @click="sec.visible = !sec.visible" class="text-gray-400 hover:text-gray-600" :title="sec.visible ? 'Hide section' : 'Show section'">
+                    <svg x-show="sec.visible" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <svg x-show="!sec.visible" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+                  </button>
+
+                  {{-- Delete --}}
+                  <button type="button" @click="removeSection(idx)" class="text-gray-400 hover:text-red-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                  </button>
+                </div>
+
+                {{-- Expanded config for this section --}}
+                <div class="mt-3 space-y-2 border-t border-gray-200 pt-3">
+                  <div class="grid gap-2 sm:grid-cols-2">
+                    <div>
+                      <label class="adm-label">Section Title</label>
+                      <input type="text" x-model="sec.title" class="adm-input" :placeholder="sectionDefaultTitle(sec.type)">
+                    </div>
+                    <div>
+                      <label class="adm-label">Subtitle</label>
+                      <input type="text" x-model="sec.subtitle" class="adm-input" placeholder="Optional subtitle">
+                    </div>
+                  </div>
+
+                  {{-- Type-specific config --}}
+                  {{-- Promo Banner --}}
+                  <template x-if="sec.type === 'promo_banner'">
+                    <div class="space-y-2">
+                      <div class="grid gap-2 sm:grid-cols-2">
+                        <div>
+                          <label class="adm-label">CTA Button Text</label>
+                          <input type="text" x-model="sec.config.cta_text" class="adm-input" placeholder="e.g. Shop Now">
+                        </div>
+                        <div>
+                          <label class="adm-label">CTA Button URL</label>
+                          <input type="text" x-model="sec.config.cta_url" class="adm-input" placeholder="e.g. /shop">
+                        </div>
+                      </div>
+                      <div class="grid gap-2 sm:grid-cols-2">
+                        <div>
+                          <label class="adm-label">Background Color</label>
+                          <div class="flex gap-2">
+                            <input type="color" x-model="sec.config.bg_color" class="h-8 w-10 cursor-pointer rounded border border-gray-200">
+                            <input type="text" x-model="sec.config.bg_color" class="adm-input flex-1" placeholder="#00584b">
+                          </div>
+                        </div>
+                        <div>
+                          <label class="adm-label">Text Color</label>
+                          <div class="flex gap-2">
+                            <input type="color" x-model="sec.config.text_color" class="h-8 w-10 cursor-pointer rounded border border-gray-200">
+                            <input type="text" x-model="sec.config.text_color" class="adm-input flex-1" placeholder="#ffffff">
+                          </div>
+                        </div>
+                      </div>
+                      <p class="text-[10px] adm-text-muted">Banner image upload is handled separately via the hero banner above.</p>
+                    </div>
+                  </template>
+
+                  {{-- Trust Badges --}}
+                  <template x-if="sec.type === 'trust_badges'">
+                    <div>
+                      <label class="adm-label">Trust Items (up to 4)</label>
+                      <template x-for="(item, i) in sec.config.items" :key="i">
+                        <div class="mb-2 flex gap-2 rounded border border-gray-200 bg-white p-2">
+                          <input type="text" x-model="item.title" class="adm-input flex-1" placeholder="Title">
+                          <input type="text" x-model="item.text" class="adm-input flex-1" placeholder="Description">
+                          <button type="button" @click="sec.config.items.splice(i, 1)" class="text-gray-400 hover:text-red-500">&times;</button>
+                        </div>
+                      </template>
+                      <button type="button" @click="sec.config.items.push({title:'', text:'', icon:'leaf', image:''})" x-show="sec.config.items.length < 4"
+                              class="text-xs font-semibold text-anv-600 hover:text-anv-700">+ Add Badge</button>
+                    </div>
+                  </template>
+
+                  {{-- Featured Products / Cross Sell --}}
+                  <template x-if="sec.type === 'featured_products' || sec.type === 'cross_sell'">
+                    <div>
+                      <label class="adm-label">Product IDs <span class="adm-text-muted font-normal">(comma-separated, or leave empty for auto-select)</span></label>
+                      <input type="text" x-model="sec.config.product_ids_str" class="adm-input" placeholder="e.g. 1,2,3,4">
+                      <p class="mt-1 text-[10px] adm-text-muted">Leave empty to auto-select top-selling products from this category.</p>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </template>
+          </div>
+
+          {{-- Add section button --}}
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button type="button" @click="addSection('welcome')" class="inline-flex items-center gap-1 rounded-full border border-dashed border-gray-300 bg-white px-3 py-1.5 text-[11px] font-semibold text-gray-600 transition hover:border-anv-400 hover:text-anv-700">
+              + Welcome Intro
+            </button>
+            <button type="button" @click="addSection('featured_products')" class="inline-flex items-center gap-1 rounded-full border border-dashed border-gray-300 bg-white px-3 py-1.5 text-[11px] font-semibold text-gray-600 transition hover:border-anv-400 hover:text-anv-700">
+              + Featured Products
+            </button>
+            <button type="button" @click="addSection('trust_badges')" class="inline-flex items-center gap-1 rounded-full border border-dashed border-gray-300 bg-white px-3 py-1.5 text-[11px] font-semibold text-gray-600 transition hover:border-anv-400 hover:text-anv-700">
+              + Trust Badges
+            </button>
+            <button type="button" @click="addSection('promo_banner')" class="inline-flex items-center gap-1 rounded-full border border-dashed border-gray-300 bg-white px-3 py-1.5 text-[11px] font-semibold text-gray-600 transition hover:border-anv-400 hover:text-anv-700">
+              + Promo Banner
+            </button>
+            <button type="button" @click="addSection('cross_sell')" class="inline-flex items-center gap-1 rounded-full border border-dashed border-gray-300 bg-white px-3 py-1.5 text-[11px] font-semibold text-gray-600 transition hover:border-anv-400 hover:text-anv-700">
+              + Cross Sell
+            </button>
+            <button type="button" @click="addSection('subcategory_cards')" class="inline-flex items-center gap-1 rounded-full border border-dashed border-gray-300 bg-white px-3 py-1.5 text-[11px] font-semibold text-gray-600 transition hover:border-anv-400 hover:text-anv-700">
+              + Subcategory Cards
+            </button>
+          </div>
+
+          {{-- Hidden input to submit sections as JSON --}}
+          <input type="hidden" name="sections" :value="JSON.stringify(form.sections)">
+        </div>
       </form>
       <div class="adm-modal-footer">
         <button type="button" @click="showModal = false" class="adm-btn-outline">Cancel</button>
@@ -376,6 +532,7 @@ function categoryManager() {
       banner_bg_color: '#00584b',
       brand_logo: '',
       brand_name: '',
+      sections: [],
     },
     openCreate() {
       this.editingId = null;
@@ -387,7 +544,7 @@ function categoryManager() {
         is_active: true, is_featured: false, image_path: '',
         banner_heading: '', banner_subheading: '', banner_image: '',
         banner_cta_text: '', banner_cta_url: '', banner_bg_color: '#00584b',
-        brand_logo: '', brand_name: '',
+        brand_logo: '', brand_name: '', sections: [],
       };
       this.showModal = true;
     },
@@ -396,6 +553,17 @@ function categoryManager() {
       this.imagePreview = null;
       this.bannerPreview = null;
       this.brandLogoPreview = null;
+      let sections = [];
+      try {
+        sections = typeof cat.sections === 'string' ? JSON.parse(cat.sections) : (cat.sections || []);
+      } catch(e) { sections = []; }
+      // Ensure each section has config object and product_ids_str
+      sections = sections.map(s => ({
+        ...s,
+        config: s.config || {},
+        visible: s.visible !== false,
+        product_ids_str: (s.config?.product_ids || []).join(', '),
+      }));
       this.form = {
         name: cat.name || '',
         parent_id: cat.parent_id || '',
@@ -413,6 +581,7 @@ function categoryManager() {
         banner_bg_color: cat.banner_bg_color || '#00584b',
         brand_logo: cat.brand_logo || '',
         brand_name: cat.brand_name || '',
+        sections: sections,
       };
       this.showModal = true;
     },
@@ -432,6 +601,66 @@ function categoryManager() {
     previewBrandLogo(e) {
       const f = e.target.files && e.target.files[0];
       this.brandLogoPreview = f ? URL.createObjectURL(f) : null;
+    },
+    // ─── Section Manager ───
+    sectionTypes: [
+      { value: 'welcome', label: 'Welcome Intro', icon: '👋' },
+      { value: 'featured_products', label: 'Featured Products', icon: '⭐' },
+      { value: 'trust_badges', label: 'Trust Badges', icon: '🛡️' },
+      { value: 'promo_banner', label: 'Promo Banner', icon: '🎯' },
+      { value: 'cross_sell', label: 'Cross Sell', icon: '🛒' },
+      { value: 'subcategory_cards', label: 'Subcategory Cards', icon: '📂' },
+    ],
+    sectionTypeLabel(type) {
+      const t = this.sectionTypes.find(s => s.value === type);
+      return t ? t.icon + ' ' + t.label : type;
+    },
+    sectionDefaultTitle(type) {
+      const defaults = {
+        welcome: 'Welcome to AB Organic',
+        featured_products: 'Featured Products',
+        trust_badges: 'Why Choose AB Organic?',
+        promo_banner: 'Special Offer',
+        cross_sell: 'You May Also Like',
+        subcategory_cards: 'Explore Categories',
+      };
+      return defaults[type] || '';
+    },
+    addSection(type) {
+      const defaults = {
+        welcome: { title: 'Welcome to AB Organic', subtitle: 'Farm-fresh certified organic products, delivered to your doorstep.' },
+        featured_products: { title: 'Featured Products', subtitle: 'Our best sellers in this collection' },
+        trust_badges: { title: 'Why Choose AB Organic?', subtitle: '', config: { items: [
+          { title: '100% Certified Organic', text: 'Every product is lab-tested and certified', icon: 'leaf', image: '' },
+          { title: 'Farm to Table', text: 'Directly sourced from organic farms', icon: 'sprout', image: '' },
+          { title: 'Traditional Processing', text: 'Cold-pressed, stone-ground methods', icon: 'wheat', image: '' },
+          { title: 'No Chemicals', text: 'Zero preservatives or artificial additives', icon: 'shield-check', image: '' },
+        ]}},
+        promo_banner: { title: 'Special Offer', subtitle: 'Limited time deal', config: { bg_color: '#00584b', text_color: '#ffffff', cta_text: 'Shop Now', cta_url: '#' }},
+        cross_sell: { title: 'You May Also Like', subtitle: 'Complete your organic collection' },
+        subcategory_cards: { title: 'Explore Categories', subtitle: '' },
+      };
+      const d = defaults[type] || { title: '', subtitle: '' };
+      this.form.sections.push({
+        type: type,
+        title: d.title || '',
+        subtitle: d.subtitle || '',
+        visible: true,
+        config: d.config || {},
+        product_ids_str: '',
+      });
+    },
+    removeSection(idx) {
+      this.form.sections.splice(idx, 1);
+    },
+    moveSection(idx, dir) {
+      const newIdx = idx + dir;
+      if (newIdx < 0 || newIdx >= this.form.sections.length) return;
+      const temp = this.form.sections[idx];
+      this.form.sections[idx] = this.form.sections[newIdx];
+      this.form.sections[newIdx] = temp;
+      // Force reactivity
+      this.form.sections = [...this.form.sections];
     },
   }
 }

@@ -18,27 +18,22 @@
     $bannerCta  = $category->banner_cta_text;
     $bannerUrl  = $category->banner_cta_url ?: '#';
     $brandLogo  = $category->brand_logo;
-    $brandName  = $category->brand_name;
+    $brandName  = $category->brand_name ?: 'AB Organic';
 @endphp
 
 <div class="relative w-full overflow-hidden" style="background:{{ $bannerBg }}">
-  {{-- Banner image --}}
   @if($bannerImg)
     <img src="{{ asset('storage/'.$bannerImg) }}" alt="{{ $bannerH }}" class="absolute inset-0 h-full w-full object-cover" loading="eager">
   @endif
 
-  {{-- Content overlay --}}
   <div class="relative mx-auto flex max-w-7xl items-center px-4 py-10 sm:px-6 sm:py-14 lg:px-8 lg:py-16">
     <div class="max-w-xl">
-      {{-- Brand logo + name --}}
       @if($brandLogo || $brandName)
         <div class="mb-3 flex items-center gap-2">
           @if($brandLogo)
             <img src="{{ asset('storage/'.$brandLogo) }}" alt="{{ $brandName }}" class="h-8 w-auto object-contain">
           @endif
-          @if($brandName)
-            <span class="text-sm font-bold uppercase tracking-wider text-white/80">{{ $brandName }}</span>
-          @endif
+          <span class="text-sm font-bold uppercase tracking-wider text-white/80">{{ $brandName }}</span>
         </div>
       @endif
 
@@ -59,7 +54,7 @@
 </div>
 
 {{-- ═══════════════════════════════════════════════════════════════
-     CATEGORY ICON NAV — horizontal circular icons (Anveshan style)
+     CATEGORY ICON NAV — horizontal circular icons
 ═══════════════════════════════════════════════════════════════ --}}
 @if(isset($rootCategories) && $rootCategories->count())
 <div class="border-b border-sage-100 bg-white">
@@ -86,7 +81,27 @@
 @endif
 
 {{-- ═══════════════════════════════════════════════════════════════
-     PRODUCT SECTION
+     ADMIN-CONFIGURED SECTIONS — rendered in order between
+     the icon nav and the main product grid
+═══════════════════════════════════════════════════════════════ --}}
+@if(!empty($category->sections) && count($category->sections))
+  @foreach($category->sections as $idx => $section)
+    @php
+        $secType = $section['type'] ?? '';
+        $secVisible = $section['visible'] ?? true;
+        $secData = $sectionData["section_{$idx}"] ?? collect();
+    @endphp
+    @if($secVisible && view()->exists("customer.category-sections.{$secType}"))
+      @include("customer.category-sections.{$secType}", [
+          'section' => $section,
+          'sectionData' => $secData,
+      ])
+    @endif
+  @endforeach
+@endif
+
+{{-- ═══════════════════════════════════════════════════════════════
+     MAIN PRODUCT SECTION — breadcrumbs, filters, grid
 ═══════════════════════════════════════════════════════════════ --}}
 <div class="bg-[#fafcfa]">
   <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">

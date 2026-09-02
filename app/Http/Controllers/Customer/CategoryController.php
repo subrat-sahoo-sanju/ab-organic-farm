@@ -70,6 +70,9 @@ class CategoryController extends Controller
             ]);
         }
 
+        // Resolve section data for admin-configured sections
+        $sectionProducts = $this->resolveSectionData($category);
+
         return view('customer.category-show', [
             'category' => $category,
             'products' => $products,
@@ -79,6 +82,75 @@ class CategoryController extends Controller
                 ->withCount('products')
                 ->orderBy('sort_order')
                 ->get(),
+            'sectionData' => $sectionProducts,
         ]);
+    }
+
+    /**
+     * Resolve product data for each configured section on the category page.
+     */
+    protected function resolveSectionData(Category $category): array
+    {
+        $sections = $category->sections ?? [];
+        $data = [];
+
+        foreach ($sections as $index => $section) {
+            $type = $section['type'] ?? '';
+            $key = "section_{$index}";
+
+            match ($type) {
+                'featured_products' => $data[$key] = $this->getFeaturedProducts($category, $section),
+                'cross_sell' => $data[$key] = $this->getCrossSellProducts($category, $section),
+                default => null,
+            };
+        }
+
+        return $data;
+    }
+
+    /**
+     * Get featured products for a section (admin-selected or top-selling).
+     */
+    protected function getFeaturedProducts(Category $category, array $section): \Illuminate\Support\Collection
+    {
+        $productIds = $section['config']['product_ids'] ?? [];
+
+        if (!empty($productIds)) {
+            return Product::published()
+                ->whereIn('id', $productIds)
+                ->with(['primaryImage', 'defaultVariant.inventory', 'category'])
+                ->get();
+        }
+
+        // Fallback: top-selling products in this category tree
+        return Product::published()
+            ->inCategoryTree($category)
+            ->with(['primaryImage', 'defaultVariant.inventory', 'category'])
+            ->orderByDesc('sold_count')
+            ->limit(8)
+            ->get();
+    }
+
+    /**
+     * Get cross-sell products from other categories.
+     */
+    protected function getCrossSellProducts(Category $category, array $section): \Illuminate\Support\Collection
+    {
+        $productIds = $section['config']['product_ids'] ?? [];
+
+        if (!empty($productIds)) {
+            return Product::published()
+                ->whereIn('id', $productIds)
+                ->with(['primaryImage', 'defaultVariant.inventory', 'category'])
+                ->get();
+        }
+
+        // Fallback: popular products from OTHER categories
+        return Product::published()
+            ->where('category_id', '!=', $category->id)
+            ->with(['primaryImage', 'defaultVariant.inventory', 'category'])
+            ->orderByDesc('sold_count')
+            ->limit(8)
+            ->get();
     }
 }
