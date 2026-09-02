@@ -123,6 +123,36 @@ if (!window.__tabGridRegistered) {
         this.loading = false;
       },
     }));
+
+    // Category product grid "Show More Products" (Load More): paginated AJAX append.
+    // nextUrl / hasMore are read from data-* attributes to avoid quote-escaping issues
+    // inside the HTML `x-data` attribute.
+    Alpine.data('categoryLoadMore', () => ({
+      loading: false,
+      failed: false,
+      nextUrl: null,
+      hasMore: false,
+      init() {
+        this.nextUrl = this.$el.dataset.nextUrl || null;
+        this.hasMore = this.$el.dataset.hasMore === '1';
+      },
+      loadMore() {
+        if (!this.nextUrl || this.loading) return;
+        this.loading = true;
+        this.failed = false;
+        fetch(this.nextUrl, {
+          headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json' },
+        })
+          .then(r => { if (!r.ok) throw new Error('Request failed'); return r.json() })
+          .then(d => {
+            this.$refs.grid.insertAdjacentHTML('beforeend', d.html);
+            this.nextUrl = d.nextPageUrl;
+            this.hasMore = d.hasMorePages;
+          })
+          .catch(() => { this.failed = true })
+          .finally(() => { this.loading = false });
+      },
+    }));
   });
 
   // Standalone horizontal rail (combo/superfoods etc.): custom scrollbar thumb synced to a scrollable grid.

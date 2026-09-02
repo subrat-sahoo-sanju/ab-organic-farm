@@ -212,28 +212,9 @@
     {{-- Product grid --}}
     @if($products->count())
       <div
-          x-data="{
-              nextUrl: @json($products->nextPageUrl()),
-              hasMore: @json($products->hasMorePages()),
-              loading: false,
-              failed: false,
-              loadMore() {
-                  if (!this.nextUrl || this.loading) return
-                  this.loading = true
-                  this.failed = false
-                  fetch(this.nextUrl, {
-                      headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json' },
-                  })
-                  .then(r => { if (!r.ok) throw new Error('Request failed'); return r.json() })
-                  .then(d => {
-                      this.$refs.grid.insertAdjacentHTML('beforeend', d.html)
-                      this.nextUrl = d.nextPageUrl
-                      this.hasMore = d.hasMorePages
-                  })
-                  .catch(() => { this.failed = true })
-                  .finally(() => { this.loading = false })
-              },
-          }"
+          x-data="categoryLoadMore()"
+          data-next-url="{{ $products->nextPageUrl() }}"
+          data-has-more="{{ $products->hasMorePages() ? '1' : '0' }}"
       >
         <div x-ref="grid" class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 sm:gap-4">
           @foreach($products as $product)
