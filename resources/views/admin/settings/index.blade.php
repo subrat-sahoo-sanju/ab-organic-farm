@@ -275,14 +275,6 @@
               </div>
             @endif
 
-            @if($s->key === 'hero')
-              <div class="sm:col-span-2">
-                <label class="adm-label">Hero Slides (JSON: [{"desktop":"sections/hero-desktop.webp","mobile":"sections/hero-mobile.webp","alt":"...","url":"..."}])</label>
-                <textarea name="sections[{{ $s->id }}][slides_json]" rows="5" class="adm-input !font-mono !text-xs">{{ json_encode($cfg['slides'] ?? [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) }}</textarea>
-                <p class="text-[11px] text-gray-400">Paths are relative to <code>storage/app/public/</code>. Use the image upload boxes below to replace the desktop/mobile images of the first slide.</p>
-              </div>
-            @endif
-
             @if(in_array($s->key, ['native_ingredients','quality']))
               <div class="sm:col-span-2">
                 <label class="adm-label">Carousel Images (JSON: [{"image":"sections/native1.jpg","url":"","alt":""}])</label>
@@ -292,7 +284,7 @@
             @endif
           </div>
 
-          @if(in_array($s->key, ['hero','native_ingredients','quality','logo_slider','trust_badges','app_download','focus_oils','focus_ghee']))
+          @if(in_array($s->key, ['native_ingredients','quality','logo_slider','trust_badges','app_download','focus_oils','focus_ghee']))
             <div class="mt-3 border-t border-gray-100 pt-3">
               <p class="text-xs font-bold uppercase tracking-wide text-gray-400 mb-2">Section Images</p>
               <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
