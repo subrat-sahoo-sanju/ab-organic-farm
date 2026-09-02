@@ -247,6 +247,7 @@ class SettingsController extends Controller
                     ['key' => 'display.whatsapp_enabled', 'label' => 'WhatsApp Widget: Enable', 'type' => 'boolean'],
                     ['key' => 'display.whatsapp_number', 'label' => 'WhatsApp Widget: Number (with country code)'],
                     ['key' => 'display.whatsapp_message', 'label' => 'WhatsApp Widget: Pre-filled Message'],
+                    ['key' => 'display.nav_menu', 'label' => 'Header Menu (top nav + drawer)', 'type' => 'json', 'json_schema' => 'nav_menu'],
                     ['key' => 'display.bottom_nav', 'label' => 'Mobile Bottom Nav (JSON list)', 'type' => 'json', 'json_schema' => 'nav_items'],
                 ],
             ],

@@ -34,91 +34,9 @@
     @endif
 
     {{-- ═══════════════════════════════════════════════════════════════
-         HEADER — sticky, logo + search + account + cart
+         HEADER — sticky, reference-style (drawer + inline nav + dropdowns)
     ═══════════════════════════════════════════════════════════════ --}}
-    <header class="sticky top-0 z-40 bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-3 md:gap-6">
-
-            <a href="{{ route('shop.index') }}" class="flex items-center gap-2 shrink-0">
-                @if($siteLogo = setting('display.logo', ''))
-                    <img src="{{ asset('storage/'.$siteLogo) }}" alt="{{ config('app.name', 'Store') }} logo" class="h-10 w-auto max-w-[160px] object-contain">
-                @else
-                    <span class="h-9 w-9 rounded-lg bg-anv-600 text-white grid place-items-center">
-                        <x-lucide-leaf class="h-5 w-5"/>
-                    </span>
-                    <span class="font-display text-lg font-bold text-anv-700 leading-tight hidden sm:block">{{ setting('store.name', 'AB Organic') }}<br><span class="text-xs font-medium text-charcoal-600/60 tracking-wide">{{ setting('store.tagline', 'FARM') }}</span></span>
-                @endif
-            </a>
-
-            <form action="{{ route('shop.search') }}" method="GET" class="hidden md:flex flex-1 max-w-2xl mx-auto">
-                <div class="relative w-full group">
-                    <x-lucide-search class="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-charcoal-600/40 group-focus-within:text-anv-600 transition-colors"/>
-                    <input type="search" name="q" value="{{ request('q') }}"
-                           placeholder="{{ setting('home.search_placeholder', 'Find your favorite items') }}"
-                           class="w-full h-11 pl-11 pr-5 rounded-full border-2 border-sage-100 bg-leaf-50 text-sm placeholder:text-charcoal-600/40 focus:border-anv-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-anv-500/20 transition-all">
-                </div>
-            </form>
-
-            <nav class="flex items-center gap-1 sm:gap-2 ml-auto shrink-0" aria-label="Main" x-data>
-                <a href="{{ route('account.wishlist') }}" class="relative hidden sm:flex items-center p-2.5 rounded-full hover:bg-leaf-100 text-charcoal-700 transition-colors" aria-label="Wishlist">
-                    <x-lucide-heart class="h-5 w-5"/>
-                    @if(auth()->check() && $wishlistCount = auth()->user()->wishlistItems()->count())
-                        <span class="absolute -top-0.5 -right-0.5 h-5 min-w-5 px-1 rounded-full bg-clay-500 text-white text-[11px] font-bold grid place-items-center">{{ $wishlistCount }}</span>
-                    @endif
-                </a>
-
-                <a href="{{ route('cart.index') }}" data-cart-anchor
-                   class="relative flex items-center p-2.5 rounded-full hover:bg-leaf-100 text-charcoal-700 transition-colors" aria-label="Cart">
-                    <x-lucide-shopping-basket class="h-5 w-5"/>
-                    <span x-text="$store.cart.count" x-show="$store.cart.count > 0" x-cloak
-                          class="absolute -top-0.5 -right-0.5 h-5 min-w-5 px-1 rounded-full bg-anv-600 text-white text-[11px] font-bold grid place-items-center"></span>
-                </a>
-
-                @auth
-                    <div class="relative" x-data="{ open: false }" @click.outside="open = false">
-                        <button class="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full hover:bg-leaf-100 transition-colors" @click="open = !open" aria-label="Account menu">
-                            <span class="h-8 w-8 rounded-full bg-anv-600 text-white grid place-items-center text-sm font-bold uppercase shadow-sm">{{ substr(auth()->user()->name, 0, 1) }}</span>
-                            <span class="hidden lg:block text-sm font-medium text-charcoal-700 max-w-[8rem] truncate">{{ auth()->user()->name }}</span>
-                            <x-lucide-chevron-down class="h-4 w-4 hidden sm:block text-charcoal-600/60"/>
-                        </button>
-                        <div x-show="open" x-transition.opacity.duration.150ms x-cloak
-                             class="absolute right-0 mt-2 w-60 rounded-2xl bg-white shadow-xl ring-1 ring-black/5 overflow-hidden py-2 z-50">
-                            <div class="px-4 py-3 border-b border-leaf-100">
-                                <p class="text-sm font-semibold truncate">{{ auth()->user()->name }}</p>
-                                <p class="text-xs text-charcoal-600/50 truncate mt-0.5">{{ auth()->user()->email }}</p>
-                            </div>
-                            <a href="{{ route('account.dashboard') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-leaf-50 transition-colors"><x-lucide-user class="h-4 w-4 text-charcoal-600/50"/> My Account</a>
-                            <a href="{{ route('account.orders') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-leaf-50 transition-colors"><x-lucide-shopping-basket class="h-4 w-4 text-charcoal-600/50"/> My Orders</a>
-                            <a href="{{ route('account.wishlist') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-leaf-50 transition-colors"><x-lucide-heart class="h-4 w-4 text-charcoal-600/50"/> Wishlist</a>
-                            @if(auth()->user()->isStaff())
-                                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-anv-700 hover:bg-leaf-50 transition-colors"><x-lucide-layout-grid class="h-4 w-4"/> Admin Panel</a>
-                            @endif
-                            <div class="border-t border-leaf-100 mt-1 pt-1">
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button class="w-full text-left flex items-center gap-3 px-4 py-2.5 text-sm text-clay-600 hover:bg-leaf-50 transition-colors"><x-lucide-menu class="h-4 w-4"/> Logout</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                @else
-                    <a href="{{ route('login') }}" class="text-sm font-semibold px-4 py-2 rounded-full border-2 border-anv-600 text-anv-700 hover:bg-leaf-100 transition-colors">Login</a>
-                    <a href="{{ route('register') }}" class="hidden sm:inline-flex items-center h-9 px-5 rounded-full bg-anv-600 text-white text-sm font-semibold hover:bg-anv-700 shadow-sm transition-colors">Sign Up</a>
-                @endauth
-            </nav>
-        </div>
-
-        <div class="md:hidden px-4 pb-3">
-            <form action="{{ route('shop.search') }}" method="GET">
-                <div class="relative w-full group">
-                    <x-lucide-search class="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-charcoal-600/40 group-focus-within:text-anv-600 transition-colors"/>
-                    <input type="search" name="q" value="{{ request('q') }}"
-                           placeholder="{{ setting('home.search_placeholder', 'Find your favorite items') }}"
-                           class="w-full h-11 pl-11 pr-5 rounded-full border-2 border-sage-100 bg-leaf-50 text-sm placeholder:text-charcoal-600/40 focus:border-anv-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-anv-500/20 transition-all">
-                </div>
-            </form>
-        </div>
-    </header>
+    @include('layouts.partials.header-nav')
 
     {{-- ═══ APP DOWNLOAD BAR · full-width #00584b (reference: anveshan.farm) ═══ --}}
     @php

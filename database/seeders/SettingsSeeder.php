@@ -33,6 +33,21 @@ class SettingsSeeder extends Seeder
             'social.whatsapp' => '+91 94370 00000',
         ];
 
+        $defaults['display.nav_menu'] = json_encode([
+            ['label' => 'All Products', 'icon' => 'nav-all', 'url' => '/categories/all', 'highlight' => false, 'children' => []],
+            ['label' => 'A2 Ghee', 'icon' => 'nav-ghee', 'url' => '/categories/oils-ghee', 'highlight' => false, 'children' => []],
+            ['label' => 'Wood-Pressed Oils', 'icon' => 'nav-oils', 'url' => '/categories/oils-ghee', 'highlight' => false, 'children' => []],
+            ['label' => 'Atta', 'icon' => 'nav-atta', 'url' => '/categories/atta-flours', 'highlight' => false, 'children' => []],
+            ['label' => 'Hot Deals', 'icon' => 'nav-deal', 'url' => '/search?q=deal', 'highlight' => true, 'children' => []],
+            ['label' => 'Shop', 'icon' => 'nav-category', 'url' => '/categories/all', 'highlight' => false, 'children' => [
+                ['label' => 'Superfoods', 'url' => '/search?q=superfood'],
+                ['label' => 'Healthy Gifting', 'url' => '/categories/all'],
+                ['label' => 'Shop Under ₹499', 'url' => '/search?q=under 499'],
+                ['label' => 'Shop Under ₹999', 'url' => '/search?q=under 999'],
+            ]],
+            ['label' => 'Healthy Combo', 'icon' => 'nav-combos', 'url' => '/search?q=combo', 'highlight' => false, 'children' => []],
+        ], JSON_UNESCAPED_SLASHES);
+
         foreach ($defaults as $key => $value) {
             $s->set($key, $value);
         }

@@ -82,6 +82,32 @@
                                 </div>
                               </template>
 
+                              <template x-if="schema === 'nav_menu'">
+                                <div class="space-y-2">
+                                  <input type="text" x-model="row.label" class="adm-input" placeholder="Label (e.g. A2 Ghee)">
+                                  <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                                    <input type="text" x-model="row.icon" class="adm-input" placeholder="Icon (e.g. nav-ghee / nav-oils / nav-atta)">
+                                    <input type="text" x-model="row.url" class="adm-input" placeholder="URL (/categories/oils-ghee)">
+                                  </div>
+                                  <label class="flex items-center gap-2 text-xs text-gray-500">
+                                    <input type="checkbox" x-model="row.highlight" class="accent-forest"> Highlight (rainbow text, e.g. Hot Deals)
+                                  </label>
+                                  <details class="rounded-md border border-gray-100 bg-gray-50 p-2">
+                                    <summary class="cursor-pointer text-xs font-semibold text-gray-500">Submenu items (optional)</summary>
+                                    <template x-for="(child, ci) in (row.children || [])" :key="ci">
+                                      <div class="mt-2 flex items-center gap-2">
+                                        <div class="flex-1 space-y-1">
+                                          <input type="text" x-model="child.label" class="adm-input !py-1.5 text-xs" placeholder="Child label (e.g. Superfoods)">
+                                          <input type="text" x-model="child.url" class="adm-input !py-1.5 text-xs" placeholder="Child URL">
+                                        </div>
+                                        <button type="button" @click="row.children.splice(ci, 1)" class="px-1 text-red-500">&times;</button>
+                                      </div>
+                                    </template>
+                                    <button type="button" @click="addChild(row)" class="mt-2 text-xs font-semibold text-forest-700 hover:underline">+ Add submenu item</button>
+                                  </details>
+                                </div>
+                              </template>
+
                               <template x-if="schema === 'nav_items'">
                                 <div class="space-y-2">
                                   <input type="text" x-model="row.label" class="adm-input" placeholder="Label (Home / Deal / Combos / Account)">
@@ -298,7 +324,7 @@
 <script>
 function jsonEditor(schema, initial) {
   let rows = [];
-  if (schema === 'tags' || schema === 'link_list' || schema === 'feat_items' || schema === 'promo_cards' || schema === 'rewards' || schema === 'nav_items') {
+  if (schema === 'tags' || schema === 'link_list' || schema === 'feat_items' || schema === 'promo_cards' || schema === 'rewards' || schema === 'nav_items' || schema === 'nav_menu') {
     try {
       const arr = typeof initial === 'string' ? JSON.parse(initial) : initial;
       if (Array.isArray(arr)) {
@@ -309,6 +335,11 @@ function jsonEditor(schema, initial) {
           if (schema === 'feat_items') return { icon: obj.icon || 'leaf', title: obj.title || '', text: obj.text || '' };
           if (schema === 'rewards') return { title: obj.title || '', points: obj.points || '' };
           if (schema === 'nav_items') return { label: obj.label || '', icon: obj.icon || '', url: obj.url || '' };
+          if (schema === 'nav_menu') return {
+            label: obj.label || '', icon: obj.icon || '', url: obj.url || '',
+            highlight: !!obj.highlight,
+            children: Array.isArray(obj.children) ? obj.children.map(c => ({ label: c.label || '', url: c.url || '' })) : [],
+          };
           if (schema === 'promo_cards') return {
             color: obj.color || 'green', badge: obj.badge || '', title: obj.title || '',
             subtitle: obj.subtitle || '', code: obj.code || '', cta: obj.cta || '', link: obj.link || '',
@@ -326,6 +357,10 @@ function jsonEditor(schema, initial) {
     if (schema === 'feat_items') return rows.map(r => ({ icon: r.icon, title: r.title, text: r.text })).filter(r => r.title || r.text);
     if (schema === 'rewards') return rows.map(r => ({ title: r.title, points: r.points })).filter(r => r.title || r.points);
     if (schema === 'nav_items') return rows.map(r => ({ label: r.label, icon: r.icon, url: r.url })).filter(r => r.label || r.url);
+    if (schema === 'nav_menu') return rows.map(r => ({
+      label: r.label, icon: r.icon, url: r.url, highlight: r.highlight,
+      children: (r.children || []).filter(c => c.label || c.url),
+    })).filter(r => r.label || r.url || (r.children && r.children.length));
     if (schema === 'promo_cards') return rows.map(r => r).filter(r => r.title || r.subtitle);
     return rows;
   };
@@ -337,6 +372,7 @@ function jsonEditor(schema, initial) {
     sync() { /* keep hidden input in sync on submit */ },
     addRow() { this.rows.push(emptyRow(this.schema)); },
     removeRow(idx) { this.rows.splice(idx, 1); },
+    addChild(row) { if (!row.children) row.children = []; row.children.push({ label: '', url: '' }); },
   };
 }
 function emptyRow(schema) {
@@ -345,6 +381,7 @@ function emptyRow(schema) {
   if (schema === 'feat_items') return { icon: 'leaf', title: '', text: '' };
   if (schema === 'rewards') return { title: '', points: '' };
   if (schema === 'nav_items') return { label: '', icon: '', url: '' };
+  if (schema === 'nav_menu') return { label: '', icon: '', url: '', highlight: false, children: [] };
   if (schema === 'promo_cards') return { color: 'green', badge: '', title: '', subtitle: '', code: '', cta: '', link: '' };
   return {};
 }
