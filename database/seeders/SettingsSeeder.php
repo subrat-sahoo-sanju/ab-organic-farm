@@ -42,6 +42,63 @@ class SettingsSeeder extends Seeder
             'footer.newsletter_sub' => 'Fresh offers & farm stories. No spam.',
             'display.whatsapp_name' => 'AB Organic Farm',
             'display.whatsapp_greeting' => 'Hi there! How can we help you today?',
+
+            // SEO / social extras
+            'seo.keywords' => 'organic food, atta, ghee, natural oils, AB Organic',
+            'og.title' => 'AB Organic Farm — Organic Products Delivered | Farm to Home',
+            'og.description' => 'Shop certified organic fruits, vegetables, grains, pulses, spices and natural personal care. Fresh from farms to your doorstep.',
+            'social.whatsapp' => '+91 94370 00000',
+
+            // COD & payments remaining
+            'cod.min_order_value' => '0',
+            'cod.delivery_charges' => '49',
+            'cod.free_delivery_above' => '499',
+            'cod.advance_percent' => '0',
+
+            // Inventory
+            'inventory.low_stock_threshold' => '5',
+            'inventory.email_alerts' => '1',
+
+            // Notifications
+            'notify.admin_email' => 'hello@verdurafarms.in',
+            'notify.sms' => '0',
+            'notify.whatsapp' => '1',
+
+            // Homepage content
+            'home.search_placeholder' => 'Search products, e.g. ghee',
+            'home.delivery_charge_text' => 'Free delivery above ₹499',
+            'home.brand_title' => 'Shop by Brand',
+            'home.brand_subtitle' => 'Explore a curated range from trusted brands.',
+            'home.featured_title' => 'Featured Products',
+            'home.featured_subtitle' => 'Hand-picked organic favourites our customers love.',
+            'home.best_title' => 'Best Sellers',
+            'home.best_subtitle' => 'The products everyone keeps coming back for.',
+            'home.new_title' => 'New Arrivals',
+            'home.new_subtitle' => 'Fresh from the farm and just landed in store.',
+            'home.why_title' => 'Why Choose Us',
+            'home.testimonial_title' => 'What Our Customers Say',
+            'home.cta_title' => 'Go Organic. Go Fresh. Go Fast.',
+            'home.cta_subtitle' => 'Join thousands of families who trust AB Organic Farm for their daily groceries.',
+            'home.cta_button' => 'Start Shopping',
+            'home.cta_link' => '/categories/all',
+
+            // Footer extras
+            'footer.tagline' => 'Good Food. Naturally Better.',
+            'footer.address' => 'Plot 12, Green Valley Road, Bhubaneswar, Odisha 751001',
+            'store.contact_link' => '#',
+
+            // Display extras
+            'display.app_download_heading' => 'Unlock 17% OFF exclusively on the App',
+            'display.app_download_sub' => 'Get the AB Organic Farm app today.',
+            'display.app_download_url2' => '#',
+            'display.app_store_url' => '#',
+            'display.app_download_url' => '#',
+            'display.rewards_enabled' => '1',
+            'display.rewards_mainline' => 'Earn rewards on every order!',
+            'display.rewards_coins' => '0',
+            'display.rewards_subline' => 'Your rewards await',
+            'display.whatsapp_number' => '919999999999',
+            'display.whatsapp_message' => 'Hi! I have a question about your products.',
         ];
 
         $defaults['display.nav_menu'] = json_encode([
