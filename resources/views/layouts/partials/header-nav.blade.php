@@ -48,7 +48,7 @@
     {{-- Desktop inline menu is centered-ish; keep logo left per reference --}}
     <a href="{{ route('shop.index') }}" class="flex shrink-0 items-center gap-2">
       @if($homeIcon)
-        <img src="{{ asset('storage/'.$homeIcon) }}" alt="{{ $storeName }} logo" class="h-10 w-auto max-w-[160px] object-contain">
+        <img src="{{ asset('storage/'.$homeIcon) }}" alt="{{ $storeName }} logo" class="h-11 w-auto max-w-[210px] object-contain sm:h-12 sm:max-w-[240px]">
       @else
         <span class="grid h-9 w-9 place-items-center rounded-lg bg-anv-600 text-white"><x-lucide-leaf class="h-5 w-5"/></span>
         <span class="hidden font-display text-lg font-bold leading-tight text-anv-700 sm:block">{{ $storeName }}<br><span class="text-xs font-medium tracking-wide text-charcoal-600/60">{{ $tagline }}</span></span>
@@ -167,7 +167,7 @@
       <div class="flex items-center justify-between border-b border-sage-100 px-4 py-4">
         <a href="{{ route('shop.index') }}" class="flex items-center gap-2" @click="drawer=false">
           @if($homeIcon)
-            <img src="{{ asset('storage/'.$homeIcon) }}" alt="{{ $storeName }}" class="h-9 w-auto max-w-[150px] object-contain">
+            <img src="{{ asset('storage/'.$homeIcon) }}" alt="{{ $storeName }}" class="h-10 w-auto max-w-[200px] object-contain sm:h-11">
           @else
             <span class="grid h-8 w-8 place-items-center rounded-lg bg-anv-600 text-white"><x-lucide-leaf class="h-4 w-4"/></span>
             <span class="font-display font-bold text-anv-700">{{ $storeName }}</span>

@@ -88,7 +88,7 @@
             <div>
                 <div class="flex items-center gap-2 mb-4">
                     @if($siteLogoWhite = setting('display.logo_white', ''))
-                        <img src="{{ asset('storage/'.$siteLogoWhite) }}" alt="{{ config('app.name', 'Store') }} logo" class="h-9 w-auto max-w-[180px] object-contain">
+                        <img src="{{ asset('storage/'.$siteLogoWhite) }}" alt="{{ config('app.name', 'Store') }} logo" class="h-10 w-auto max-w-[200px] object-contain sm:h-11">
                     @else
                         <span class="h-8 w-8 rounded-lg bg-anv-600 text-white grid place-items-center"><x-lucide-leaf class="h-4 w-4"/></span>
                         <span class="font-display text-base font-bold text-white">{{ setting('footer.company_name', setting('store.name', 'AB Organic Farm')) }}</span>
