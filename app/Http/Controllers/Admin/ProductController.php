@@ -191,7 +191,14 @@ class ProductController extends Controller
             'images.*' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
 
-        return $request->validate($rules);
+        $data = $request->validate($rules);
+
+        // `cost_price` is NOT NULL in the DB. The field is optional in the form,
+        // so when untouched Laravel sends null which would violate the column and
+        // crash "add product". Pin it to a safe default instead.
+        $data['cost_price'] = $data['cost_price'] ?? 0;
+
+        return $data;
     }
 
     protected function validatedVariants(Request $request, ?Product $existing = null): array

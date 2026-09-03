@@ -197,7 +197,7 @@
               form.append('_token', @js(csrf_token()));
               this.order.forEach((id, pos) => form.append(`order[${pos}]`, id));
               try {
-                await fetch('{{ route('admin.products.images.order', $product) }}', { method: 'POST', body: form, 'X-Requested-With': 'XMLHttpRequest' });
+                await fetch(@js($product->exists ? route('admin.products.images.order', $product) : '#'), { method: 'POST', body: form, 'X-Requested-With': 'XMLHttpRequest' });
               } finally {
                 window.location.reload();
               }
@@ -205,7 +205,7 @@
             async setPrimary(id) {
               const form = new FormData();
               form.append('_token', @js(csrf_token()));
-              await fetch('{{ route('admin.products.images.primary', [$product, ':id']) }}'.replace(':id', id), {
+              await fetch(@js($product->exists ? route('admin.products.images.primary', [$product, ':id']) : '#').replace(':id', id), {
                 method: 'POST', body: form,
               });
               window.location.reload();

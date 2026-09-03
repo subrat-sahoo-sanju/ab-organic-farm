@@ -171,11 +171,7 @@ class CategoryController extends Controller
                 $key = trim($tab['key'] ?? '') ?: Str::slug($title ?: ('tab-'.count($tabs)));
                 $icon = $tab['icon'] ?? '';
                 $activeIcon = $tab['active_icon'] ?? $icon;
-                $productIds = is_array($tab['product_ids'] ?? null)
-                    ? array_values(array_filter(array_map('intval', $tab['product_ids'])))
-                    : array_values(array_filter(array_map('intval',
-                        preg_split('/[\s,]+/', (string) ($tab['product_ids'] ?? ''))
-                    )));
+                $productIds = $this->resolveProductIds($tab['product_ids'] ?? null);
 
                 $products = $productIds
                     ? Product::published()
@@ -224,6 +220,37 @@ class CategoryController extends Controller
                 ->sortByDesc('sold_count')
                 ->take(20),
         ];
+    }
+
+    /**
+     * Normalise a tab's product_ids value into a clean int[] regardless of whether
+     * the admin stored it as an array, a comma/space/semicolon-delimited string,
+     * or a JSON string/array. Prevents the past "Array to string conversion" crash.
+     */
+    protected function resolveProductIds($value): array
+    {
+        $ids = [];
+
+        if (is_array($value)) {
+            foreach ($value as $v) {
+                if (is_array($v)) {
+                    $ids = array_merge($ids, $this->resolveProductIds($v));
+                    continue;
+                }
+                $ids[] = $v;
+            }
+        } elseif (is_string($value) && $value !== '') {
+            $trimmed = trim($value);
+            if (str_starts_with($trimmed, '[') || str_starts_with($trimmed, '{')) {
+                $decoded = json_decode($trimmed, true);
+                if (is_array($decoded)) {
+                    return $this->resolveProductIds($decoded);
+                }
+            }
+            $ids = preg_split('/[\s,;]+/', $trimmed);
+        }
+
+        return array_values(array_filter(array_map('intval', $ids), fn ($id) => $id > 0));
     }
 
     /**

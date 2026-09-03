@@ -92,10 +92,21 @@ class HomeController extends Controller
 
             if ($key === 'logo_slider') {
                 $images = $config['images'] ?? [];
-                if (! empty($images['desktop'])) {
-                    $data[$key] = collect([(object) ['image' => $images['desktop'], 'url' => '#']]);
-                } elseif (! empty($images) && is_numeric(array_key_first($images))) {
-                    $data[$key] = collect($images)->map(fn ($im) => (object) ['image' => $im['image'] ?? null, 'url' => $im['url'] ?? null]);
+                $desktop = $images['desktop'] ?? (is_array($images) ? reset($images) : null);
+                // Only a non-empty string is a real logo image path; structured
+                // config (arrays of nulls / keyed objects) must be ignored so we
+                // fall back to the brands logos.
+                $validLocal = static function ($v) {
+                    if (is_string($v) && trim($v) !== '') {
+                        return trim($v);
+                    }
+                    if (is_array($v) && isset($v['image']) && is_string($v['image']) && $v['image'] !== '') {
+                        return $v['image'];
+                    }
+                    return null;
+                };
+                if ($img = $validLocal($desktop)) {
+                    $data[$key] = collect([(object) ['image' => $img, 'url' => '#']]);
                 } else {
                     $data[$key] = Brand::whereNotNull('logo_path')->take(12)->get()->map(fn ($b) => (object) ['image' => $b->logo_path, 'url' => '#']);
                 }
@@ -125,14 +136,9 @@ class HomeController extends Controller
                     ->get();
             }
 
-            if ($key === 'logo_slider') {
-                $images = $config['images'] ?? [];
-                if (count($images)) {
-                    $data[$key] = collect($images)->map(fn ($im) => (object) ['image' => $im['image'] ?? null, 'url' => $im['url'] ?? null]);
-                } else {
-                    $data[$key] = Brand::whereNotNull('logo_path')->take(12)->get()->map(fn ($b) => (object) ['image' => $b->logo_path, 'url' => '#']);
-                }
-            }
+            // logo_slider is handled above (line ~93). This duplicate block used to
+            // override it with null-image entries whenever the config held empty image
+            // slots, which made "Trusted by" render the empty-state instead of logos.
         }
 
         return view('customer.home', [
