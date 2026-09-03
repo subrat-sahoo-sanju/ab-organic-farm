@@ -98,34 +98,52 @@ class SettingsController extends Controller
 
     public function update(\Illuminate\Http\Request $request): RedirectResponse
     {
-        $data = $request->validate($this->validationRules());
+        // CRITICAL: PHP converts dots in `<input name="group.key">` to underscores in the
+        // parsed request (name="home.cta_title" arrives as $_POST['home_cta_title']). This is
+        // standard PHP behaviour. So we map each known dotted setting key back to the
+        // underscore key PHP produced before reading/saving anything.
+        $raw = $request->all();
+        $rules = $this->validationRules();
+        $service = app(\App\Services\SettingsService::class);
 
-        // Image fields (site logo, footer logo, favicon…) → store in storage/logos.
         foreach ($this->sections() as $section) {
             foreach ($section['keys'] as $field) {
-                if (($field['type'] ?? 'text') !== 'image') {
+                $key = $field['key'];
+                $phpKey = str_replace('.', '_', $key); // what PHP actually received
+                $type = $field['type'] ?? 'text';
+
+                // Image fields (site logo, footer logo, favicon…) → storage/logos.
+                // The form names these with a double underscore (display__logo) so they
+                // never collide with the text fields; read those exact names back.
+                if ($type === 'image') {
+                    $imgKey = str_replace('.', '__', $key);
+                    $file = $request->file($imgKey);
+                    $value = $raw[$imgKey.'_existing'] ?? (string) setting($key, '');
+                    if ($file instanceof \Illuminate\Http\UploadedFile && $file->isValid()) {
+                        $path = $file->store('logos', 'public');
+                        if ($path) {
+                            $value = $path;
+                        }
+                    }
+                    $service->set($key, $value ?? '');
                     continue;
                 }
 
-                $key = $field['key'];
-                $fileKey = str_replace('.', '__', $key);
-                $file = $request->file($fileKey);
-                if ($file instanceof \Illuminate\Http\UploadedFile && $file->isValid()) {
-                    $path = $file->store('logos', 'public');
-                    if ($path) {
-                        $data[$key] = $path;
-                        continue;
-                    }
+                // Non-image: read the underscore key PHP produced from the raw request.
+                $value = $raw[$phpKey] ?? null;
+
+                // Validate individually — nullable fields are always valid when empty,
+                // and this sidesteps the dotted-key nesting problem of ->validate().
+                $fieldValidator = \Illuminate\Support\Facades\Validator::make(
+                    ['value' => $value],
+                    ['value' => $rules[$key] ?? ['nullable']],
+                );
+                if ($fieldValidator->fails()) {
+                    continue;
                 }
 
-                $existing = $request->input($fileKey.'_existing');
-                $data[$key] = $existing ?? (string) setting($key, '');
+                $service->set($key, $value ?? '');
             }
-        }
-
-        $service = app(\App\Services\SettingsService::class);
-        foreach ($data as $key => $value) {
-            $service->set($key, $value ?? '');
         }
 
         return back()->with('success', 'Settings saved and live on the storefront.');
