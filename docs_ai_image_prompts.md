@@ -40,9 +40,9 @@ three-leaf sprig icon to the left, deep green #14532D text, transparent backgrou
 ```
 
 **Save (upload) locations for logos:**
-- Main header logo → Admin → Settings (Store / Design) or `storage/app/public/logos/logo.png`
-- Footer / white version → `storage/app/public/logos/logo-white.png`
-- Brand logos shown on the homepage "Trusted by / logo slider" → Admin → Catalogue → Brands → edit each brand → upload `logo`. Stored under `storage/app/public/brands/`.
+- Main header logo → Admin → Settings (Store / Design) → "Site Logo". Currently set to the generated SVG `logos/ab-organic-label.svg` (in `storage/app/public/logos/` + source `public/images/logo/`). Upload a PNG/JPG here to replace it.
+- Footer / white version → Admin → Settings → "Footer Logo". Currently `logos/ab-organic-label-white.svg`.
+- Brand logos shown on the homepage "Trusted by / logo slider" → Admin → Settings → Sections → the "Trusted By" card → "Brand Partner Logos" multi-uploader (or Admin → Catalogue → Brands → edit each brand → upload `logo`). Stored under `storage/app/public/brands/` or `storage/app/public/logos/`.
 
 ---
 

@@ -31,8 +31,8 @@ class HomepageSectionsSeeder extends Seeder
                 ],
             ]],
 
-            // 2 · Why Choose Anveshan (90×90 icon grid)
-            ['key' => 'trust_badges', 'title' => 'Why Choose Anveshan?', 'subtitle' => 'The Anveshan difference', 'sort_order' => 20, 'config' => [
+            // 2 · Why Choose AB Organic Farm (90×90 icon grid)
+            ['key' => 'trust_badges', 'title' => 'Why Choose AB Organic Farm?', 'subtitle' => 'The AB Organic Farm difference', 'sort_order' => 20, 'config' => [
                 'product_count' => null,
                 'items' => [
                     ['image' => 'images/why-native.svg', 'icon' => 'map-pin', 'title' => 'Native Sourcing', 'text' => 'Highest quality raw material from native regions all over India.'],
