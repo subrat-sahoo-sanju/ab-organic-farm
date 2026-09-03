@@ -238,24 +238,57 @@
               <input type="number" name="sections[{{ $s->id }}][product_count]" value="{{ $cfg['product_count'] ?? '' }}" min="1" max="24" class="adm-input">
             </div>
 
-            @if(str_starts_with($s->key, 'focus_'))
-              <div class="sm:col-span-3">
-                <label class="adm-label">Focus Menu Tabs (JSON — {{ $s->key === 'focus_oils' ? 'Groundnut / Mustard / Sunflower / Olive / Coconut / Sesame' : 'Ghee' }} icon tabs)</label>
-                <textarea name="sections[{{ $s->id }}][tabs_json]" rows="9" class="adm-input !font-mono !text-xs">{{ json_encode($cfg['tabs'] ?? [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) }}</textarea>
-                <p class="text-[11px] text-gray-400">
-                  Same format as the Welcome menu: <code>[{"title":"Groundnut","key":"groundnut","type":"keyword","value":"groundnut","fallback":{"type":"category","value":"oils-ghee"},"active_icon":"images/nav/nav-groundnut-active.svg","inactive_icon":"images/nav/nav-groundnut.svg"}].</code> Blank = auto (oils/ghee keywords).
-                </p>
+            @if(str_starts_with($s->key, 'focus_') || $s->key === 'welcome')
+              @php $tabHint = $s->key === 'welcome' ? 'All / Ghee / Oils / Atta / Combos / Deal' : ($s->key === 'focus_oils' ? 'Groundnut / Mustard / Sunflower / Olive / Coconut / Sesame' : 'Gir / Desi Cow / Buffalo / Combo'); @endphp
+              <div class="sm:col-span-full" x-data="sectionList('tabs', @js($cfg['tabs'] ?? []))" @input="sync()">
+                <input type="hidden" data-listsync :name="'sections[{{ $s->id }}][tabs_json]'" :value="jsonValue">
+                <label class="adm-label">Menu Tabs — {{ $tabHint }} <span class="font-normal text-gray-400">(each row = one tab on the homepage)</span></label>
+                <div class="space-y-2">
+                  <template x-for="(row, i) in rows" :key="i">
+                    <div class="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5">
+                        <div><label class="text-[11px] font-semibold text-gray-500">Tab Name</label><input x-model="row.title" class="adm-input !py-1.5 text-xs" placeholder="e.g. Ghee"></div>
+                        <div><label class="text-[11px] font-semibold text-gray-500">Show (type)</label>
+                          <select x-model="row.type" class="adm-input !py-1.5 text-xs">
+                            <option value="all">All products</option>
+                            <option value="deal">Sale / deal products</option>
+                            <option value="category">One category</option>
+                            <option value="categories">Several categories</option>
+                            <option value="keyword">Product name / keyword</option>
+                          </select>
+                        </div>
+                        <div><label class="text-[11px] font-semibold text-gray-500">Value (name / category slug)</label><input x-model="row.value" class="adm-input !py-1.5 text-xs" placeholder="e.g. ghee"></div>
+                        <div><label class="text-[11px] font-semibold text-gray-500">Icon path</label><input x-model="row.inactive_icon" class="adm-input !py-1.5 text-xs" placeholder="images/nav/…svg"></div>
+                        <div class="flex items-end gap-1">
+                          <input x-model="row.active_icon" class="adm-input !py-1.5 text-xs" placeholder="active icon (optional)">
+                          <button type="button" @click="removeRow(i)" class="rounded-md bg-red-50 px-2 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100">Remove</button>
+                        </div>
+                      </div>
+                      <div class="mt-2 grid grid-cols-1 gap-2 border-t border-gray-200 pt-2 sm:grid-cols-2 lg:grid-cols-4">
+                        <div><label class="text-[11px] font-semibold text-gray-400">Fallback: show if empty (optional)</label>
+                          <select x-model="row.fallback_type" class="adm-input !py-1.5 text-xs">
+                            <option value="">No fallback</option>
+                            <option value="category">One category</option>
+                            <option value="categories">Several categories</option>
+                            <option value="keyword">Product keyword</option>
+                          </select>
+                        </div>
+                        <div><label class="text-[11px] font-semibold text-gray-400">Fallback value (slug)</label><input x-model="row.fallback_value" class="adm-input !py-1.5 text-xs" placeholder="e.g. ghee"></div>
+                        <div><label class="text-[11px] font-semibold text-gray-400">Fallback categories</label><input x-model="row.fallback_values" class="adm-input !py-1.5 text-xs" placeholder="ghee, oil, atta (comma separated)"></div>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+                <div class="mt-2 flex gap-2">
+                  <button type="button" @click="addRow()" class="rounded-md bg-forest-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-forest-700">+ Add Tab</button>
+                  <p class="self-center text-[11px] text-gray-400">Icon path example <code>images/nav/nav-ghee.svg</code> (optional). Save to show changes live.</p>
+                </div>
               </div>
             @endif
 
-            @if($s->key === 'welcome')
-              <div class="sm:col-span-3">
-                <label class="adm-label">Welcome Menu Tabs (JSON — All / Ghee / Oils / Atta / Combos / Deal / Superfoods)</label>
-                <textarea name="sections[{{ $s->id }}][tabs_json]" rows="9" class="adm-input !font-mono !text-xs">{{ json_encode($cfg['tabs'] ?? '', JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) }}</textarea>
-                <p class="text-[11px] text-gray-400">
-                  Format: <code>[{"title":"Ghee","key":"ghee","type":"keyword","value":"ghee","active_icon":"images/nav/nav-ghee-active.svg","inactive_icon":"images/nav/nav-ghee.svg"}].</code><br>
-                  <code>type</code>: <code>all</code> | <code>deal</code> (sale items) | <code>category</code> (<code>value</code> = category slug) | <code>categories</code> (<code>values</code> = slug list) | <code>keyword</code> (<code>value</code> = name text). Optional <code>fallback</code> = same object, used when a tab has no products. Icon paths are relative to <code>public/</code>.
-                </p>
+            @if($s->key === 'hero')
+              <div class="sm:col-span-full rounded-lg bg-cream-50 border border-cream-200 p-3 text-sm text-charcoal-600">
+                The hero (top slider) is managed from <a href="{{ route('admin.banners.index') }}" class="font-semibold text-forest-700 underline">Admin → Marketing → Banners</a>. Add or edit a banner with placement <strong>Hero</strong> to change the slides, plus their title / subtitle / button text.
               </div>
             @endif
 
@@ -271,17 +304,45 @@
             @endif
 
             @if($s->key === 'trust_badges')
-              <div class="sm:col-span-2">
-                <label class="adm-label">Trust Badges (JSON: [{"icon":"leaf","title":"...","text":"..."}])</label>
-                <textarea name="sections[{{ $s->id }}][items]" rows="4" class="adm-input !font-mono !text-xs">{{ json_encode($cfg['items'] ?? [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) }}</textarea>
+              <div class="sm:col-span-full" x-data="sectionList('badges', @js($cfg['items'] ?? []))" @input="sync()">
+                <input type="hidden" data-listsync :name="'sections[{{ $s->id }}][items]'" :value="jsonValue">
+                <label class="adm-label">Trust Badges <span class="font-normal text-gray-400">(the "Why Choose Us" points)</span></label>
+                <div class="space-y-2">
+                  <template x-for="(row, i) in rows" :key="i">
+                    <div class="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                        <div><label class="text-[11px] font-semibold text-gray-500">Badge Title</label><input x-model="row.title" class="adm-input !py-1.5 text-xs" placeholder="e.g. Native Sourcing"></div>
+                        <div><label class="text-[11px] font-semibold text-gray-500">Icon (small icon name)</label><input x-model="row.icon" class="adm-input !py-1.5 text-xs" placeholder="e.g. leaf / shield-check / users"></div>
+                        <div class="sm:col-span-2"><label class="text-[11px] font-semibold text-gray-500">Description</label><input x-model="row.text" class="adm-input !py-1.5 text-xs" placeholder="Short description shown under the title"></div>
+                      </div>
+                      <div class="mt-1 flex justify-end"><button type="button" @click="removeRow(i)" class="rounded-md bg-red-50 px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-100">Remove</button></div>
+                    </div>
+                  </template>
+                </div>
+                <div class="mt-2"><button type="button" @click="addRow()" class="rounded-md bg-forest-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-forest-700">+ Add Badge</button></div>
               </div>
             @endif
 
             @if(in_array($s->key, ['native_ingredients','quality']))
-              <div class="sm:col-span-2">
-                <label class="adm-label">Carousel Images (JSON: [{"image":"sections/native1.jpg","url":"","alt":""}])</label>
-                <textarea name="sections[{{ $s->id }}][carousel_json]" rows="5" class="adm-input !font-mono !text-xs">{{ json_encode($cfg['carousel'] ?? [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) }}</textarea>
-                <p class="text-[11px] text-gray-400">Portrait images, one per entry. Paths are relative to <code>storage/app/public/</code>.</p>
+              <div class="sm:col-span-full" x-data="sectionList('carousel', @js($cfg['carousel'] ?? []))" @input="sync()">
+                <input type="hidden" data-listsync :name="'sections[{{ $s->id }}][carousel_json]'" :value="jsonValue">
+                <label class="adm-label">Carousel Images <span class="font-normal text-gray-400">(the rotating images in this section)</span></label>
+                <div class="space-y-2">
+                  <template x-for="(row, i) in rows" :key="i">
+                    <div class="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5">
+                        <div class="sm:col-span-2"><label class="text-[11px] font-semibold text-gray-500">Image path</label><input x-model="row.image" class="adm-input !py-1.5 text-xs" placeholder="sections/native1.jpg"></div>
+                        <div><label class="text-[11px] font-semibold text-gray-500">Alt text</label><input x-model="row.alt" class="adm-input !py-1.5 text-xs" placeholder="Short label"></div>
+                        <div><label class="text-[11px] font-semibold text-gray-500">Link (optional)</label><input x-model="row.url" class="adm-input !py-1.5 text-xs" placeholder="/category or https://"></div>
+                        <div class="flex items-end gap-1">
+                          <span class="flex-1 text-[10px] text-gray-400">Live preview<br><img :src="row.image ? '/storage/' + row.image.replace(/^\/?storage\//,'') : ''" class="mt-1 h-10 w-16 rounded object-cover ring-1 ring-gray-200"></span>
+                          <button type="button" @click="removeRow(i)" class="rounded-md bg-red-50 px-2 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100">Remove</button>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+                <div class="mt-2"><button type="button" @click="addRow()" class="rounded-md bg-forest-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-forest-700">+ Add Image</button></div>
               </div>
             @endif
           </div>
@@ -398,6 +459,55 @@ function emptyRow(schema) {
   if (schema === 'nav_menu') return { label: '', icon: '', url: '', highlight: false, children: [] };
   if (schema === 'promo_cards') return { color: 'green', badge: '', title: '', subtitle: '', code: '', cta: '', link: '' };
   return {};
+}
+
+/* ── Visual list editors for Homepage Sections (no JSON needed) ────────── */
+function blankRow(schema) {
+  if (schema === 'badges')  return { icon: 'leaf', title: '', text: '' };
+  if (schema === 'tabs')    return { title: '', key: '', type: 'keyword', value: '', inactive_icon: '', active_icon: '', fallback_type: '', fallback_value: '', fallback_values: '' };
+  if (schema === 'carousel'|| schema === 'slides') return { image: '', alt: '', url: '' };
+  return {};
+}
+function rowFromObj(schema, o) {
+  o = o || {};
+  if (schema === 'badges')  return { icon: o.icon || 'leaf', title: o.title || '', text: o.text || '' };
+  if (schema === 'tabs')    return {
+    title: o.title || '', key: o.key || (o.title||'').toLowerCase().replace(/\s+/g,'-'), type: o.type || 'keyword',
+    value: o.value || '', inactive_icon: o.inactive_icon || '', active_icon: o.active_icon || '',
+    fallback_type: ((o.fallback||{}).type) || '', fallback_value: (o.fallback||{}).value || '',
+    fallback_values: Array.isArray((o.fallback||{}).values) ? (o.fallback).values.join(', ') : '',
+  };
+  if (schema === 'carousel'|| schema === 'slides') return { image: o.image || '', alt: o.alt || '', url: o.url || '' };
+  return {};
+}
+function sectionList(schema, initial) {
+  let rows = [];
+  try {
+    const arr = typeof initial === 'string' ? JSON.parse(initial) : initial;
+    if (Array.isArray(arr)) rows = arr.map(i => rowFromObj(schema, i));
+  } catch (e) {}
+  if (!rows.length) rows = [blankRow(schema)];
+  const serialize = () => rows.map(r => {
+    const out = {};
+    for (const k in r) if (r[k] !== '') out[k] = r[k];
+    delete out.fallback_type; delete out.fallback_value; delete out.fallback_values;
+    if (schema === 'tabs' && (r.fallback_type || r.fallback_value || r.fallback_values)) {
+      if (r.fallback_values) {
+        out.fallback = { type: r.fallback_type || 'categories', values: r.fallback_values.split(',').map(s => s.trim()).filter(Boolean) };
+      } else {
+        out.fallback = { type: r.fallback_type || 'category', value: r.fallback_value || '' };
+      }
+    }
+    return out;
+  }).filter(r => Object.keys(r).length);
+  return {
+    schema, rows,
+    get jsonValue() { return JSON.stringify(serialize()); },
+    addRow() { this.rows.push(blankRow(this.schema)); },
+    removeRow(i) { this.rows.splice(i, 1); if (!this.rows.length) this.rows.push(blankRow(this.schema)); },
+    move(i, d) { const j = i + d; if (j < 0 || j >= this.rows.length) return; const t = this.rows[i]; this.rows[i] = this.rows[j]; this.rows[j] = t; },
+    sync() { const h = this.$el && this.$el.querySelector('input[type="hidden"][data-listsync]'); if (h) h.value = this.jsonValue; },
+  };
 }
 </script>
 @endpush
