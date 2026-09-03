@@ -394,40 +394,59 @@ class HomeController extends Controller
         return Category::roots()->where('is_active', true)->orderBy('sort_order')->take($limit)->get();
     }
 
-    /** Build the reference 'Product in Focus' section: oil/ghee keyword tabs + first-tab products. */
+    /** Build the reference 'Product in Focus' section: an "All" first tab + keyword/category tabs. */
     protected function focusSection(string $key, array $config, int $count): array
     {
         $tabs = [];
         $sources = [];
         $raw = $config['tabs'] ?? null;
+        $needle = str_contains($key, 'ghee') ? 'ghee' : 'oil';
+        $catSlug = str_contains($key, 'ghee') ? 'ghee' : 'oil';
+        $allTitle = str_contains($key, 'ghee') ? 'All Ghee' : 'All Oils';
+
+        // Default "All" tab = whole category, shown first so the rail starts rich.
+        $all = [
+            'title' => $allTitle,
+            'key' => 'all-'.$catSlug,
+            'type' => 'category',
+            'value' => $catSlug,
+        ];
+        $sources[] = $all;
+        $tabs[] = $this->welcomeTab($all, $count);
 
         if (is_array($raw) && count($raw)) {
             foreach (array_values($raw) as $item) {
                 $row = is_string($item)
                     ? ['title' => ucwords(str_replace('-', ' ', $item)), 'key' => $item, 'type' => 'keyword', 'value' => $item]
                     : (is_array($item) ? $item : []);
+                if (empty($row['key'])) {
+                    $row['key'] = \Illuminate\Support\Str::slug($row['title'] ?? 'tab');
+                }
+                if (empty($row['type'])) {
+                    $row['type'] = 'keyword';
+                }
                 $sources[] = $row;
                 $tabs[] = $this->welcomeTab($row, $count);
             }
         }
 
-        $needle = str_contains($key, 'ghee') ? 'ghee' : 'oil';
-
-        if (! count($tabs)) {
-            $keywords = str_contains($key, 'ghee')
-                ? ['ghee']
-                : ['groundnut', 'mustard', 'sunflower', 'olive', 'coconut', 'sesame'];
-            foreach ($keywords as $term) {
-                $row = [
-                    'title' => ucwords($term),
-                    'key' => \Illuminate\Support\Str::slug($term),
-                    'type' => 'keyword',
-                    'value' => $term,
-                    'fallback' => ['type' => 'category', 'value' => 'oils-ghee'],
-                ];
-                $sources[] = $row;
-                $tabs[] = $this->welcomeTab($row, $count);
+        $keywords = str_contains($key, 'ghee')
+            ? ['ghee']
+            : ['groundnut', 'mustard', 'sunflower', 'olive', 'coconut', 'sesame'];
+        foreach ($keywords as $term) {
+            $exists = collect($sources)->contains(fn ($s) => ($s['value'] ?? '') === $term || ($s['title'] ?? '') === ucwords($term));
+            if ($exists) {
+                continue;
             }
+            $row = [
+                'title' => ucwords($term),
+                'key' => \Illuminate\Support\Str::slug($term),
+                'type' => 'keyword',
+                'value' => $term,
+                'fallback' => ['type' => 'category', 'value' => $catSlug],
+            ];
+            $sources[] = $row;
+            $tabs[] = $this->welcomeTab($row, $count);
         }
 
         $first = $sources[0] ?? null;
