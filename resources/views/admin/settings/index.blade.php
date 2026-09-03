@@ -57,6 +57,8 @@
                   <div
                     x-data="jsonEditor('{{ $field['json_schema'] }}', @js($value))"
                     x-init="$nextTick(() => sync())"
+                    x-effect="sync()"
+                    @input="sync()"
                   >
                     <input type="hidden" :name="'{{ $field['key'] }}'" :value="jsonValue">
                     <div class="space-y-2">
@@ -377,7 +379,10 @@ function jsonEditor(schema, initial) {
     schema,
     rows,
     get jsonValue() { return JSON.stringify(serialize()); },
-    sync() { /* keep hidden input in sync on submit */ },
+    sync() {
+      const h = this.$el && this.$el.querySelector('input[type="hidden"]');
+      if (h) h.value = this.jsonValue;
+    },
     addRow() { this.rows.push(emptyRow(this.schema)); },
     removeRow(idx) { this.rows.splice(idx, 1); },
     addChild(row) { if (!row.children) row.children = []; row.children.push({ label: '', url: '' }); },

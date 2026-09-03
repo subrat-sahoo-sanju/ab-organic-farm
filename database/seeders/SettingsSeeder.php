@@ -99,6 +99,10 @@ class SettingsSeeder extends Seeder
             'display.rewards_subline' => 'Your rewards await',
             'display.whatsapp_number' => '919999999999',
             'display.whatsapp_message' => 'Hi! I have a question about your products.',
+            'display.announcement_items' => json_encode([
+                'Free delivery on orders above ₹499',
+                '100% certified organic · straight from the farm',
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
         ];
 
         $defaults['display.nav_menu'] = json_encode([
