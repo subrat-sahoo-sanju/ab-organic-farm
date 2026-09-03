@@ -193,195 +193,372 @@
   </form>
 
   {{-- ═══ HOMEPAGE SECTIONS MANAGER ═══ --}}
-  <form action="{{ route('admin.settings.sections') }}" method="POST" enctype="multipart/form-data" x-show="activeTab === 'sections'" x-cloak>
+  <form action="{{ route('admin.settings.sections') }}" method="POST" enctype="multipart/form-data" x-show="activeTab === 'sections'" x-cloak novalidate>
     @csrf
-    <div class="adm-section p-6 space-y-4">
-      <h3 class="adm-section-title">Homepage Sections</h3>
-      <div class="adm-divider"></div>
-      <p class="adm-text-secondary text-sm mb-4">Toggle sections, reorder them, and edit their titles/subtitles. Product-count and focus-tab settings make every section dynamic.</p>
+    <div class="space-y-5">
+      {{-- Pane header --}}
+      <div class="adm-pane">
+        <div class="flex flex-wrap items-center justify-between gap-3 px-6 py-5">
+          <div class="flex items-center gap-3">
+            <div class="adm-pane-icon"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg></div>
+            <div>
+              <h3 class="adm-section-title !mb-0.5">Homepage Sections</h3>
+              <p class="adm-text-secondary text-sm">Arrange your homepage — show or hide sections, set titles, and edit content visually. Your changes go live the moment you save.</p>
+            </div>
+          </div>
+          <button type="submit" class="adm-btn-primary flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            Save Sections
+          </button>
+        </div>
+      </div>
+
+      @php
+        $sectionMeta = [
+          'hero' => ['Homepage Hero', 'Big rotating banner at the very top.', 'icon-mega'],
+          'welcome' => ['Welcome Menu', 'Icon menu + product grid that greets shoppers.', 'icon-menu'],
+          'trust_badges' => ['Why Choose Us', 'The trust points displayed under the menu.', 'icon-shield'],
+          'native_ingredients' => ['Native Ingredients', 'Rotating carousel of native produce.', 'icon-leaf'],
+          'quality' => ['Only Perfect', 'Rotating carousel for quality messaging.', 'icon-star'],
+          'combos' => ['Healthy Combos', 'Horizontal rail of combo packs.', 'icon-cart'],
+          'superfoods' => ['Superfoods', 'Horizontal rail of superfoods.', 'icon-spark'],
+          'testimonials' => ['Customer Reviews', 'What customers say.', 'icon-heart'],
+          'focus_oils' => ['Focus: Oils', 'Icon-menu product section for oils.', 'icon-drop'],
+          'focus_ghee' => ['Focus: Ghee', 'Icon-menu product section for ghee.', 'icon-flame'],
+          'recently_viewed' => ['Recently Viewed', 'Personalized, shows once visitor has history.', 'icon-clock'],
+          'app_download' => ['Download App', 'App store download banner.', 'icon-phone'],
+          'logo_slider' => ['Trusted By', 'Brand logo strip.', 'icon-flag'],
+          'promotional_banners' => ['Promotions & Deals', 'Promotional banner strip.', 'icon-tag'],
+          'best_sellers' => ['Best Sellers', 'Best-selling rail.', 'icon-trophy'],
+          'trending' => ['Trending Now', 'Trending rail.', 'icon-fire'],
+          'new_arrivals' => ['New Arrivals', 'New arrivals rail.', 'icon-box'],
+        ];
+      @endphp
 
       @foreach($homepageSections as $idx => $s)
-        @php $cfg = $s->config ?? []; @endphp
-        <div class="rounded-xl border border-gray-200 bg-white p-4">
-          <div class="flex flex-wrap items-start justify-between gap-3">
-            <div class="flex items-center gap-3">
-              <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-forest-50 text-xs font-extrabold text-forest-700">{{ $loop->iteration }}</span>
-              <div>
-                <p class="text-sm font-bold text-gray-800">{{ $s->key }} <span class="ml-1 rounded bg-cream-100 px-1.5 py-0.5 text-[10px] font-semibold text-charcoal-500">{{ $s->key }}</span></p>
-                <label class="relative mt-1 inline-flex cursor-pointer items-center gap-2">
+        @php
+          $cfg = $s->config ?? [];
+          $open = $loop->first ? true : false;
+          $meta = $sectionMeta[$s->key] ?? [Str::headline($s->key), 'Homepage section.', 'icon-leaf'];
+        @endphp
+        <div class="adm-pane" x-data="{ open: {{ $open ? 'true' : 'false' }} }">
+          {{-- Card head --}}
+          <div class="adm-pane-head">
+            <div class="flex min-w-0 items-center gap-3">
+              <div class="adm-pane-icon">
+                @include('admin.settings._sec-icon', ['icon' => $meta[2], 'cls' => 'h-6 w-6'])
+              </div>
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="truncate text-[15px] font-bold text-gray-800 dark:text-white">{{ $meta[0] }}</span>
+                  <span class="adm-chip {{ $s->is_visible ? 'adm-chip-live' : 'adm-chip-draft' }}">
+                    <span class="adm-status-dot {{ $s->is_visible ? 'bg-emerald-500' : 'bg-indigo-400' }}"></span>
+                    {{ $s->is_visible ? 'Live' : 'Hidden' }}
+                  </span>
+                </div>
+                <p class="font-heading truncate text-xs text-gray-400">{{ $meta[1] }}</p>
+              </div>
+            </div>
+
+            <div class="flex shrink-0 items-center gap-2">
+              {{-- Reorder --}}
+              @php
+                $prevKey = $homepageSections->get($loop->index - 1)->id ?? null;
+                $nextKey = $homepageSections->get($loop->index + 1)->id ?? null;
+              @endphp
+              <button type="button" title="Move up" onclick="swapSectionOrder({{ $s->id }}, {{ $prevKey ?? 'null' }}, 'sort_order')" class="grid h-8 w-8 place-items-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-forest-600 dark:hover:bg-gray-700 {{ $prevKey === null ? 'opacity-30 pointer-events-none' : '' }}"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg></button>
+              <button type="button" title="Move down" onclick="swapSectionOrder({{ $s->id }}, {{ $nextKey ?? 'null' }}, 'sort_order')" class="grid h-8 w-8 place-items-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-forest-600 dark:hover:bg-gray-700 {{ $nextKey === null ? 'opacity-30 pointer-events-none' : '' }}"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button>
+
+              {{-- Expand toggle --}}
+              <button type="button" @click="open = !open" class="grid h-8 w-8 place-items-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-forest-600 dark:hover:bg-gray-700">
+                <svg x-show="!open" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                <svg x-show="open" x-cloak class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
+              </button>
+            </div>
+          </div>
+
+          {{-- Card body --}}
+          <div x-show="open" x-transition:enter="transition-opacity duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+
+            {{-- Visibility + order --}}
+            <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 bg-gray-50/60 px-6 py-3 dark:border-gray-800 dark:bg-gray-900/40">
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Show this section on the homepage</span>
+                <label class="relative inline-flex cursor-pointer items-center">
                   <input type="hidden" name="sections[{{ $s->id }}][visible]" value="0">
-                  <input type="checkbox" name="sections[{{ $s->id }}][visible]" value="1" {{ $s->is_visible ? 'checked' : '' }} class="accent-forest">
-                  <span class="text-xs font-medium {{ $s->is_visible ? 'text-forest-700' : 'text-gray-400' }}">{{ $s->is_visible ? 'Visible' : 'Hidden' }}</span>
+                  <input type="checkbox" name="sections[{{ $s->id }}][visible]" value="1" {{ $s->is_visible ? 'checked' : '' }} class="peer sr-only" @change="$el.nextElementSibling.classList.toggle('on', $el.checked)">
+                  <span class="adm-toggle {{ $s->is_visible ? 'on' : '' }}"><span class="adm-toggle-dot"></span></span>
                 </label>
               </div>
-            </div>
-            <div class="flex items-center gap-2">
-              <label class="text-xs font-medium text-gray-500">Order</label>
-              <input type="number" name="sections[{{ $s->id }}][sort_order]" value="{{ $s->sort_order }}" min="0" step="1" class="w-20 adm-input !py-1.5">
-            </div>
-          </div>
-
-          <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div>
-              <label class="adm-label">Title</label>
-              <input type="text" name="sections[{{ $s->id }}][title]" value="{{ $s->title }}" class="adm-input">
-            </div>
-            <div>
-              <label class="adm-label">Subtitle</label>
-              <input type="text" name="sections[{{ $s->id }}][subtitle]" value="{{ $s->subtitle }}" class="adm-input">
-            </div>
-          </div>
-
-          <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <label class="adm-label">Products Count</label>
-              <input type="number" name="sections[{{ $s->id }}][product_count]" value="{{ $cfg['product_count'] ?? '' }}" min="1" max="24" class="adm-input">
+              <div class="flex items-center gap-2">
+                <label class="text-xs font-medium text-gray-500">Position</label>
+                <div class="position-pane flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 dark:border-gray-700 dark:bg-gray-800">
+                  <span class="position-num px-0.5 text-xs font-bold text-forest-600">No. {{ $loop->iteration }}</span>
+                  <input type="hidden" name="sections[{{ $s->id }}][sort_order]" value="{{ $s->sort_order }}">
+                </div>
+              </div>
             </div>
 
-            @if(str_starts_with($s->key, 'focus_') || $s->key === 'welcome')
-              @php $tabHint = $s->key === 'welcome' ? 'All / Ghee / Oils / Atta / Combos / Deal' : ($s->key === 'focus_oils' ? 'Groundnut / Mustard / Sunflower / Olive / Coconut / Sesame' : 'Gir / Desi Cow / Buffalo / Combo'); @endphp
-              <div class="sm:col-span-full" x-data="sectionList('tabs', @js($cfg['tabs'] ?? []))" @input="sync()">
-                <input type="hidden" data-listsync :name="'sections[{{ $s->id }}][tabs_json]'" :value="jsonValue">
-                <label class="adm-label">Menu Tabs — {{ $tabHint }} <span class="font-normal text-gray-400">(each row = one tab on the homepage)</span></label>
-                <div class="space-y-2">
-                  <template x-for="(row, i) in rows" :key="i">
-                    <div class="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5">
-                        <div><label class="text-[11px] font-semibold text-gray-500">Tab Name</label><input x-model="row.title" class="adm-input !py-1.5 text-xs" placeholder="e.g. Ghee"></div>
-                        <div><label class="text-[11px] font-semibold text-gray-500">Show (type)</label>
-                          <select x-model="row.type" class="adm-input !py-1.5 text-xs">
-                            <option value="all">All products</option>
-                            <option value="deal">Sale / deal products</option>
-                            <option value="category">One category</option>
-                            <option value="categories">Several categories</option>
-                            <option value="keyword">Product name / keyword</option>
-                          </select>
-                        </div>
-                        <div><label class="text-[11px] font-semibold text-gray-500">Value (name / category slug)</label><input x-model="row.value" class="adm-input !py-1.5 text-xs" placeholder="e.g. ghee"></div>
-                        <div><label class="text-[11px] font-semibold text-gray-500">Icon path</label><input x-model="row.inactive_icon" class="adm-input !py-1.5 text-xs" placeholder="images/nav/…svg"></div>
-                        <div class="flex items-end gap-1">
-                          <input x-model="row.active_icon" class="adm-input !py-1.5 text-xs" placeholder="active icon (optional)">
-                          <button type="button" @click="removeRow(i)" class="rounded-md bg-red-50 px-2 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100">Remove</button>
-                        </div>
-                      </div>
-                      <div class="mt-2 grid grid-cols-1 gap-2 border-t border-gray-200 pt-2 sm:grid-cols-2 lg:grid-cols-4">
-                        <div><label class="text-[11px] font-semibold text-gray-400">Fallback: show if empty (optional)</label>
-                          <select x-model="row.fallback_type" class="adm-input !py-1.5 text-xs">
-                            <option value="">No fallback</option>
-                            <option value="category">One category</option>
-                            <option value="categories">Several categories</option>
-                            <option value="keyword">Product keyword</option>
-                          </select>
-                        </div>
-                        <div><label class="text-[11px] font-semibold text-gray-400">Fallback value (slug)</label><input x-model="row.fallback_value" class="adm-input !py-1.5 text-xs" placeholder="e.g. ghee"></div>
-                        <div><label class="text-[11px] font-semibold text-gray-400">Fallback categories</label><input x-model="row.fallback_values" class="adm-input !py-1.5 text-xs" placeholder="ghee, oil, atta (comma separated)"></div>
-                      </div>
+            <div class="space-y-6 px-6 py-6">
+              {{-- Title / subtitle / products --}}
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div class="md:col-span-1">
+                  <label class="adm-field">Section Title</label>
+                  <input type="text" name="sections[{{ $s->id }}][title]" value="{{ $s->title }}" class="adm-input" placeholder="Section heading">
+                </div>
+                <div class="md:col-span-1">
+                  <label class="adm-field">Subtitle</label>
+                  <input type="text" name="sections[{{ $s->id }}][subtitle]" value="{{ $s->subtitle }}" class="adm-input" placeholder="Short line under the title">
+                </div>
+                <div class="md:col-span-1">
+                  <label class="adm-field">Products Count</label>
+                  <input type="number" name="sections[{{ $s->id }}][product_count]" value="{{ $cfg['product_count'] ?? '' }}" min="1" max="24" class="adm-input" placeholder="e.g. 8">
+                </div>
+              </div>
+
+              {{-- Section-specific editors --}}
+              @if(str_starts_with($s->key, 'focus_') || $s->key === 'welcome')
+                @php $tabHint = $s->key === 'welcome' ? 'All / Ghee / Oils / Atta / Combos / Deal' : ($s->key === 'focus_oils' ? 'Groundnut / Mustard / Sunflower / Olive / Coconut / Sesame' : 'Gir / Desi Cow / Buffalo / Combo'); @endphp
+                <div class="rounded-2xl border border-gray-100 bg-gray-50/70 p-5 dark:border-gray-800 dark:bg-gray-900/40" x-data="sectionList('tabs', @js($cfg['tabs'] ?? []))" @input="sync()">
+                  <input type="hidden" data-listsync :name="'sections[{{ $s->id }}][tabs_json]'" :value="jsonValue">
+                  <div class="mb-4 flex items-center gap-2">
+                    <span class="adm-rownum">🧩</span>
+                    <div>
+                      <p class="text-sm font-bold text-gray-800 dark:text-white">Menu Tabs</p>
+                      <p class="text-xs text-gray-400">Each row is one tab visitors tap in the menu (<code class="text-forest-600">{{ $tabHint }}</code>).</p>
                     </div>
-                  </template>
-                </div>
-                <div class="mt-2 flex gap-2">
-                  <button type="button" @click="addRow()" class="rounded-md bg-forest-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-forest-700">+ Add Tab</button>
-                  <p class="self-center text-[11px] text-gray-400">Icon path example <code>images/nav/nav-ghee.svg</code> (optional). Save to show changes live.</p>
-                </div>
-              </div>
-            @endif
-
-            @if($s->key === 'hero')
-              <div class="sm:col-span-full rounded-lg bg-cream-50 border border-cream-200 p-3 text-sm text-charcoal-600">
-                The hero (top slider) is managed from <a href="{{ route('admin.banners.index') }}" class="font-semibold text-forest-700 underline">Admin → Marketing → Banners</a>. Add or edit a banner with placement <strong>Hero</strong> to change the slides, plus their title / subtitle / button text.
-              </div>
-            @endif
-
-            @if($s->key === 'app_download')
-              <div>
-                <label class="adm-label">Android Store URL</label>
-                <input type="url" name="sections[{{ $s->id }}][android_url]" value="{{ $cfg['android_url'] ?? '' }}" class="adm-input">
-              </div>
-              <div>
-                <label class="adm-label">iOS Store URL</label>
-                <input type="url" name="sections[{{ $s->id }}][ios_url]" value="{{ $cfg['ios_url'] ?? '' }}" class="adm-input">
-              </div>
-            @endif
-
-            @if($s->key === 'trust_badges')
-              <div class="sm:col-span-full" x-data="sectionList('badges', @js($cfg['items'] ?? []))" @input="sync()">
-                <input type="hidden" data-listsync :name="'sections[{{ $s->id }}][items]'" :value="jsonValue">
-                <label class="adm-label">Trust Badges <span class="font-normal text-gray-400">(the "Why Choose Us" points)</span></label>
-                <div class="space-y-2">
-                  <template x-for="(row, i) in rows" :key="i">
-                    <div class="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
-                        <div><label class="text-[11px] font-semibold text-gray-500">Badge Title</label><input x-model="row.title" class="adm-input !py-1.5 text-xs" placeholder="e.g. Native Sourcing"></div>
-                        <div><label class="text-[11px] font-semibold text-gray-500">Icon (small icon name)</label><input x-model="row.icon" class="adm-input !py-1.5 text-xs" placeholder="e.g. leaf / shield-check / users"></div>
-                        <div class="sm:col-span-2"><label class="text-[11px] font-semibold text-gray-500">Description</label><input x-model="row.text" class="adm-input !py-1.5 text-xs" placeholder="Short description shown under the title"></div>
+                  </div>
+                  <div class="space-y-3">
+                    <template x-for="(row, i) in rows" :key="i">
+                      <div class="adm-list-card">
+                        <div class="mb-3 flex items-center justify-between">
+                          <div class="flex items-center gap-2">
+                            <span class="adm-rownum"><span x-text="i + 1"></span></span>
+                            <span class="text-xs font-semibold uppercase tracking-wide text-gray-400">Tab <span x-text="i + 1"></span></span>
+                          </div>
+                          <button type="button" @click="removeRow(i)" class="inline-flex items-center gap-1 rounded-lg bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20">Remove</button>
+                        </div>
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                          <div>
+                            <label class="adm-field">Tab Name</label>
+                            <input x-model="row.title" class="adm-input" placeholder="e.g. Ghee">
+                          </div>
+                          <div>
+                            <label class="adm-field">Show (type)</label>
+                            <select x-model="row.type" class="adm-input">
+                              <option value="all">All products</option>
+                              <option value="deal">Sale / deal products</option>
+                              <option value="category">One category</option>
+                              <option value="categories">Several categories</option>
+                              <option value="keyword">Product name / keyword</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label class="adm-field">Value</label>
+                            <input x-model="row.value" class="adm-input" placeholder="Name or category slug e.g. ghee">
+                          </div>
+                          <div>
+                            <label class="adm-field">Icon</label>
+                            <input x-model="row.inactive_icon" class="adm-input" placeholder="images/nav/nav-ghee.svg">
+                          </div>
+                        </div>
+                        <details class="mt-3 rounded-lg border border-gray-100 bg-white/60 p-3 dark:border-gray-800 dark:bg-gray-900/30">
+                          <summary class="cursor-pointer text-xs font-semibold text-gray-500 hover:text-forest-600">Fallback (what to show if this tab is empty)</summary>
+                          <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                            <div>
+                              <label class="adm-field">Fallback type</label>
+                              <select x-model="row.fallback_type" class="adm-input">
+                                <option value="">No fallback</option>
+                                <option value="category">One category</option>
+                                <option value="categories">Several categories</option>
+                                <option value="keyword">Product keyword</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label class="adm-field">Fallback value</label>
+                              <input x-model="row.fallback_value" class="adm-input" placeholder="e.g. ghee">
+                            </div>
+                            <div>
+                              <label class="adm-field">Fallback categories</label>
+                              <input x-model="row.fallback_values" class="adm-input" placeholder="ghee, oil, atta">
+                            </div>
+                          </div>
+                        </details>
                       </div>
-                      <div class="mt-1 flex justify-end"><button type="button" @click="removeRow(i)" class="rounded-md bg-red-50 px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-100">Remove</button></div>
-                    </div>
-                  </template>
+                    </template>
+                  </div>
+                  <button type="button" @click="addRow()" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-forest-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-forest-700">
+                    + Add Tab
+                  </button>
                 </div>
-                <div class="mt-2"><button type="button" @click="addRow()" class="rounded-md bg-forest-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-forest-700">+ Add Badge</button></div>
-              </div>
-            @endif
+              @endif
 
-            @if(in_array($s->key, ['native_ingredients','quality']))
-              <div class="sm:col-span-full" x-data="sectionList('carousel', @js($cfg['carousel'] ?? []))" @input="sync()">
-                <input type="hidden" data-listsync :name="'sections[{{ $s->id }}][carousel_json]'" :value="jsonValue">
-                <label class="adm-label">Carousel Images <span class="font-normal text-gray-400">(the rotating images in this section)</span></label>
-                <div class="space-y-2">
-                  <template x-for="(row, i) in rows" :key="i">
-                    <div class="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5">
-                        <div class="sm:col-span-2"><label class="text-[11px] font-semibold text-gray-500">Image path</label><input x-model="row.image" class="adm-input !py-1.5 text-xs" placeholder="sections/native1.jpg"></div>
-                        <div><label class="text-[11px] font-semibold text-gray-500">Alt text</label><input x-model="row.alt" class="adm-input !py-1.5 text-xs" placeholder="Short label"></div>
-                        <div><label class="text-[11px] font-semibold text-gray-500">Link (optional)</label><input x-model="row.url" class="adm-input !py-1.5 text-xs" placeholder="/category or https://"></div>
-                        <div class="flex items-end gap-1">
-                          <span class="flex-1 text-[10px] text-gray-400">Live preview<br><img :src="row.image ? '/storage/' + row.image.replace(/^\/?storage\//,'') : ''" class="mt-1 h-10 w-16 rounded object-cover ring-1 ring-gray-200"></span>
-                          <button type="button" @click="removeRow(i)" class="rounded-md bg-red-50 px-2 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100">Remove</button>
+              @if($s->key === 'hero')
+                <div class="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-500/30 dark:bg-amber-500/10">
+                  <span class="grid h-9 w-9 flex-none place-items-center rounded-xl bg-amber-200/70 text-lg">🖼️</span>
+                  <div>
+                    <p class="text-sm font-bold text-amber-800 dark:text-amber-200">Hero banner is managed from Banners</p>
+                    <p class="mt-0.5 text-sm text-amber-700/90 dark:text-amber-200/80">Add or edit a banner with placement <strong>Hero</strong> in <a href="{{ route('admin.banners.index') }}" class="font-semibold underline">Admin → Marketing → Banners</a> to change the slides, titles and button text.</p>
+                  </div>
+                </div>
+              @endif
+
+              @if($s->key === 'app_download')
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label class="adm-field">Android Store URL</label>
+                    <input type="url" name="sections[{{ $s->id }}][android_url]" value="{{ $cfg['android_url'] ?? '' }}" class="adm-input" placeholder="https://play.google.com/…">
+                  </div>
+                  <div>
+                    <label class="adm-field">iOS (App Store) URL</label>
+                    <input type="url" name="sections[{{ $s->id }}][ios_url]" value="{{ $cfg['ios_url'] ?? '' }}" class="adm-input" placeholder="https://apps.apple.com/…">
+                  </div>
+                </div>
+              @endif
+
+              @if($s->key === 'trust_badges')
+                <div class="rounded-2xl border border-gray-100 bg-gray-50/70 p-5 dark:border-gray-800 dark:bg-gray-900/40" x-data="sectionList('badges', @js($cfg['items'] ?? []))" @input="sync()">
+                  <input type="hidden" data-listsync :name="'sections[{{ $s->id }}][items]'" :value="jsonValue">
+                  <div class="mb-4 flex items-center gap-2">
+                    <span class="adm-rownum">💚</span>
+                    <div>
+                      <p class="text-sm font-bold text-gray-800 dark:text-white">Trust Badges</p>
+                      <p class="text-xs text-gray-400">The "Why Choose Us" points shown together.</p>
+                    </div>
+                  </div>
+                  <div class="space-y-3">
+                    <template x-for="(row, i) in rows" :key="i">
+                      <div class="adm-list-card">
+                        <div class="mb-3 flex items-center justify-between">
+                          <div class="flex items-center gap-2">
+                            <span class="adm-rownum"><span x-text="i + 1"></span></span>
+                            <span class="text-xs font-semibold uppercase tracking-wide text-gray-400">Badge <span x-text="i + 1"></span></span>
+                          </div>
+                          <button type="button" @click="removeRow(i)" class="inline-flex items-center gap-1 rounded-lg bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20">Remove</button>
+                        </div>
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                          <div>
+                            <label class="adm-field">Badge Title</label>
+                            <input x-model="row.title" class="adm-input" placeholder="e.g. Native Sourcing">
+                          </div>
+                          <div>
+                            <label class="adm-field">Icon name</label>
+                            <input x-model="row.icon" class="adm-input" placeholder="e.g. leaf / shield-check / users">
+                          </div>
+                          <div class="sm:col-span-2 lg:col-span-1">
+                            <label class="adm-field">Short Description</label>
+                            <input x-model="row.text" class="adm-input" placeholder="Shown under the title">
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </template>
+                    </template>
+                  </div>
+                  <button type="button" @click="addRow()" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-forest-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-forest-700">+ Add Badge</button>
                 </div>
-                <div class="mt-2"><button type="button" @click="addRow()" class="rounded-md bg-forest-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-forest-700">+ Add Image</button></div>
-              </div>
-            @endif
-          </div>
+              @endif
 
-          @if(in_array($s->key, ['native_ingredients','quality','logo_slider','trust_badges','app_download','focus_oils','focus_ghee']))
-            <div class="mt-3 border-t border-gray-100 pt-3">
-              <p class="text-xs font-bold uppercase tracking-wide text-gray-400 mb-2">Section Images</p>
-              <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              @if(in_array($s->key, ['native_ingredients','quality']))
+                <div class="rounded-2xl border border-gray-100 bg-gray-50/70 p-5 dark:border-gray-800 dark:bg-gray-900/40" x-data="sectionList('carousel', @js($cfg['carousel'] ?? []))" @input="sync()">
+                  <input type="hidden" data-listsync :name="'sections[{{ $s->id }}][carousel_json]'" :value="jsonValue">
+                  <div class="mb-4 flex items-center gap-2">
+                    <span class="adm-rownum">🎠</span>
+                    <div>
+                      <p class="text-sm font-bold text-gray-800 dark:text-white">Carousel Images</p>
+                      <p class="text-xs text-gray-400">The rotating images in this section — each one a slide.</p>
+                    </div>
+                  </div>
+                  <div class="space-y-3">
+                    <template x-for="(row, i) in rows" :key="i">
+                      <div class="adm-list-card">
+                        <div class="mb-3 flex items-center justify-between">
+                          <div class="flex items-center gap-2">
+                            <span class="adm-rownum"><span x-text="i + 1"></span></span>
+                            <span class="text-xs font-semibold uppercase tracking-wide text-gray-400">Slide <span x-text="i + 1"></span></span>
+                          </div>
+                          <button type="button" @click="removeRow(i)" class="inline-flex items-center gap-1 rounded-lg bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20">Remove</button>
+                        </div>
+                        <div class="flex flex-col gap-3 sm:flex-row">
+                          <div class="w-full sm:w-36">
+                            <label class="adm-field">Live preview</label>
+                            <div class="grid h-20 w-full place-items-center rounded-xl border border-dashed border-gray-300 bg-gray-50 text-gray-300 dark:border-gray-700 dark:bg-gray-900">
+                              <img :src="row.image ? '/storage/' + row.image.replace(/^\/?storage\//,'') : ''" x-on:error="$el.style.display='none'" class="h-full w-full rounded-xl object-cover" alt="">
+                              <span x-show="!row.image" class="absolute text-[10px]">no image</span>
+                            </div>
+                          </div>
+                          <div class="flex-1 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <div class="sm:col-span-2">
+                              <label class="adm-field">Image path</label>
+                              <input x-model="row.image" class="adm-input" placeholder="sections/native1.jpg">
+                            </div>
+                            <div>
+                              <label class="adm-field">Alt text</label>
+                              <input x-model="row.alt" class="adm-input" placeholder="Short label">
+                            </div>
+                            <div>
+                              <label class="adm-field">Link (optional)</label>
+                              <input x-model="row.url" class="adm-input" placeholder="/category or https://">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                  <button type="button" @click="addRow()" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-forest-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-forest-700">+ Add Image</button>
+                </div>
+              @endif
+
+              {{-- Section-level images --}}
+              @if(in_array($s->key, ['native_ingredients','quality','logo_slider','trust_badges','app_download','focus_oils','focus_ghee']))
                 @php $imgs = $cfg['images'] ?? []; @endphp
-                <div>
-                  <label class="adm-label">Desktop Image</label>
-                  @if(!empty($imgs['desktop']))
-                    <img src="{{ asset('storage/'.$imgs['desktop']) }}" class="mb-1 h-16 w-full rounded-lg object-cover">
-                  @endif
-                  <input type="file" name="sections[{{ $s->id }}][image_desktop]" class="adm-input !py-1.5 text-xs" accept="image/*">
-                  <input type="hidden" name="sections[{{ $s->id }}][image_desktop_existing]" value="{{ $imgs['desktop'] ?? '' }}">
+                <div class="rounded-2xl border border-gray-100 bg-gray-50/70 p-5 dark:border-gray-800 dark:bg-gray-900/40">
+                  <div class="mb-4 flex items-center gap-2">
+                    <span class="adm-rownum">📷</span>
+                    <div>
+                      <p class="text-sm font-bold text-gray-800 dark:text-white">Section Images</p>
+                      <p class="text-xs text-gray-400">Upload a picture to replace the default. Leave blank to keep the current one.</p>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <div class="adm-imgbox">
+                      @if(!empty($imgs['desktop']))
+                        <img src="{{ asset('storage/'.$imgs['desktop']) }}" alt="Desktop preview" class="!h-28">
+                      @endif
+                      <label class="text-sm font-medium text-gray-500">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"/></svg>
+                        Desktop image
+                        <span class="ml-auto text-[11px] text-gray-400">click to upload</span>
+                      </label>
+                      <input type="file" name="sections[{{ $s->id }}][image_desktop]" accept="image/*">
+                      <input type="hidden" name="sections[{{ $s->id }}][image_desktop_existing]" value="{{ $imgs['desktop'] ?? '' }}">
+                    </div>
+                    <div class="adm-imgbox">
+                      @if(!empty($imgs['mobile']))
+                        <img src="{{ asset('storage/'.$imgs['mobile']) }}" alt="Mobile preview" class="!h-28">
+                      @endif
+                      <label class="text-sm font-medium text-gray-500">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                        Mobile image
+                      </label>
+                      <input type="file" name="sections[{{ $s->id }}][image_mobile]" accept="image/*">
+                      <input type="hidden" name="sections[{{ $s->id }}][image_mobile_existing]" value="{{ $imgs['mobile'] ?? '' }}">
+                    </div>
+                    <div>
+                      <label class="adm-field">Alt / Custom</label>
+                      <input type="text" name="sections[{{ $s->id }}][image_alt]" value="{{ $imgs['alt'] ?? '' }}" placeholder="Alt text" class="adm-input">
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label class="adm-label">Mobile Image</label>
-                  @if(!empty($imgs['mobile']))
-                    <img src="{{ asset('storage/'.$imgs['mobile']) }}" class="mb-1 h-16 w-full rounded-lg object-cover">
-                  @endif
-                  <input type="file" name="sections[{{ $s->id }}][image_mobile]" class="adm-input !py-1.5 text-xs" accept="image/*">
-                  <input type="hidden" name="sections[{{ $s->id }}][image_mobile_existing]" value="{{ $imgs['mobile'] ?? '' }}">
-                </div>
-                <div>
-                  <label class="adm-label">Alt / Custom</label>
-                  <input type="text" name="sections[{{ $s->id }}][image_alt]" value="{{ $imgs['alt'] ?? '' }}" placeholder="Alt text" class="adm-input text-xs">
-                </div>
-              </div>
-              <p class="mt-1 text-[11px] text-gray-400">Upload new images to replace the defaults. Leave blank to keep current.</p>
+              @endif
             </div>
-          @endif
+          </div>
         </div>
       @endforeach
 
-      <div class="adm-divider"></div>
-      <div class="flex justify-end">
-        <button type="submit" class="adm-btn-primary">Save Sections</button>
+      <div class="sticky bottom-4 z-10 flex justify-end">
+        <button type="submit" class="adm-btn-primary flex items-center gap-2 shadow-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          Save Sections
+        </button>
       </div>
     </div>
   </form>
@@ -508,6 +685,21 @@ function sectionList(schema, initial) {
     move(i, d) { const j = i + d; if (j < 0 || j >= this.rows.length) return; const t = this.rows[i]; this.rows[i] = this.rows[j]; this.rows[j] = t; },
     sync() { const h = this.$el && this.$el.querySelector('input[type="hidden"][data-listsync]'); if (h) h.value = this.jsonValue; },
   };
+}
+
+/* ── Reorder homepage section cards (swap two sort_order values) ─── */
+function swapSectionOrder(aId, bId, name) {
+  if (!bId) return;
+  const sel = (id) => document.querySelector('input[name="sections[' + id + '][' + name + ']"]');
+  const a = sel(aId), b = sel(bId);
+  if (!a || !b) return;
+  const tmp = a.value; a.value = b.value; b.value = tmp;
+  // re-caption the "No. N" labels to match the current DOM order
+  const labels = document.querySelectorAll('.position-pane');
+  [...labels].forEach((el, i) => {
+    const t = el.querySelector('.position-num');
+    if (t) t.textContent = 'No. ' + (i + 1);
+  });
 }
 </script>
 @endpush
