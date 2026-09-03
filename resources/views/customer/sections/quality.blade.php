@@ -70,4 +70,6 @@
         </div>
     </div>
 </section>
+@else
+@include('customer.sections._empty-state', ['sec' => $sec])
 @endif
