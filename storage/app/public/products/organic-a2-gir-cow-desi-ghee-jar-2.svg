@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000">
-  <rect width="1000" height="1000" fill="#F4F0E1"/>
-  <circle cx="500" cy="420" r="300" fill="#B5762A" opacity="0.18"/>
-  <circle cx="500" cy="420" r="205" fill="#B5762A" opacity="0.32"/>
-  <text x="500" y="300" font-family="Georgia, serif" font-size="150" font-weight="bold" fill="#ffffff" text-anchor="middle">AB</text>
-  <text x="500" y="360" font-family="Georgia, serif" font-size="42" letter-spacing="6" fill="#14532D" text-anchor="middle" opacity="0.85">ORGANIC FARM</text>
-  <text x="500" y="520" font-family="Verdana, sans-serif" font-size="52" font-weight="700" fill="#14532D" text-anchor="middle">Organic A2 Gir Cow</text>
-  <text x="500" y="620" font-family="Verdana, sans-serif" font-size="30" fill="#14532D" opacity="0.6" text-anchor="middle">1 litre</text>
-</svg>
