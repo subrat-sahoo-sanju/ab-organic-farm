@@ -503,6 +503,40 @@
                 </div>
               @endif
 
+              {{-- Logo Slider: multi-logo strip (Trusted By marquee) --}}
+              @if($s->key === 'logo_slider')
+                @php
+                    $sectionLogos = collect($cfg['logos'] ?? [])->filter(fn ($p) => is_string($p) && $p !== '')->values()->all();
+                @endphp
+                <div class="rounded-2xl border border-dashed border-forest-200 bg-forest-50/60 p-5 dark:border-forest-700 dark:bg-forest-900/20">
+                  <div class="mb-4 flex items-center gap-2">
+                    <span class="adm-rownum">⭐</span>
+                    <div>
+                      <p class="text-sm font-bold text-gray-800 dark:text-white">Brand Partner Logos</p>
+                      <p class="text-xs text-gray-400">Upload the AB Organic / partner brand logos shown in the "Trusted by" strip. Add several, remove any, then Save Sections. Recommended size ~ 400×120.</p>
+                    </div>
+                  </div>
+                  <div id="logo-slider-grid" class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                    @foreach($sectionLogos as $li => $logoPath)
+                      <div class="logo-item relative overflow-hidden rounded-lg border border-gray-200 bg-white p-2">
+                        <img src="{{ asset('storage/'.$logoPath) }}" alt="Brand logo" class="h-20 w-full object-contain">
+                        <button type="button" data-remove="1" data-path="{{ $logoPath }}" data-section="{{ $s->id }}"
+                                class="absolute right-1 top-1 rounded-full bg-red-600 px-1.5 text-xs font-bold text-white hover:bg-red-700">✕</button>
+                        <input type="hidden" name="sections[{{ $s->id }}][logos_existing][]" value="{{ $logoPath }}">
+                      </div>
+                    @endforeach
+                    <div class="flex min-h-[100px] items-center justify-center rounded-lg border border-dashed border-gray-300 bg-white/60 p-2">
+                      <label class="cursor-pointer text-center text-xs font-medium text-gray-500">
+                        <span class="block text-lg">＋</span> Add Logos
+                        <input type="file" name="sections[{{ $s->id }}][logos][]" accept="image/*" multiple class="hidden">
+                      </label>
+                    </div>
+                  </div>
+                  <input type="hidden" name="sections[{{ $s->id }}][removed_logos]" id="removed_logos_{{ $s->id }}">
+                  <p class="mt-2 text-[11px] text-gray-400">Empty list → falls back to your registered Brands' logos automatically.</p>
+                </div>
+              @endif
+
               {{-- Section-level images --}}
               @if(in_array($s->key, ['native_ingredients','quality','logo_slider','trust_badges','app_download','focus_oils','focus_ghee']))
                 @php $imgs = $cfg['images'] ?? []; @endphp
@@ -707,5 +741,20 @@ function swapSectionOrder(aId, bId, name) {
     if (t) t.textContent = 'No. ' + (i + 1);
   });
 }
+
+// Logo Slider remove button: mark a logo for removal on Save.
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-remove]');
+  if (!btn) return;
+  const path = btn.getAttribute('data-path') || '';
+  const item = btn.closest('.logo-item');
+  if (item) item.remove();
+  const holder = document.getElementById('removed_logos_' + (btn.getAttribute('data-section') || ''));
+  if (holder && path) {
+    const kept = holder.value ? holder.value.split(',') : [];
+    kept.push(path);
+    holder.value = kept.join(',');
+  }
+});
 </script>
 @endpush

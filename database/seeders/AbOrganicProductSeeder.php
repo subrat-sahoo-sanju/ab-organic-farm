@@ -118,9 +118,47 @@ class AbOrganicProductSeeder extends Seeder
                 'sort_order' => 0,
                 'is_primary' => true,
             ]);
+
+            // Second HD image per product → powers the multi-image gallery
+            // swatches on the product page AND the card hover-swap.
+            $secondary = $this->makeAltProductSvg($product);
+            ProductImage::create([
+                'product_id' => $product->id,
+                'path' => $secondary,
+                'thumb_path' => $secondary,
+                'alt_text' => $name.' (alternate pack shot)',
+                'sort_order' => 1,
+                'is_primary' => false,
+            ]);
         }
 
         $this->seedReviews();
+
+    $this->ensureAltImages();
+    }
+
+    /** Adds a distinct second HD image to seeded products when they lack one. */
+    protected function ensureAltImages(): void
+    {
+        $products = Product::whereIn('sku', [
+            'AB-GHEE-A2-500', 'AB-GHEE-A2-1000', 'AB-GHEE-VIL-500', 'AB-GHEE-PCK-500', 'AB-GHEE-MUL-1',
+            'AB-OIL-MUS-1', 'AB-OIL-GND-1', 'AB-OIL-COC-500', 'AB-ATTA-WW-5', 'AB-ATTA-MG-5',
+        ])->get();
+
+        foreach ($products as $product) {
+            $altFile = $this->makeAltProductSvg($product);
+            if (ProductImage::where('product_id', $product->id)->where('path', $altFile)->exists()) {
+                continue;
+            }
+            ProductImage::create([
+                'product_id' => $product->id,
+                'path' => $altFile,
+                'thumb_path' => $altFile,
+                'alt_text' => $product->name.' (alternate pack shot)',
+                'sort_order' => 1,
+                'is_primary' => false,
+            ]);
+        }
     }
 
     /** Approved reviews feed both the "Trending" rail and the testimonials section. */
@@ -203,6 +241,39 @@ SVG;
 
         // Stored without the leading "storage/" so it resolves correctly via
         // asset('storage/'.$path) in the storefront. See ProductImageController.
+        return $file;
+    }
+
+    /** Distinct "alternate pack shot" so the gallery swatches + card hover differ. */
+    protected function makeAltProductSvg(Product $product): string
+    {
+        $palettes = [
+            ['#E7EEE2', '#1C4B3A', '#C98A2F'],
+            ['#F0F2E9', '#175B46', '#D39A35'],
+            ['#EAF0E6', '#2E7D32', '#B5762A'],
+        ];
+        [$bg, $fg, $accent] = $palettes[$product->id % count($palettes)];
+        $short = collect(explode(' ', $product->name))->take(3)->implode(' ');
+
+        $svg = <<<SVG
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000">
+  <rect width="1000" height="1000" fill="{$bg}"/>
+  <rect x="140" y="150" width="720" height="700" rx="42" fill="#ffffff" stroke="{$accent}" stroke-width="10"/>
+  <rect x="140" y="150" width="720" height="140" rx="42" fill="{$fg}"/>
+  <rect x="140" y="174" width="720" height="116" fill="{$fg}"/>
+  <circle cx="280" cy="220" r="52" fill="{$accent}"/>
+  <text x="280" y="232" font-family="Georgia, serif" font-size="66" font-weight="bold" font-style="italic" fill="#ffffff" text-anchor="middle">A</text>
+  <text x="500" y="248" font-family="Verdana, sans-serif" font-size="54" font-weight="700" letter-spacing="4" fill="#ffffff" text-anchor="middle">AB ORGANIC</text>
+  <text x="500" y="380" font-family="Verdana, sans-serif" font-size="76" font-weight="700" fill="{$fg}" text-anchor="middle">{$short}</text>
+  <text x="500" y="470" font-family="Verdana, sans-serif" font-size="34" fill="{$fg}" opacity="0.65" text-anchor="middle">{$product->unit_label} · Farm Fresh</text>
+  <circle cx="760" cy="760" r="64" fill="{$accent}" opacity="0.22"/>
+  <text x="760" y="776" font-family="Verdana, sans-serif" font-size="30" font-weight="700" fill="{$fg}" text-anchor="middle">100%</text>
+</svg>
+SVG;
+
+        $file = "products/{$product->slug}-alt.svg";
+        Storage::disk('public')->put($file, $svg);
+
         return $file;
     }
 }

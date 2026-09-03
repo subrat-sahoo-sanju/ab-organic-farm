@@ -91,11 +91,6 @@ class HomeController extends Controller
             }
 
             if ($key === 'logo_slider') {
-                $images = $config['images'] ?? [];
-                $desktop = $images['desktop'] ?? (is_array($images) ? reset($images) : null);
-                // Only a non-empty string is a real logo image path; structured
-                // config (arrays of nulls / keyed objects) must be ignored so we
-                // fall back to the brands logos.
                 $validLocal = static function ($v) {
                     if (is_string($v) && trim($v) !== '') {
                         return trim($v);
@@ -105,10 +100,22 @@ class HomeController extends Controller
                     }
                     return null;
                 };
-                if ($img = $validLocal($desktop)) {
-                    $data[$key] = collect([(object) ['image' => $img, 'url' => '#']]);
+                // 1) Admin-uploaded multi-logo strip (config.logos).
+                $customLogos = collect($config['logos'] ?? [])
+                    ->map(fn ($v) => $validLocal($v))
+                    ->filter();
+                if ($customLogos->isNotEmpty()) {
+                    $data[$key] = $customLogos->map(fn ($img) => (object) ['image' => $img, 'url' => '#']);
                 } else {
-                    $data[$key] = Brand::whereNotNull('logo_path')->take(12)->get()->map(fn ($b) => (object) ['image' => $b->logo_path, 'url' => '#']);
+                    // 2) Single configured image slot.
+                    $images = $config['images'] ?? [];
+                    $desktop = $images['desktop'] ?? (is_array($images) ? reset($images) : null);
+                    if ($img = $validLocal($desktop)) {
+                        $data[$key] = collect([(object) ['image' => $img, 'url' => '#']]);
+                    } else {
+                        // 3) Fall back to the brands logos.
+                        $data[$key] = Brand::whereNotNull('logo_path')->take(12)->get()->map(fn ($b) => (object) ['image' => $b->logo_path, 'url' => '#']);
+                    }
                 }
             }
 

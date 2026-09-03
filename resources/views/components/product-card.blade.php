@@ -42,6 +42,17 @@
         @if($discount > 0)
             <span class="anv-badge-tag absolute left-2 top-2 rounded-md bg-gold-300 px-1.5 py-1 text-[10px] font-extrabold text-anv-600 shadow-sm">{{ $discount }}% OFF</span>
         @endif
+
+        {{-- Small brand label watermark (bottom-left) --}}
+        <span class="pointer-events-none absolute bottom-2 left-2 flex items-center gap-1 rounded-full bg-white/90 px-2 py-1 shadow-sm backdrop-blur-[2px]">
+            <svg viewBox="0 0 24 24" fill="none" class="h-3.5 w-3.5" aria-hidden="true">
+                <circle cx="12" cy="12" r="11" fill="#143B2F"/>
+                <path d="M12 5c4 2 6 5 6 8a6 6 0 0 1-12 0c0-1.5.5-4 2.5-5.5C10 6 11 5.6 12 5z" fill="#67B18A"/>
+                <circle cx="12" cy="13" r="2.6" fill="#CF9726"/>
+                <path d="M12 14.5v-1" stroke="#143B2F" stroke-width="1.2"/>
+            </svg>
+            <span class="text-[9px] font-extrabold uppercase tracking-wide text-[#143B2F]">AB&nbsp;Organic</span>
+        </span>
         @if($badge)
             <span class="anv-badge-tag absolute right-2 top-2 rounded-md bg-anv-600 px-2 py-1 text-[10px] font-bold uppercase text-white shadow-sm">{{ $badge }}</span>
         @endif

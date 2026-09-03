@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000">
+  <rect width="1000" height="1000" fill="#E7EEE2"/>
+  <rect x="140" y="150" width="720" height="700" rx="42" fill="#ffffff" stroke="#C98A2F" stroke-width="10"/>
+  <rect x="140" y="150" width="720" height="140" rx="42" fill="#1C4B3A"/>
+  <rect x="140" y="174" width="720" height="116" fill="#1C4B3A"/>
+  <circle cx="280" cy="220" r="52" fill="#C98A2F"/>
+  <text x="280" y="232" font-family="Georgia, serif" font-size="66" font-weight="bold" font-style="italic" fill="#ffffff" text-anchor="middle">A</text>
+  <text x="500" y="248" font-family="Verdana, sans-serif" font-size="54" font-weight="700" letter-spacing="4" fill="#ffffff" text-anchor="middle">AB ORGANIC</text>
+  <text x="500" y="380" font-family="Verdana, sans-serif" font-size="76" font-weight="700" fill="#1C4B3A" text-anchor="middle">Virgin Coconut Oil</text>
+  <text x="500" y="470" font-family="Verdana, sans-serif" font-size="34" fill="#1C4B3A" opacity="0.65" text-anchor="middle">500 ml · Farm Fresh</text>
+  <circle cx="760" cy="760" r="64" fill="#C98A2F" opacity="0.22"/>
+  <text x="760" y="776" font-family="Verdana, sans-serif" font-size="30" font-weight="700" fill="#1C4B3A" text-anchor="middle">100%</text>
+</svg>

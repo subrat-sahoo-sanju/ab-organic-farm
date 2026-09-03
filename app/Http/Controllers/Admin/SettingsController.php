@@ -84,6 +84,28 @@ class SettingsController extends Controller
             }
             $config['images'] = $images;
 
+            // Logo slider: admin-uploaded multi-logo strip (config.logos).
+            // Kept as an ordered list of storage-relative logo image paths.
+            if ($section->key === 'logo_slider') {
+                $discarded = collect(explode(',', (string) ($payload['removed_logos'] ?? '')))
+                    ->filter()->map(fn ($p) => trim($p));
+                $existing = collect($payload['logos_existing'] ?? [])
+                    ->filter(fn ($p) => is_string($p) && $p !== '')
+                    ->reject(fn ($p) => $discarded->contains(trim($p)))
+                    ->values()
+                    ->all();
+                $config['logos'] = $existing;
+                $uploads = $request->file("sections.{$id}.logos", []);
+                foreach ((array) $uploads as $logoFile) {
+                    if ($logoFile && $logoFile->isValid()) {
+                        $path = $logoFile->store('logos', 'public');
+                        if ($path) {
+                            $config['logos'][] = $path;
+                        }
+                    }
+                }
+            }
+
             $section->update([
                 'title' => $payload['title'] ?? '',
                 'subtitle' => $payload['subtitle'] ?? '',
