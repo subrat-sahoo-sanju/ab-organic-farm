@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Laravel</title>
-        @php $css = @file_get_contents(public_path('static/assets/app-u21Flaqo.css')); @endphp
+        @php $css = @file_get_contents(public_path('static/assets/app-CwmQRRjJ.css')); @endphp
         <style>{!! $css !!}</style>
     </head>
     <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
