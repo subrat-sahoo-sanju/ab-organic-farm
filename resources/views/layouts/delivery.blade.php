@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('static/assets/app-DFSc02Nj.css') }}">
-  <script src="{{ asset('static/assets/app-CohnTwkU.js') }}" defer></script>
+  <link rel="stylesheet" href="{{ route('asset.css') }}">
+  <script src="{{ route('asset.js') }}" defer></script>
   <script>
     function darkMode() {
       return {
