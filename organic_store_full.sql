@@ -1,4 +1,3 @@
-WARNING: option --ssl-verify-server-cert is disabled, because of an insecure passwordless login.
 /*M!999999\- enable the sandbox mode */ 
 -- MariaDB dump 10.20-12.3.3-MariaDB, for osx10.20 (arm64)
 --
