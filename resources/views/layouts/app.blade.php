@@ -9,8 +9,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800&family=Roboto+Slab:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ route('asset.css') }}">
-    <script src="{{ route('asset.js') }}" defer></script>
+    <link rel="icon" href="{{ asset('storage/sections/app-icon.jpg') }}" type="image/jpeg">
+    @php $css = @file_get_contents(public_path('static/assets/app-DFSc02Nj.css')); @endphp
+    @php $js = @file_get_contents(public_path('static/assets/app-CohnTwkU.js')); @endphp
+    <style>{!! $css !!}</style>
+    <script>{!! $js !!}</script>
     <style>[x-cloak]{display:none!important}[data-wishlist].wish-on{background:#fff;box-shadow:0 6px 18px -6px rgba(224,36,65,.45)}</style>
     @stack('head')
     @stack('meta')

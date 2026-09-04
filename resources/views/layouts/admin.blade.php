@@ -8,8 +8,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ route('asset.css') }}">
-  <script src="{{ route('asset.js') }}" defer></script>
+  <link rel="icon" href="{{ asset('storage/sections/app-icon.jpg') }}" type="image/jpeg">
+  @php $css = @file_get_contents(public_path('static/assets/app-DFSc02Nj.css')); @endphp
+  @php $js = @file_get_contents(public_path('static/assets/app-CohnTwkU.js')); @endphp
+  <style>{!! $css !!}</style>
+  <script>{!! $js !!}</script>
   <script>
     function darkMode() {
       return {

@@ -8,7 +8,9 @@ class AssetController extends Controller
 {
     public function css(): Response
     {
-        return response(file_get_contents(public_path('static/assets/app-DFSc02Nj.css')), 200, [
+        $file = $this->findAsset('*.css');
+
+        return response(file_get_contents($file), 200, [
             'Content-Type' => 'text/css',
             'Cache-Control' => 'public, max-age=31536000, immutable',
         ]);
@@ -16,9 +18,23 @@ class AssetController extends Controller
 
     public function js(): Response
     {
-        return response(file_get_contents(public_path('static/assets/app-CohnTwkU.js')), 200, [
+        $file = $this->findAsset('*.js');
+
+        return response(file_get_contents($file), 200, [
             'Content-Type' => 'application/javascript',
             'Cache-Control' => 'public, max-age=31536000, immutable',
         ]);
+    }
+
+    private function findAsset(string $pattern): string
+    {
+        $dir = public_path('static/assets');
+        $files = glob($dir . '/' . $pattern);
+
+        if (empty($files)) {
+            abort(404, 'Asset not found');
+        }
+
+        return $files[0];
     }
 }
