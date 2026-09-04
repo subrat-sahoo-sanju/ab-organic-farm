@@ -9,9 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" href="{{ asset('storage/sections/app-icon.jpg') }}" type="image/jpeg">
     @php $css = @file_get_contents(public_path('static/assets/app-DFSc02Nj.css')); @endphp
-    @php $js = @file_get_contents(public_path('static/assets/app-CohnTwkU.js')); @endphp
     <style>{!! $css !!}</style>
-    <script>{!! $js !!}</script>
 </head>
 <body class="min-h-screen bg-cream-50 font-sans antialiased">
 
@@ -88,5 +86,8 @@
 </div>
 
 <x-ui.toaster/>
+    @stack('scripts')
+    @php $js = @file_get_contents(public_path('static/assets/app-CohnTwkU.js')); @endphp
+    <script>{!! $js !!}</script>
 </body>
 </html>

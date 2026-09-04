@@ -12,9 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
     <link rel="icon" href="{{ asset('storage/sections/app-icon.jpg') }}" type="image/jpeg">
     @php $css = @file_get_contents(public_path('static/assets/app-DFSc02Nj.css')); @endphp
-    @php $js = @file_get_contents(public_path('static/assets/app-CohnTwkU.js')); @endphp
     <style>{!! $css !!}</style>
-    <script>{!! $js !!}</script>
 </head>
 <body class="min-h-screen bg-cream flex items-center justify-center p-4">
 
@@ -38,4 +36,7 @@
     <p class="mt-6 text-center text-xs text-charcoal/40">Fresh · Organic · Trusted — Farm to Home</p>
 </div>
 </body>
+    @stack('scripts')
+    @php $js = @file_get_contents(public_path('static/assets/app-CohnTwkU.js')); @endphp
+    <script>{!! $js !!}</script>
 </html>
