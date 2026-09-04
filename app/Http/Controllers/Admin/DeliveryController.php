@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DeliveryAssignment;
 use App\Models\DeliveryPerson;
 use App\Models\Order;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -28,6 +29,21 @@ class DeliveryController extends Controller
                 'delivered_today' => DeliveryAssignment::where('status', 'delivered')->whereDate('delivered_at', now())->count(),
                 'failed' => DeliveryAssignment::where('status', 'failed')->count(),
             ],
+        ]);
+    }
+
+    public function live(): JsonResponse
+    {
+        return response()->json([
+            'ok' => true,
+            'stats' => [
+                'pending_orders' => Order::where('status', OrderStatus::Packed)->count(),
+                'assigned' => DeliveryAssignment::where('status', 'assigned')->count(),
+                'out' => DeliveryAssignment::where('status', 'out_for_delivery')->count(),
+                'delivered_today' => DeliveryAssignment::where('status', 'delivered')->whereDate('delivered_at', now())->count(),
+                'failed' => DeliveryAssignment::where('status', 'failed')->count(),
+            ],
+            'active_count' => DeliveryAssignment::whereIn('status', ['assigned', 'out_for_delivery'])->count(),
         ]);
     }
 

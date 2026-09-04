@@ -8,7 +8,7 @@
 
 @if($products->count() || $hasTabs)
 <section class="w-full border-t border-sage-100 bg-white py-10 sm:py-14">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div class="mb-8 text-center">
             <h2 class="font-display text-2xl font-extrabold text-charcoal-900 sm:text-3xl">{{ $title }}</h2>
             @if($subtitle)

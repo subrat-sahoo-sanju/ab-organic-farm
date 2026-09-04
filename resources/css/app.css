@@ -8,104 +8,113 @@
    ========================================================================== */
 
 @theme {
-    /* ── Primary: Blinkit-inspired green ────────────────── */
-    --color-forest-50:  #EDFCF2;
-    --color-forest-100: #D4F7E0;
-    --color-forest-200: #ACEFC4;
-    --color-forest-300: #72E2A0;
-    --color-forest-400: #36CC78;
-    --color-forest-500: #0C831F;
-    --color-forest-600: #0A6E1A;
-    --color-forest-700: #085815;
-    --color-forest-800: #064611;
-    --color-forest-900: #043A0E;
+    /* ════════════════════════════════════════════════════════════════
+       AB ORGANIC FARM — "ROYAL HARVEST" LUXURY PALETTE
+       deep emerald · champagne gold · ivory
+       A premium, high-end organic identity: rich deep-emerald green as the
+       primary brand colour, opulent champagne-gold as the star accent, and
+       warm ivory backgrounds. Gold-rich, unmistakably luxury - perfect for
+       premium ghee, cold-pressed oils and fine organic staples.
+       ════════════════════════════════════════════════════════════════ */
 
-    /* ── Mint accent ───────────────────────────────────── */
-    --color-mint-50:  #F0FBF4;
-    --color-mint-100: #DCF8E6;
-    --color-mint-200: #BBF0CF;
-    --color-mint-300: #8DE4AE;
-    --color-mint-400: #58D388;
-    --color-mint-500: #30BD68;
+    /* ── Forest: deep emerald green (primary brand) ── */
+    --color-forest-50:  #F2F7F4;
+    --color-forest-100: #E0EEE6;
+    --color-forest-200: #C2DCCB;
+    --color-forest-300: #9AC4A9;
+    --color-forest-400: #5FA07A;
+    --color-forest-500: #2E7D53;   /* rich emerald */
+    --color-forest-600: #226743;
+    --color-forest-700: #1C5437;
+    --color-forest-800: #153F2A;
+    --color-forest-900: #0E2B1D;
 
-    /* ── Sage border / subtle backgrounds ──────────────── */
-    --color-sage-50:  #F5F9F6;
-    --color-sage-100: #E4EEEA;
-    --color-sage-200: #C9DDD3;
-    --color-sage-300: #A3C5B5;
-    --color-sage-400: #7DAD97;
-    --color-sage-500: #5D9479;
+    /* ── Mint: soft fresh organic green ──────────────────── */
+    --color-mint-50:  #F1F7F3;
+    --color-mint-100: #DFEDE4;
+    --color-mint-200: #BFDAC9;
+    --color-mint-300: #9AC5A9;
+    --color-mint-400: #6FA986;
+    --color-mint-500: #4A8A64;
 
-    /* ── Clay / coral accent ───────────────────────────── */
-    --color-clay-50:  #FFF1ED;
-    --color-clay-100: #FFDDD3;
-    --color-clay-200: #FFBAB0;
-    --color-clay-300: #FF9080;
-    --color-clay-400: #FF6B50;
-    --color-clay-500: #E74D33;
-    --color-clay-600: #C93520;
+    /* ── Sage: muted olive-sage (borders / subtle bg) ─────── */
+    --color-sage-50:  #F5F3ED;
+    --color-sage-100: #E9E4D6;
+    --color-sage-200: #D4C9AB;
+    --color-sage-300: #B5A47A;
+    --color-sage-400: #95824F;
+    --color-sage-500: #74653B;
 
-    /* ── Harvest gold ──────────────────────────────────── */
-    --color-harvest-300: #FFD06B;
-    --color-harvest-400: #FFC233;
-    --color-harvest-500: #F5A623;
+    /* ── Clay: warm terracotta (supporting warm accent) ──── */
+    --color-clay-50:  #FCF4EE;
+    --color-clay-100: #F8E4D7;
+    --color-clay-200: #F0C9AD;
+    --color-clay-300: #E3A67D;
+    --color-clay-400: #D07F4C;
+    --color-clay-500: #B9612B;
+    --color-clay-600: #964A1F;
 
-    /* ── Cream / warm white ────────────────────────────── */
-    --color-cream-50:  #FEFDFB;
-    --color-cream-100: #FDF9F2;
-    --color-cream-200: #F5F0E4;
+    /* ── Harvest: honey-amber (oil glow) ─────────────────── */
+    --color-harvest-300: #F7D675;
+    --color-harvest-400: #F0BC4A;
+    --color-harvest-500: #D99A2B;
 
-    /* ── Charcoal text ─────────────────────────────────── */
-    --color-charcoal-300: #94A39A;
-    --color-charcoal-400: #6B7E73;
-    --color-charcoal-500: #4A5E52;
-    --color-charcoal-600: #3A4B42;
-    --color-charcoal-700: #2C3A33;
-    --color-charcoal-800: #1E2922;
-    --color-charcoal-900: #121B16;
+    /* ── Cream: warm ivory (elegant canvas) ──────────────── */
+    --color-cream-50:  #FEFCF8;
+    --color-cream-100: #FBF7EF;
+    --color-cream-200: #F4ECDC;
 
-    /* ── Anveshan-style deep green (primary) ───────────── */
-    --color-anv-50:  #EEF4F1;
-    --color-anv-100: #DCE8E2;
-    --color-anv-200: #B7D0C3;
-    --color-anv-300: #8FB3A2;
-    --color-anv-400: #5F8F7B;
-    --color-anv-500: #2E6B58;
-    --color-anv-600: #235A49;
-    --color-anv-700: #1A4D42;
-    --color-anv-800: #123C33;
-    --color-anv-900: #0C3028;
+    /* ── Charcoal: deep green-tinted text ────────────────── */
+    --color-charcoal-300: #B9C4BE;
+    --color-charcoal-400: #8F9D95;
+    --color-charcoal-500: #6B7C72;
+    --color-charcoal-600: #50615A;
+    --color-charcoal-700: #3C4A44;
+    --color-charcoal-800: #29342F;
+    --color-charcoal-900: #171E1B;
 
-    /* ── Anveshan-style gold (accent) ──────────────────── */
-    --color-gold-100: #F9F2D9;
-    --color-gold-200: #F1E3B4;
-    --color-gold-300: #E8D998;
-    --color-gold-400: #DBBE62;
-    --color-gold-500: #C9A333;
-    --color-gold-600: #B8862A;
-    --color-gold-700: #8F6A1E;
+    /* ── Anv: deep emerald (PRIMARY BRAND — gold-tinged) ─── */
+    --color-anv-50:  #F4F8F6;
+    --color-anv-100: #E4EEE9;
+    --color-anv-200: #C4D8CF;
+    --color-anv-300: #94BBA9;
+    --color-anv-400: #5C957C;
+    --color-anv-500: #317552;
+    --color-anv-600: #20573C;   /* deep emerald brand */
+    --color-anv-700: #1A4630;
+    --color-anv-800: #123326;
+    --color-anv-900: #0B2018;
 
-    /* ── Soft leaf page background ──────────────────────── */
-    --color-leaf-50:  #FAFCFA;
-    --color-leaf-100: #F1F7F2;
+    /* ── Gold: opulent champagne-gold (STAR ACCENT) ──────── */
+    --color-gold-100: #FBF4D9;
+    --color-gold-200: #F7E6A9;
+    --color-gold-300: #F2D77E;
+    --color-gold-400: #E4BE4A;
+    --color-gold-500: #C9A227;   /* rich champagne gold */
+    --color-gold-600: #A98520;
+    --color-gold-700: #856819;
+
+    /* ── Leaf: warm ivory page background ────────────────── */
+    --color-leaf-50:  #FEFDF9;
+    --color-leaf-100: #FAF5EA;
 
     /* ── Base tokens (enable slash-opacity modifiers) ──── */
-    --color-forest:   #0C831F;
-    --color-mint:     #30BD68;
-    --color-sage:     #A3C5B5;
-    --color-clay:     #E74D33;
-    --color-harvest:  #F5A623;
-    --color-cream:    #FDF9F2;
-    --color-charcoal: #3A4B42;
+    --color-forest:   #2E7D53;
+    --color-mint:     #4A8A64;
+    --color-sage:     #B5A47A;
+    --color-clay:     #B9612B;
+    --color-harvest:  #D99A2B;
+    --color-cream:    #FBF7EF;
+    --color-charcoal: #50615A;
 
     /* ── Typography ────────────────────────────────────── */
     --font-display: 'Roboto Slab', Georgia, serif;
     --font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
 
     /* ── Shadows ───────────────────────────────────────── */
-    --shadow-card: 0 2px 12px -2px rgb(12 131 31 / 0.08);
-    --shadow-lift: 0 8px 30px -4px rgb(12 131 31 / 0.14);
-    --shadow-glow: 0 0 0 3px rgb(12 131 31 / 0.15);
+    --shadow-card: 0 2px 12px -2px rgb(32 87 60 / 0.12);
+    --shadow-lift: 0 8px 30px -4px rgb(32 87 60 / 0.16);
+    --shadow-glow: 0 0 0 3px rgb(201 162 39 / 0.14);
     --shadow-soft: 0 1px 3px rgb(0 0 0 / 0.06);
 
     /* ── Radii ─────────────────────────────────────────── */
@@ -155,6 +164,18 @@
 @keyframes bounce-subtle {
     0%, 100% { transform: translateY(0); }
     50%      { transform: translateY(-4px); }
+}
+
+/* Real-time "live" pulse — used by the delivery/admin live panels. */
+@keyframes ping {
+    0%   { transform: scale(0.6); opacity: 1; }
+    80%, 100% { transform: scale(2.2); opacity: 0; }
+}
+.animate-ping {
+    animation: ping 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.anv-pulse-live {
+    animation: pop 0.8s ease-out;
 }
 
 /* ==========================================================================
@@ -716,42 +737,42 @@ h1, h2, h3, .font-display { font-family: var(--font-display); }
 
 .dark {
     --color-cream-50: #161B18;
-    --color-cream-100: #1E2922;
-    --color-cream-200: #2A3830;
-    --color-forest-50: #0A2D12;
-    --color-forest-100: #0D3A18;
-    --color-sage-100: #253630;
-    --color-sage-200: #2F443C;
+    --color-cream-100: #31261A;
+    --color-cream-200: #453828;
+    --color-forest-50: #2C1C0E;
+    --color-forest-100: #613E20;
+    --color-sage-100: #3A3022;
+    --color-sage-200: #453828;
 }
 
 .dark body,
 .dark {
-    background-color: #121B16;
-    color: #E4EEEA;
+    background-color: #1E160E;
+    color: #F3EBDE;
 }
 
 .dark .admin-card,
 .dark .stat-card {
-    background-color: #1E2922;
-    border-color: #2A3830;
+    background-color: #31261A;
+    border-color: #453828;
 }
 
 .dark .stat-card .stat-value {
-    color: #E4EEEA;
+    color: #F3EBDE;
 }
 
 .dark .stat-card .stat-label {
-    color: #94A39A;
+    color: #C4B7A6;
 }
 
 .dark .card {
-    background-color: #1E2922;
-    border-color: #2A3830;
+    background-color: #31261A;
+    border-color: #453828;
 }
 
 .dark .btn-primary {
     background-color: var(--color-forest-400);
-    color: #121B16;
+    color: #1E160E;
 }
 
 .dark .btn-primary:hover {
@@ -759,8 +780,8 @@ h1, h2, h3, .font-display { font-family: var(--font-display); }
 }
 
 .dark .btn-outline {
-    border-color: #2F443C;
-    color: #C9DDD3;
+    border-color: #453828;
+    color: #E6D3B9;
 }
 
 .dark .btn-outline:hover {
@@ -769,12 +790,12 @@ h1, h2, h3, .font-display { font-family: var(--font-display); }
 }
 
 .dark .btn-ghost {
-    color: #C9DDD3;
+    color: #E6D3B9;
 }
 
 .dark .btn-ghost:hover {
-    background-color: #2A3830;
-    color: #ACEFC4;
+    background-color: #453828;
+    color: #EED086;
 }
 
 /* ==========================================================================
@@ -810,7 +831,7 @@ h1, h2, h3, .font-display { font-family: var(--font-display); }
 }
 .dark .adm-page-count {
     background-color: rgba(54, 204, 120, 0.12);
-    color: #36CC78;
+    color: #D19C2F;
 }
 
 /* ── Section Card (content wrapper) ─────────────────── */
@@ -943,7 +964,7 @@ h1, h2, h3, .font-display { font-family: var(--font-display); }
 }
 .adm-input::placeholder { color: #9ca3af; }
 .adm-input:focus {
-    border-color: #0C831F;
+    border-color: #7C522A;
     box-shadow: 0 0 0 3px rgba(12, 131, 31, 0.1);
 }
 .dark .adm-input {
@@ -953,7 +974,7 @@ h1, h2, h3, .font-display { font-family: var(--font-display); }
 }
 .dark .adm-input::placeholder { color: #6b7280; }
 .dark .adm-input:focus {
-    border-color: #36CC78;
+    border-color: #D19C2F;
     box-shadow: 0 0 0 3px rgba(54, 204, 120, 0.15);
 }
 
@@ -1014,18 +1035,18 @@ textarea.adm-input {
 }
 
 .adm-pill-active {
-    background-color: #0C831F;
+    background-color: #7C522A;
     color: #fff;
-    border-color: #0C831F;
+    border-color: #7C522A;
 }
 .adm-pill-active:hover {
-    background-color: #0A6E1A;
-    border-color: #0A6E1A;
+    background-color: #B07F23;
+    border-color: #B07F23;
 }
 .dark .adm-pill-active {
-    background-color: #36CC78;
+    background-color: #D19C2F;
     color: #111827;
-    border-color: #36CC78;
+    border-color: #D19C2F;
 }
 
 /* ── Badge ──────────────────────────────────────────── */
@@ -1050,7 +1071,7 @@ textarea.adm-input {
     font-size: 0.875rem;
     font-weight: 600;
     color: #fff;
-    background-color: #0C831F;
+    background-color: #7C522A;
     border: none;
     border-radius: 0.75rem;
     cursor: pointer;
@@ -1059,18 +1080,18 @@ textarea.adm-input {
     white-space: nowrap;
 }
 .adm-btn-primary:hover {
-    background-color: #0A6E1A;
+    background-color: #B07F23;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px -2px rgba(12, 131, 31, 0.35);
 }
 .adm-btn-primary:active { transform: translateY(0) scale(0.98); }
 
 .dark .adm-btn-primary {
-    background-color: #36CC78;
+    background-color: #D19C2F;
     color: #111827;
 }
 .dark .adm-btn-primary:hover {
-    background-color: #72E2A0;
+    background-color: #E3B950;
 }
 
 /* ── Outline Button ─────────────────────────────────── */
@@ -1142,12 +1163,12 @@ textarea.adm-input {
     text-decoration: none;
 }
 .adm-btn-ghost:hover {
-    color: #0C831F;
+    color: #7C522A;
     background-color: #f0fdf4;
 }
 .dark .adm-btn-ghost { color: #9ca3af; }
 .dark .adm-btn-ghost:hover {
-    color: #36CC78;
+    color: #D19C2F;
     background-color: rgba(54, 204, 120, 0.08);
 }
 
@@ -1158,16 +1179,16 @@ textarea.adm-input {
     gap: 0.25rem;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #0C831F;
+    color: #7C522A;
     text-decoration: none;
     transition: all 0.15s ease;
 }
 .adm-action-link:hover {
     text-decoration: underline;
-    color: #0A6E1A;
+    color: #B07F23;
 }
-.dark .adm-action-link { color: #36CC78; }
-.dark .adm-action-link:hover { color: #72E2A0; }
+.dark .adm-action-link { color: #D19C2F; }
+.dark .adm-action-link:hover { color: #E3B950; }
 
 .adm-action-link-muted {
     color: #6b7280;
@@ -1277,11 +1298,11 @@ textarea.adm-input {
 .adm-text-primary   { color: #1f2937; }
 .adm-text-secondary { color: #6b7280; }
 .adm-text-muted     { color: #9ca3af; }
-.adm-text-accent    { color: #0C831F; }
+.adm-text-accent    { color: #7C522A; }
 .dark .adm-text-primary   { color: #f3f4f6; }
 .dark .adm-text-secondary { color: #9ca3af; }
 .dark .adm-text-muted     { color: #6b7280; }
-.dark .adm-text-accent    { color: #36CC78; }
+.dark .adm-text-accent    { color: #D19C2F; }
 
 /* ── Divider ────────────────────────────────────────── */
 .adm-divider {
@@ -1320,10 +1341,10 @@ textarea.adm-input {
     transition: background-color 0.2s ease;
 }
 .adm-toggle.on {
-    background-color: #0C831F;
+    background-color: #7C522A;
 }
 .dark .adm-toggle { background-color: #4b5563; }
-.dark .adm-toggle.on { background-color: #36CC78; }
+.dark .adm-toggle.on { background-color: #D19C2F; }
 
 .adm-toggle-dot {
     position: absolute;
@@ -1380,7 +1401,7 @@ textarea.adm-input {
     display: grid;
     place-items: center;
     color: #fff;
-    background: linear-gradient(135deg, #0C831F, #4CAF50);
+    background: linear-gradient(135deg, #7C522A, #5E9C4E);
 }
 
 .adm-kicker {
@@ -1429,7 +1450,7 @@ textarea.adm-input {
 }
 .adm-list-card:focus-within { border-color: #9ddfa8; box-shadow: 0 0 0 3px rgba(12, 131, 31, 0.08); }
 .dark .adm-list-card { border-color: #374151; background-color: #111827; }
-.dark .adm-list-card:focus-within { border-color: #0C831F; }
+.dark .adm-list-card:focus-within { border-color: #7C522A; }
 
 .adm-dot-step { border-radius: 3px; }
 
@@ -1494,17 +1515,17 @@ textarea.adm-input {
   position: absolute;
   bottom: 0; left: 0;
   height: 2px;
-  background: linear-gradient(90deg, #235A49, #2E6B58);
+  background: linear-gradient(90deg, #7C522A, #7C522A);
   border-radius: 9999px;
   transition: transform 0.3s ease, width 0.3s ease;
   will-change: transform, width;
 }
 .anv-tab-btn { white-space: nowrap; color: rgba(36,36,36,.55); transition: color .2s ease; }
-.anv-tab-btn.active { color: #235A49; font-weight: 700; }
+.anv-tab-btn.active { color: #7C522A; font-weight: 700; }
 .anv-tab-btn.active::after {
   content: ''; position: absolute; left: 0.85rem; right: 0.85rem; bottom: -1px;
   height: 2px; border-radius: 9999px;
-  background: linear-gradient(90deg, #235A49, #2E6B58);
+  background: linear-gradient(90deg, #7C522A, #7C522A);
 }
 
 /* Marquee (logo slider / combo rails) */
@@ -1549,10 +1570,10 @@ textarea.adm-input {
 
 /* Reviews slider */
 .anv-rev-nav { width: 40px; height: 40px; border-radius: 9999px; display: grid; place-items: center;
-  background: #fff; border: 1px solid #EDF3EF; color: #235A49; cursor: pointer; transition: all .2s ease; }
-.anv-rev-nav:hover { background: #235A49; color: #fff; }
+  background: #fff; border: 1px solid #EDF3EF; color: #7C522A; cursor: pointer; transition: all .2s ease; }
+.anv-rev-nav:hover { background: #7C522A; color: #fff; }
 .anv-rev-dot { width: 8px; height: 8px; border-radius: 9999px; background: #d9e2dc; transition: .2s; cursor: pointer; }
-.anv-rev-dot.active { width: 24px; background: #235A49; }
+.anv-rev-dot.active { width: 24px; background: #7C522A; }
 
 /* App download strip */
 @keyframes anvShine { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
@@ -1570,7 +1591,7 @@ textarea.adm-input {
 
 /* ═══════════ APP DOWNLOAD BAR (reference: anveshan.farm) ═══════════ */
 .app-download-bar {
-  background: #00584b;
+  background: #7C522A;
   color: #ffffff;
   width: 100%;
   padding: 10px 0;
@@ -1610,7 +1631,7 @@ textarea.adm-input {
 .app-download-bar__sub { font-size: 12px; color: rgba(255,255,255,.92); margin: 1px 0 0; }
 .app-download-bar__btn {
   display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 999px;
-  background: linear-gradient(135deg,#ffd700 0%,#ffdf6b 100%); color: #00584b; font-weight: 800;
+  background: linear-gradient(135deg,#ffd700 0%,#ffdf6b 100%); color: #7C522A; font-weight: 800;
   font-size: 13px; text-decoration: none; transition: transform .2s ease, box-shadow .2s ease; white-space: nowrap;
 }
 .app-download-bar__btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.25); }
@@ -1621,3 +1642,105 @@ textarea.adm-input {
 }
 .app-download-bar__close:hover { color: #fff; background: rgba(255,255,255,.15); }
 .app-download-bar__close svg { width: 16px; height: 16px; }
+
+/* ════════════════════════════════════════════════════════════════════
+   LEGACY-TO-ROYAL-HARVEST BRAND REMAP
+   Swaps the old espresso-brown brand accents to the new deep-emerald
+   + champagne-gold identity WITHOUT editing dozens of blade files.
+   Targets inline styles and component classes that use the previous
+   hard-coded brand hexes (#7C522A, #B07F23, #D19C2F, #2C1C0E, etc).
+   ════════════════════════════════════════════════════════════════════ */
+:root {
+    --rb-primary: #1F5C3F;   /* new deep emerald brand */
+    --rb-primary-dark: #173F2A;
+    --rb-primary-soft: #EAF4EE;
+    --rb-gold: #C9A227;
+    --rb-gold-dark: #A98520;
+    --rb-gold-soft: #FBF4D9;
+}
+
+/* Inline style color remap (old #7C522A brand brown → new emerald) */
+[style*="color:#7C522A"] { color: #1F5C3F !important; }
+[style*="color: #7C522A"] { color: #1F5C3F !important; }
+[style*="background:#7C522A"] { background: #1F5C3F !important; }
+[style*="background: #7C522A"] { background: #1F5C3F !important; }
+[style*="background-color:#7C522A"] { background-color: #1F5C3F !important; }
+[style*="background-color: #7C522A"] { background-color: #1F5C3F !important; }
+[style*="stroke:#7C522A"] { stroke: #C9A227 !important; }
+[style*="stroke: #7C522A"] { stroke: #C9A227 !important; }
+[style*="fill:#7C522A"] { fill: #C9A227 !important; }
+[style*="fill: #7C522A"] { fill: #C9A227 !important; }
+[style*="border-color:#7C522A"] { border-color: #1F5C3F !important; }
+[style*="border-color: #7C522A"] { border-color: #1F5C3F !important; }
+
+/* Old gold → new champagne-gold */
+[style*="#B07F23"] { color: #A98520 !important; }
+[style*="#D19C2F"] { color: #C9A227 !important; }
+
+/* Dark charcoal/brown text → emerald-dark */
+[style*="color:#2C1C0E"] { color: #173F2A !important; }
+[style*="color: #2C1C0E"] { color: #173F2A !important; }
+[style*="background:#2C1C0E"] { background: #173F2A !important; }
+[style*="background: #2C1C0E"] { background: #173F2A !important; }
+[style*="background-color:#2C1C0E"] { background-color: #173F2A !important; }
+[style*="background-color: #2C1C0E"] { background-color: #173F2A !important; }
+
+/* Warm hover chips #eef5f0 / #f6efe3 → emerald-soft */
+[style*="#eef5f0"] { background: #EAF4EE !important; }
+[style*="#EEF5F0"] { background: #EAF4EE !important; }
+[style*="#f6efe3"] { background: #EAF4EE !important; }
+
+/* The header nav link gold-amber star etc. */
+.nav-rainbow {
+    background: linear-gradient(90deg, #B8860B, #C9A227, #1F5C3F, #2E7D53);
+    -webkit-background-clip: text; background-clip: text;
+}
+
+/* Header / footer brand accent bars & underlines that used brown → emerald */
+.bg-anv-600, .bg-anv-700, .bg-anv-800, .bg-anv-900 { background-color: #1F5C3F; }
+.text-anv-600, .text-anv-700, .text-anv-800 { color: #1F5C3F; }
+.border-anv-500, .border-anv-600 { border-color: #1F5C3F; }
+
+/* Gold chips used for badges stay as rich gold */
+.bg-gold-400, .bg-gold-300 { background-color: #E4BE4A; }
+.text-gold-600, .text-gold-700 { color: #A98520; }
+
+/* ═══ Tailwind arbitrary-arbitrary brand remap (class-based) ═══
+   The old espresso-brown was baked into ~156 text-[#7C522A] classes.
+   These overrides flip them to the new emerald + gold theme. */
+.text-\[\#7C522A\] { color: #1F5C3F !important; }
+.bg-\[\#7C522A\] { background-color: #1F5C3F !important; }
+.border-\[\#7C522A\] { border-color: #1F5C3F !important; }
+.ring-\[\#7C522A\] { --tw-ring-color: #1F5C3F !important; }
+.text-\[\#613E20\] { color: #1A4630 !important; }
+.bg-\[\#613E20\] { background-color: #1A4630 !important; }
+.text-\[\#2C1C0E\] { color: #173F2A !important; }
+.bg-\[\#2C1C0E\] { background-color: #173F2A !important; }
+.border-\[\#2C1C0E\] { border-color: #173F2A !important; }
+.text-\[\#B07F23\] { color: #A98520 !important; }
+.bg-\[\#B07F23\] { background-color: #A98520 !important; }
+.text-\[\#D19C2F\] { color: #C9A227 !important; }
+.bg-\[\#D19C2F\] { background-color: #C9A227 !important; }
+.text-\[\#CF9726\] { color: #C9A227 !important; }
+.border-\[\#CF9726\] { border-color: #C9A227 !important; }
+.hover\:bg-\[\#CF9726\]:hover { background-color: #C9A227 !important; }
+.text-\[\#b8860b\] { color: #A98520 !important; }
+.hover\:bg-\[\#eef5f0\]:hover { background-color: #EAF4EE !important; }
+.bg-\[\#eef5f0\] { background-color: #EAF4EE !important; }
+.hover\:bg-\[\#f6efe3\]:hover { background-color: #EAF4EE !important; }
+.bg-\[\#f6efe3\] { background-color: #EAF4EE !important; }
+.hover\:bg-\[\#7C522A\]:hover { background-color: #1F5C3F !important; }
+.hover\:bg-\[\#2C1C0E\]:hover { background-color: #173F2A !important; }
+.focus\:border-\[\#7C522A\]:focus { border-color: #1F5C3F !important; }
+.focus\:ring-\[\#7C522A\]\/20:focus { --tw-ring-color: rgb(31 92 63 / 0.2) !important; }
+.group-focus-within\:text-\[\#7C522A\]:focus-within, .group-focus-within\:text-anv-600:focus-within { color: #1F5C3F !important; }
+/* Gradient stops (from/via/to utilities) — old brand brown → emerald */
+.from-\[\#7C522A\] { --tw-gradient-from: #1F5C3F !important; }
+.via-\[\#7C522A\] { --tw-gradient-via: #2E7D53 !important; }
+.to-\[\#7C522A\] { --tw-gradient-to: #1F5C3F !important; }
+.from-\[\#2C1C0E\] { --tw-gradient-from: #173F2A !important; }
+.via-\[\#2C1C0E\] { --tw-gradient-via: #153F2A !important; }
+.to-\[\#2C1C0E\] { --tw-gradient-to: #173F2A !important; }
+.from-\[\#1E160E\] { --tw-gradient-from: #0E2B1D !important; }
+.text-\[\#9AA79F\] { color: #6B7C72 !important; }
+.bg-\[\#FFF6DB\] { background-color: #FBF4D9 !important; }

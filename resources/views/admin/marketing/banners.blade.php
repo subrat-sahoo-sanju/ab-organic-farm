@@ -1,10 +1,10 @@
 @extends('layouts.admin', ['title' => 'Banners'])
 
 @section('content')
-<div class="space-y-4" x-data="bannerManager()">
+<div class="space-y-4" x-data="bannerManager()" @click="onGridClick($event)">
 
   <div class="flex flex-wrap items-center justify-between gap-4">
-    <h2 class="adm-page-title">All Banners <span class="adm-page-count">{{ $banners->count() }}</span></h2>
+    <h2 class="adm-page-title">All Banners <span id="banner-count" class="adm-page-count">{{ $banners->count() }}</span></h2>
     <button @click="openCreate()" class="adm-btn-primary">+ Add Banner</button>
   </div>
 
@@ -12,55 +12,8 @@
     <div class="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">{{ session('success') }}</div>
   @endif
 
-  <div class="adm-grid-3">
-    @forelse($banners as $banner)
-      <div class="adm-section overflow-hidden">
-        <div class="h-40 bg-forest/5 p-2">
-          @if($banner->desktop_image)
-            <img src="{{ asset('storage/'.$banner->desktop_image) }}" class="h-full w-full rounded-xl object-cover" alt="{{ $banner->title }}">
-          @else
-            <div class="flex h-full items-center justify-center text-3xl opacity-20">🎯</div>
-          @endif
-        </div>
-        <div class="p-4 space-y-2">
-          <div class="flex items-start justify-between gap-2">
-            <div class="min-w-0">
-              <h3 class="truncate font-semibold">{{ $banner->title }}</h3>
-              @if($banner->subtitle)
-                <p class="truncate text-xs adm-text-muted">{{ $banner->subtitle }}</p>
-              @endif
-            </div>
-            @if($banner->is_active)
-              <span class="shrink-0 adm-badge bg-forest/10 text-forest">Active</span>
-            @else
-              <span class="shrink-0 adm-badge bg-charcoal/5 text-charcoal/50">Inactive</span>
-            @endif
-          </div>
-          <div class="flex items-center gap-3 text-[10px] adm-text-muted">
-            <span class="rounded-full bg-forest/5 px-2 py-0.5 font-semibold uppercase text-forest/70">{{ $banner->placement }}</span>
-            <span>Sort: {{ $banner->sort_order }}</span>
-          </div>
-          @if($banner->button_text)
-            <p class="text-xs adm-text-muted">CTA: "{{ $banner->button_text }}" → {{ $banner->button_url }}</p>
-          @endif
-          <div class="flex items-center gap-2 pt-2 border-t border-sage/20">
-            <button @click="openEdit({{ $banner->toJson() }})" class="adm-action-link text-xs">Edit</button>
-            <form action="{{ route('admin.banners.toggle', $banner) }}" method="POST">
-              @csrf
-              <button type="submit" class="adm-btn-ghost text-xs font-semibold {{ $banner->is_active ? 'text-amber-600' : 'text-forest' }}">
-                {{ $banner->is_active ? 'Deactivate' : 'Activate' }}
-              </button>
-            </form>
-            <form action="{{ route('admin.banners.destroy', $banner) }}" method="POST" onsubmit="return confirm('Delete this banner?')">
-              @csrf @method('DELETE')
-              <button type="submit" class="adm-btn-ghost text-xs font-semibold text-red-500">Delete</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    @empty
-      <div class="col-span-full adm-empty">No banners found. Create your first banner to get started.</div>
-    @endforelse
+  <div id="banners-grid" class="adm-grid-3">
+    @include('admin.marketing.banners._grid', ['banners' => $banners])
   </div>
 
   {{-- Modal --}}
@@ -70,49 +23,47 @@
         <h3 class="adm-modal-title" x-text="editingId ? 'Edit Banner' : 'Create Banner'"></h3>
         <button @click="showModal = false" class="adm-btn-ghost text-lg">&times;</button>
       </div>
-      <form :action="editingId ? '{{ url('admin/banners') }}/' + editingId : '{{ route('admin.banners.store') }}'" method="POST" enctype="multipart/form-data" class="adm-modal-body space-y-4">
+      <form :action="editingId ? '{{ url('admin/banners') }}/' + editingId : '{{ route('admin.banners.store') }}'" method="POST" enctype="multipart/form-data" @submit.prevent="save($event)" class="adm-modal-body space-y-4">
         @csrf
         <template x-if="editingId"><input type="hidden" name="_method" value="PATCH"></template>
 
         <div>
           <label class="adm-label">Title *</label>
           <input type="text" name="title" x-model="form.title" required class="adm-input">
-          @error('title') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+          <template x-if="errors.title"><p class="mt-1 text-xs text-red-500" x-text="errors.title"></p></template>
         </div>
         <div>
           <label class="adm-label">Subtitle</label>
           <input type="text" name="subtitle" x-model="form.subtitle" class="adm-input">
-          @error('subtitle') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
         </div>
         <div class="grid gap-4 sm:grid-cols-2">
           <div>
             <label class="adm-label">Placement *</label>
-            <select name="placement" x-model="form.placement" required class="adm-input">
+            <select name="placement" x-model="form.placement" @change="computeSizeMsg()" class="adm-input">
               <option value="hero">Hero</option>
               <option value="strip">Strip</option>
               <option value="category_top">Category Top</option>
               <option value="promotional">Promotional</option>
             </select>
-            @error('placement') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
           </div>
           <div>
             <label class="adm-label">Sort Order</label>
             <input type="number" name="sort_order" x-model="form.sort_order" min="0" class="adm-input">
-            @error('sort_order') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
           </div>
         </div>
         <div>
           <label class="adm-label">Button Text</label>
           <input type="text" name="button_text" x-model="form.button_text" placeholder="Shop Now" class="adm-input">
-          @error('button_text') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
         </div>
         <div>
           <label class="adm-label">Button URL</label>
           <input type="text" name="button_url" x-model="form.button_url" placeholder="/shop or https://example.com" class="adm-input">
-          @error('button_url') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
         </div>
         <div>
-          <label class="adm-label" x-text="editingId ? 'Desktop Image (leave empty to keep current)' : 'Desktop Image *'"></label>
+          <label class="adm-label">
+            Desktop Image *
+            <span class="font-normal" x-text="'· Required ' + sizeText + ' for ' + placementLabel"></span>
+          </label>
           <input type="file" name="desktop_image" accept="image/jpeg,image/png,image/webp,image/svg+xml" :required="!editingId" @change="previewFile($event)" class="adm-input">
           <template x-if="editingId && form.desktop_image && !newPreview">
             <div class="mt-2 h-16 w-32 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
@@ -124,12 +75,12 @@
               <div class="relative aspect-video">
                 <img :src="newPreview" class="h-full w-full object-contain rounded-md">
               </div>
-              <p class="mt-1.5 text-[11px] adm-text-muted">
-                Selected file: <span x-text="newPreviewDims ? newPreviewDims[0] + ' × ' + newPreviewDims[1] + 'px' : '…'"></span>
-              </p>
+              <p x-show="sizeMsg" class="mt-1.5 text-[11px] leading-relaxed"
+                :class="sizeOk ? 'text-green-600' : 'text-amber-600'" x-html="sizeMsg"></p>
+              <strong x-show="!sizeOk" class="mt-1 block text-[11px] font-semibold text-amber-600">The selected area will be auto-cropped — the image will not be stretched or blurred.</strong>
             </div>
           </template>
-          @error('desktop_image') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+          <template x-if="errors.desktop_image"><p class="mt-1 text-xs text-red-500" x-text="errors.desktop_image"></p></template>
         </div>
         <div class="flex gap-6">
           <label class="flex items-center gap-2 text-sm">
@@ -144,21 +95,42 @@
         <p class="text-[11px] adm-text-muted -mt-2">When text is hidden, clicking the image redirects to the Button URL.</p>
         <div class="adm-modal-footer">
           <button type="button" @click="showModal = false" class="adm-btn-outline">Cancel</button>
-          <button type="submit" class="adm-btn-primary" x-text="editingId ? 'Update Banner' : 'Create Banner'"></button>
+          <button type="submit" class="adm-btn-primary" x-text="editingId ? 'Update Banner' : 'Create Banner'" :disabled="busy"></button>
         </div>
       </form>
     </div>
   </div>
 
+  {{-- Toast --}}
+  <div id="banner-toast" class="fixed bottom-6 right-6 z-[100]"></div>
+
 </div>
 
 <script>
 function bannerManager() {
+  const PLACEMENT_SIZES = {
+    hero:          [1600, 500],
+    strip:         [1200, 150],
+    category_top:  [1200, 220],
+    promotional:   [1200, 400],
+  };
+  const PLACEMENT_LABEL = {
+    hero: 'Hero',
+    strip: 'Strip',
+    category_top: 'Category Top',
+    promotional: 'Promotional',
+  };
+  const csrf = '{{ csrf_token() }}';
+
   return {
     showModal: false,
+    busy: false,
     editingId: null,
     newPreview: '',
     newPreviewDims: null,
+    sizeMsg: '',
+    sizeOk: true,
+    errors: {},
     form: {
       title: '',
       subtitle: '',
@@ -170,33 +142,80 @@ function bannerManager() {
       is_active: true,
       show_text: true,
     },
+    get sizeText() {
+      const [w, h] = PLACEMENT_SIZES[this.form.placement] || PLACEMENT_SIZES.promotional;
+      return w + '×' + h;
+    },
+    get placementLabel() {
+      return PLACEMENT_LABEL[this.form.placement] || 'Hero';
+    },
+    computeSizeMsg() {
+      if (!this.newPreviewDims) {
+        this.sizeMsg = '';
+        this.sizeOk = true;
+        return;
+      }
+      const [reqW, reqH] = PLACEMENT_SIZES[this.form.placement] || PLACEMENT_SIZES.promotional;
+      const [aw, ah] = this.newPreviewDims;
+      if (aw === reqW && ah === reqH) {
+        this.sizeMsg = 'Your image is <strong>' + aw + '×' + ah + '</strong> — exactly the required ' + reqW + '×' + reqH + '. Perfect!';
+        this.sizeOk = true;
+      } else if (aw >= reqW && ah >= reqH) {
+        this.sizeMsg = 'Your image is <strong>' + aw + '×' + ah + '</strong> — big enough for ' + reqW + '×' + reqH + '. Will be auto-cropped to fit perfectly.';
+        this.sizeOk = true;
+      } else {
+        this.sizeMsg = 'Your image is <strong>' + aw + '×' + ah + '</strong> — smaller than required ' + reqW + '×' + reqH + '. Please use a larger, higher-quality image.';
+        this.sizeOk = false;
+      }
+    },
     previewFile(ev) {
       const f = ev.target.files && ev.target.files[0];
       if (!f) {
         this.newPreview = '';
         this.newPreviewDims = null;
+        this.sizeMsg = '';
+        this.sizeOk = true;
+        return;
+      }
+      if (f.size > 4096 * 1024) {
+        this.newPreview = '';
+        this.newPreviewDims = null;
+        this.sizeOk = false;
+        this.sizeMsg = 'Your image is <strong>' + (Math.round(f.size / 1048576 * 10) / 10) + ' MB</strong> — over the 4 MB upload limit. Please use a smaller image.';
         return;
       }
       const reader = new FileReader();
       reader.onload = (e) => {
         this.newPreview = e.target.result;
         const img = new Image();
-        img.onload = () => { this.newPreviewDims = [img.naturalWidth, img.naturalHeight]; };
+        img.onload = () => {
+          this.newPreviewDims = [img.naturalWidth, img.naturalHeight];
+          this.computeSizeMsg();
+        };
         img.src = e.target.result;
       };
       reader.readAsDataURL(f);
     },
-    openCreate() {
+    resetForm() {
       this.editingId = null;
+      this.errors = {};
       this.newPreview = '';
       this.newPreviewDims = null;
+      this.sizeMsg = '';
+      this.sizeOk = true;
       this.form = { title: '', subtitle: '', placement: 'hero', sort_order: 0, button_text: '', button_url: '', desktop_image: '', is_active: true, show_text: true };
+    },
+    openCreate() {
+      this.resetForm();
       this.showModal = true;
     },
     openEdit(banner) {
       this.editingId = banner.id;
+      this.errors = {};
       this.newPreview = '';
       this.newPreviewDims = null;
+      this.sizeMsg = '';
+      this.sizeOk = true;
       this.form = {
         title: banner.title || '',
         subtitle: banner.subtitle || '',
@@ -209,8 +228,76 @@ function bannerManager() {
         show_text: banner.show_text !== false,
       };
       this.showModal = true;
-    }
-  }
+    },
+    onGridClick(ev) {
+      const btn = ev.target.closest('[data-action]');
+      if (!btn) return;
+      const act = btn.getAttribute('data-action');
+      if (act === 'edit') {
+        this.openEdit(JSON.parse(btn.getAttribute('data-banner')));
+        return;
+      }
+      const id = btn.getAttribute('data-id');
+      if (act === 'toggle') { this.toggleBanner(id); }
+      else if (act === 'delete') { this.removeBanner(id); }
+    },
+    renderGrid(d) {
+      const grid = document.getElementById('banners-grid');
+      if (grid && d.grid) grid.innerHTML = d.grid;
+      const count = document.getElementById('banner-count');
+      if (count && d.count !== undefined) count.textContent = d.count;
+    },
+    toast(msg, isErr) {
+      const box = document.getElementById('banner-toast');
+      if (!box) return;
+      const el = document.createElement('div');
+      el.className = 'mb-2 rounded-xl border px-4 py-3 text-sm shadow-lg transition ' + (isErr ? 'border-red-200 bg-red-50 text-red-700' : 'border-green-200 bg-green-50 text-green-700');
+      el.textContent = msg;
+      box.appendChild(el);
+      setTimeout(() => { el.classList.add('opacity-0'); setTimeout(() => el.remove(), 300); }, 3200);
+    },
+    async save(ev) {
+      const form = ev.target;
+      this.busy = true;
+      this.errors = {};
+      try {
+        const res = await fetch(form.action, { method: 'POST', headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' }, body: new FormData(form) });
+        const data = await res.json().catch(() => ({ ok: false, message: 'Something went wrong. Please try again.' }));
+        if (data.ok) {
+          this.renderGrid(data);
+          this.toast(data.message);
+          this.resetForm();
+          this.showModal = false;
+        } else if (data.errors) {
+          this.errors = Object.fromEntries(Object.entries(data.errors).map(([k, v]) => [k, v[0] || 'Invalid value.']));
+          this.toast(Object.values(this.errors)[0] || 'Please fix the highlighted fields.', true);
+        } else {
+          this.toast(data.message || 'Could not save.', true);
+        }
+      } catch (e) {
+        this.toast('Network error. Please retry.', true);
+      } finally {
+        this.busy = false;
+      }
+    },
+    async toggleBanner(id) {
+      try {
+        const res = await fetch('/admin/banners/' + id + '/toggle', { method: 'POST', headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' } });
+        const data = await res.json().catch(() => ({ ok: false, message: 'Something went wrong.' }));
+        if (data.ok) { this.renderGrid(data); this.toast(data.message); }
+        else { this.toast(data.message, true); }
+      } catch (e) { this.toast('Network error.', true); }
+    },
+    async removeBanner(id) {
+      if (!confirm('Delete this banner?')) return;
+      try {
+        const res = await fetch('/admin/banners/' + id, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' } });
+        const data = await res.json().catch(() => ({ ok: false, message: 'Something went wrong.' }));
+        if (data.ok) { this.renderGrid(data); this.toast(data.message); }
+        else { this.toast(data.message, true); }
+      } catch (e) { this.toast('Network error.', true); }
+    },
+  };
 }
 </script>
 @endsection

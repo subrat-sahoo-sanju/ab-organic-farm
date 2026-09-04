@@ -3,7 +3,7 @@
 @section('title', 'COD Collections')
 
 @section('content')
-<div class="mx-auto max-w-7xl space-y-6">
+<div class="mx-auto max-w-[1440px] space-y-6">
 
   {{-- Page Header --}}
   <div>

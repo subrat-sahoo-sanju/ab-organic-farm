@@ -3,26 +3,38 @@
 @section('content')
 <div class="space-y-4" x-data="{ reassignId: null, assignOrder: null }">
 
-  <div class="adm-grid-5">
-    <div class="adm-stat">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-bold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+        <span class="relative flex h-2 w-2">
+          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75"></span>
+          <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+        </span>
+        LIVE · auto-refreshes
+      </span>
+    </div>
+  </div>
+
+  <div class="adm-grid-5" x-data="livePanel({ url: '/admin/delivery/live', interval: 6000 })">
+    <div class="adm-stat" :class="pulse('pending_orders')">
       <div class="adm-stat-label">Pending Orders</div>
-      <div class="adm-stat-value">{{ $stats['pending_orders'] }}</div>
+      <div class="adm-stat-value" x-text="stats['pending_orders'] === undefined ? '{{ $stats['pending_orders'] }}' : stats['pending_orders']">{{ $stats['pending_orders'] }}</div>
     </div>
-    <div class="adm-stat">
+    <div class="adm-stat" :class="pulse('assigned')">
       <div class="adm-stat-label">Assigned</div>
-      <div class="adm-stat-value">{{ $stats['assigned'] }}</div>
+      <div class="adm-stat-value" x-text="stats['assigned'] === undefined ? '{{ $stats['assigned'] }}' : stats['assigned']">{{ $stats['assigned'] }}</div>
     </div>
-    <div class="adm-stat">
+    <div class="adm-stat" :class="pulse('out')">
       <div class="adm-stat-label">Out for Delivery</div>
-      <div class="adm-stat-value">{{ $stats['out'] }}</div>
+      <div class="adm-stat-value" x-text="stats['out'] === undefined ? '{{ $stats['out'] }}' : stats['out']">{{ $stats['out'] }}</div>
     </div>
-    <div class="adm-stat">
+    <div class="adm-stat" :class="pulse('delivered_today')">
       <div class="adm-stat-label">Delivered Today</div>
-      <div class="adm-stat-value">{{ $stats['delivered_today'] }}</div>
+      <div class="adm-stat-value" x-text="stats['delivered_today'] === undefined ? '{{ $stats['delivered_today'] }}' : stats['delivered_today']">{{ $stats['delivered_today'] }}</div>
     </div>
-    <div class="adm-stat">
+    <div class="adm-stat" :class="pulse('failed')">
       <div class="adm-stat-label">Failed</div>
-      <div class="adm-stat-value">{{ $stats['failed'] }}</div>
+      <div class="adm-stat-value" x-text="stats['failed'] === undefined ? '{{ $stats['failed'] }}' : stats['failed']">{{ $stats['failed'] }}</div>
     </div>
   </div>
 

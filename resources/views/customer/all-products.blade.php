@@ -13,7 +13,7 @@
 </style>
 
 <div class="bg-[#fafcfa]">
-  <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8" x-data="allProducts()">
+  <div class="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8" x-data="allProducts()">
 
     {{-- Header --}}
     <div class="flex flex-col items-start gap-1">

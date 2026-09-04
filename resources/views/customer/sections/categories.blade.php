@@ -6,7 +6,7 @@
 
 @if($cats->count())
 <section class="py-8">
-  <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+  <div class="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8">
     @include('customer.sections._header', ['title' => $sec->title, 'subtitle' => $sec->subtitle, 'align' => 'center', 'link' => route('shop.categories'), 'linkLabel' => 'All Categories'])
 
     <div class="scrollbar-none mt-6 flex items-start gap-5 overflow-x-auto pb-2" style="-webkit-overflow-scrolling: touch;">

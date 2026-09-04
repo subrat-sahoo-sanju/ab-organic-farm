@@ -16,7 +16,7 @@ class DashboardController extends Controller
 
         return view('delivery.dashboard', [
             'assignments' => DeliveryAssignment::where('delivery_person_id', $person->id)
-                ->with(['order' => fn ($q) => $q->with(['orderItems.product', 'payment.codCollection', 'payment'])])
+                ->with(['order' => fn ($q) => $q->with(['items.product', 'payment.codCollection', 'payment'])])
                 ->whereIn('status', ['assigned', 'out_for_delivery'])
                 ->latest('assigned_at')
                 ->get(),

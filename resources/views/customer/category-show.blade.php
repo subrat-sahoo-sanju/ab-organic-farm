@@ -13,7 +13,7 @@
      HERO BANNER — full-width, admin-manageable per category
 ═══════════════════════════════════════════════════════════════ --}}
 @php
-    $bannerBg   = $category->banner_bg_color ?: '#00584b';
+    $bannerBg   = $category->banner_bg_color ?: '#7C522A';
     $bannerImg  = $category->banner_image;
     $bannerH    = $category->banner_heading ?: $category->name;
     $bannerSub  = $category->banner_subheading;
@@ -39,7 +39,7 @@
   <div class="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent"></div>
 
   {{-- Content overlay --}}
-  <div class="relative mx-auto flex max-w-7xl items-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+  <div class="relative mx-auto flex max-w-[1440px] items-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
     <div class="max-w-xl">
       @if($brandLogo || $brandName)
         <div class="mb-3 flex items-center gap-2">
@@ -83,7 +83,7 @@
     <img src="{{ asset('storage/'.$bannerImg) }}" alt="{{ $bannerH }}" class="absolute inset-0 h-full w-full object-cover" loading="eager">
   @endif
   <div class="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent"></div>
-  <div class="relative mx-auto flex max-w-7xl items-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+  <div class="relative mx-auto flex max-w-[1440px] items-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
     <div class="max-w-xl">
       @if($brandLogo || $brandName)
         <div class="mb-3 flex items-center gap-2">
@@ -113,7 +113,7 @@
 ═══════════════════════════════════════════════════════════════ --}}
 @if(isset($rootCategories) && $rootCategories->count())
 <div class="border-b border-sage-100 bg-white">
-  <div class="mx-auto max-w-7xl overflow-x-auto px-4 py-4 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-[1440px] overflow-x-auto px-4 py-4 sm:px-6 lg:px-8">
     <div class="flex items-center gap-4 sm:gap-6" style="min-width:max-content">
       @foreach($rootCategories as $cat)
         @php $active = $cat->id === $category->id || $cat->id === $category->parent_id; @endphp
@@ -165,7 +165,7 @@
      MAIN PRODUCT SECTION — breadcrumbs, filters, grid
 ═══════════════════════════════════════════════════════════════ --}}
 <div class="bg-[#fafcfa]">
-  <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-[1440px] px-4 py-8 sm:px-6 lg:px-8">
 
     {{-- Breadcrumbs --}}
     <nav class="mb-4 text-xs text-charcoal-600/50">

@@ -4,12 +4,12 @@
     $image = $section['config']['image'] ?? '';
     $ctaText = $section['config']['cta_text'] ?? 'Shop Now';
     $ctaUrl = $section['config']['cta_url'] ?? '#';
-    $bgColor = $section['config']['bg_color'] ?? '#00584b';
+    $bgColor = $section['config']['bg_color'] ?? '#7C522A';
     $textColor = $section['config']['text_color'] ?? '#ffffff';
 @endphp
 
 <section class="w-full overflow-hidden" style="background:{{ $bgColor }}">
-    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="relative mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         @if($image)
             <img src="{{ asset('storage/'.$image) }}" alt="{{ $title }}" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
             <div class="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent"></div>

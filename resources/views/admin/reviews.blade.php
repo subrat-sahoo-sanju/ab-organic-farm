@@ -44,7 +44,11 @@
               <span class="font-semibold">{{ $review->product->name ?? '—' }}</span>
             </td>
             <td>
-              <a href="{{ route('admin.orders.show', $review->order) }}" class="font-semibold text-charcoal hover:text-forest transition">{{ $review->order->order_number ?? '—' }}</a>
+              @if($review->order)
+                <a href="{{ route('admin.orders.show', $review->order) }}" class="font-semibold text-charcoal hover:text-forest transition">{{ $review->order->order_number ?? '—' }}</a>
+              @else
+                <span class="font-semibold text-charcoal/60">—</span>
+              @endif
             </td>
             <td>{{ $review->user->name ?? '—' }}</td>
             <td>

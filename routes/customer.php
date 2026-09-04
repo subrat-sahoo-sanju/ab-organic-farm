@@ -5,6 +5,9 @@ use App\Http\Controllers\Customer;
 
 Route::get('/', [Customer\HomeController::class, 'index'])->name('shop.index');
 Route::get('/categories/all', [Customer\CategoryController::class, 'all'])->name('shop.all');
+// Convenience alias for the full catalog — it's the CTA target recommended by
+// the admin banner form (e.g. "Shop Now" → /shop).
+Route::get('/shop', [Customer\CategoryController::class, 'all'])->name('shop.shop');
 Route::get('/categories', [Customer\CategoryController::class, 'categories'])->name('shop.categories');
 Route::get('/categories/{category:slug}', [Customer\CategoryController::class, 'show'])->name('shop.category');
 Route::get('/products/{product:slug}', [Customer\ProductController::class, 'show'])->name('shop.product');
@@ -17,6 +20,16 @@ Route::get('/api/categories/{category}/products', [Customer\HomeController::clas
 Route::get('/api/welcome-tab/products', [Customer\HomeController::class, 'welcomeTabApi'])->name('api.welcome-tab');
 Route::get('/api/recent-viewed/products', [Customer\HomeController::class, 'recentViewedProductsApi'])->name('api.recent-viewed');
 
+// Informational / policy pages
+Route::get('/privacy-policy', [Customer\PageController::class, 'show'])->name('pages.privacy');
+Route::get('/shipping-policy', [Customer\PageController::class, 'show'])->name('pages.shipping');
+Route::get('/refund-policy', [Customer\PageController::class, 'show'])->name('pages.refund');
+Route::get('/terms-of-service', [Customer\PageController::class, 'show'])->name('pages.terms');
+Route::get('/cancellation-policy', [Customer\PageController::class, 'show'])->name('pages.cancellation');
+Route::get('/returns-exchanges', [Customer\PageController::class, 'show'])->name('pages.returns');
+// Any additional admin-created page (e.g. /pages/my-page) is reachable here.
+Route::get('/pages/{page:slug}', [Customer\PageController::class, 'show'])->name('pages.show');
+
 Route::get('/cart', [Customer\CartController::class, 'index'])->name('cart.index');
 Route::get('/cart/state', [Customer\CartController::class, 'state'])->name('cart.state');
 Route::get('/cart/drawer', [Customer\CartController::class, 'drawer'])->name('cart.drawer');
@@ -26,7 +39,7 @@ Route::delete('/cart/items/{item}', [Customer\CartController::class, 'remove'])-
 Route::post('/cart/coupon', [Customer\CartController::class, 'applyCoupon'])->name('cart.apply-coupon');
 Route::delete('/cart/coupon', [Customer\CartController::class, 'removeCoupon'])->name('cart.remove-coupon');
 
-Route::get('/wishlist/{product}/toggle', [Customer\WishlistController::class, 'toggle'])
+Route::match(['GET', 'DELETE'], '/wishlist/{product}/toggle', [Customer\WishlistController::class, 'toggle'])
     ->middleware('auth')->name('wishlist.toggle');
 Route::get('/wishlist', [Customer\WishlistController::class, 'index'])
     ->middleware(['auth', 'active'])->name('account.wishlist');

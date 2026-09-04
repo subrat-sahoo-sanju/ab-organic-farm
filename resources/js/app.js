@@ -463,5 +463,190 @@ Alpine.data('tabGrid', (gridId, initial) => {
     }
 })
 
+Alpine.data('headerSearch', () => ({
+    drawer: false,
+    search: false,
+    q: '',
+    results: [],
+    categories: [],
+    loading: false,
+    popular: ['Ghee', 'Cold Pressed Oil', 'Atta', 'Honey', 'Jaggery', 'Superfoods'],
+
+    openSearch() {
+        this.search = true
+        this.q = ''
+        this.results = []
+        this.$nextTick(() => this.$refs.searchInput && this.$refs.searchInput.focus())
+    },
+
+    closeSearch() {
+        this.search = false
+    },
+
+    async runSearch() {
+        const term = (this.q || '').trim()
+        if (term.length < 2) {
+            this.results = []
+            this.categories = []
+            this.loading = false
+            return
+        }
+        this.loading = true
+        try {
+            const res = await fetch('/api/search-suggest?q=' + encodeURIComponent(term), {
+                headers: { Accept: 'application/json' },
+            })
+            if (!res.ok) throw new Error('bad status')
+            const data = await res.json()
+            this.results = data.products || []
+            this.categories = data.categories || []
+        } catch (e) {
+            this.results = []
+        } finally {
+            this.loading = false
+        }
+    },
+
+    goSearch() {
+        const term = (this.q || '').trim()
+        this.closeSearch()
+        window.location.href = '/search?q=' + encodeURIComponent(term)
+    },
+}))
+
+// Format numbers as Indian Rupees (no decimals when whole)
+const fmtINR = (n) => {
+    const v = Number(n || 0)
+    return '₹' + new Intl.NumberFormat('en-IN', {
+        maximumFractionDigits: Number.isInteger(v) ? 0 : 2,
+    }).format(v)
+}
+
+/* ── Real-time live panel (delivery dashboard & admin delivery) ──────
+   Polls a lightweight JSON endpoint on a short interval and keeps the
+   page's stats/notifications fresh without any manual refresh.         */
+Alpine.data('livePanel', (cfg = {}) => ({
+    url: cfg.url || '/portal/live',
+    interval: cfg.interval || 8000,
+    countdown: 0,
+    countdownTarget: cfg.countdown || 5,
+    since: 0,
+    lastVersion: -1,
+    seenIds: {},
+    stats: {},
+    newOrders: [],
+    connected: false,
+    errors: 0,
+    pulseClass: '',
+    _timer: null,
+    _lastActivity: Date.now(),
+    _dismissed: false,
+
+    init() {
+        const self = this
+        this._onActivity = () => { self._lastActivity = Date.now() }
+        window.addEventListener('keydown', this._onActivity)
+        window.addEventListener('mousedown', this._onActivity)
+        window.addEventListener('touchstart', this._onActivity)
+        window.addEventListener('visibilitychange', () => {
+            window.document.visibilityState == 'visible' && self.poll()
+        })
+        this.poll()
+        this._timer = window.setInterval(() => self.poll(), this.interval)
+    },
+
+    destroy() {
+        if (this._timer) window.clearInterval(this._timer)
+        if (this._countTimer) window.clearInterval(this._countTimer)
+        window.removeEventListener('keydown', this._onActivity)
+        window.removeEventListener('mousedown', this._onActivity)
+        window.removeEventListener('touchstart', this._onActivity)
+    },
+
+    async poll() {
+        try {
+            const sep = this.url.includes('?') ? '&' : '?'
+            const res = await fetch(this.url + sep + 'since=' + this.since, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json', 'X-CSRF-TOKEN': csrf() },
+            })
+            if (!res.ok) throw new Error('poll ' + res.status)
+            const d = await res.json()
+            this.errors = 0
+            this.connected = true
+
+            // Pulse any tile whose value changed.
+            const changed = []
+            for (const k in (d.stats || {})) {
+                const nv = Number(d.stats[k] || 0)
+                if (this.stats[k] !== undefined && this.stats[k] !== nv) changed.push(k)
+                this.stats[k] = nv
+            }
+            if (changed.length) {
+                const key = changed[0]
+                this.pulseClass = 'pulse-' + key
+                setTimeout(() => { if (this.pulseClass === 'pulse-' + key) this.pulseClass = '' }, 1500)
+            }
+
+            // First successful poll seeds without notifying.
+            const isFirst = this.lastVersion < 0
+            const version = Number(d.version || 0)
+            this.lastVersion = isFirst ? version : this.lastVersion
+            this.since = Math.max(this.since, version)
+
+            // Brand-new (not previously seen, still to pick up) assignments.
+            let freshArr = d.new || []
+            let trulyNew = []
+            if (!isFirst) {
+                trulyNew = freshArr.filter(n => n.status === 'assigned' && !this.seenIds[String(n.id)])
+            }
+            freshArr.forEach(n => { this.seenIds[String(n.id)] = true })
+
+            if (typeof cfg.onPoll === 'function') {
+                try { cfg.onPoll.call(this, d, freshArr, trulyNew) } catch (e) { /* void */ }
+            }
+
+            // Show the live banner + start an auto-refresh countdown.
+            if (trulyNew.length) {
+                this.newOrders = trulyNew
+                if (!this._dismissed) this.beginCountdown()
+            }
+        } catch (e) {
+            this.errors = Math.min(this.errors + 1, 999)
+        }
+    },
+
+    beginCountdown() {
+        if (this._countTimer) window.clearInterval(this._countTimer)
+        this.countdown = this.countdownTarget
+        this._pulseAt = Date.now()
+        this._countTimer = window.setInterval(() => {
+            if (this._dismissed) {
+                window.clearInterval(this._countTimer); this._countTimer = null; return
+            }
+            this.countdown--
+            if (this.countdown <= 0) {
+                window.clearInterval(this._countTimer); this._countTimer = null
+                // Auto-refresh only if the courier has been idle, so we never
+                // reload while they are typing or tapping.
+                if (Date.now() - this._lastActivity > 20000) window.location.reload()
+                else this._dismissed = true
+            }
+        }, 1000)
+    },
+
+    fmt: fmtINR,
+    pulse(key) {
+        return this.pulseClass === 'pulse-' + key ? 'anv-pulse-live' : ''
+    },
+    hasNew() {
+        return this.newOrders.length && !this._dismissed
+    },
+    dismiss() {
+        this._dismissed = true
+        this.countdown = 0
+        if (this._countTimer) { window.clearInterval(this._countTimer); this._countTimer = null }
+    },
+}))
+
 // Start Alpine only after every component is registered.
 Alpine.start()

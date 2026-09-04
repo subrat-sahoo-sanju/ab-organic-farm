@@ -41,7 +41,7 @@
         <section class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
           {{-- Header --}}
           <div class="flex items-center gap-3 border-b border-gray-50 px-5 py-4">
-            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#0C831F] text-xs font-bold text-white">1</span>
+            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#7C522A] text-xs font-bold text-white">1</span>
             <h2 class="flex-1 text-sm font-bold text-gray-900">Delivery Address</h2>
             @error('address_id')
               <span class="rounded-full bg-red-50 px-2.5 py-0.5 text-[11px] font-semibold text-red-500">{{ $message }}</span>
@@ -55,16 +55,16 @@
                 @foreach($addresses as $address)
                   <label
                     class="flex cursor-pointer items-start gap-3 rounded-xl border-2 p-3.5 transition-all duration-200"
-                    :class="selectedAddress === {{ $address->id }} ? 'border-[#0C831F] bg-[#0C831F]/[0.03] shadow-sm' : 'border-gray-100 hover:border-gray-200'"
+                    :class="selectedAddress === {{ $address->id }} ? 'border-[#7C522A] bg-[#7C522A]/[0.03] shadow-sm' : 'border-gray-100 hover:border-gray-200'"
                     @click="selectedAddress = {{ $address->id }}">
                     <input type="radio" name="address_id" value="{{ $address->id }}"
                       {{ $address->id === ($defaultAddress?->id) ? 'checked' : '' }}
-                      class="mt-0.5 h-4 w-4 border-gray-300 text-[#0C831F] focus:ring-[#0C831F]"
+                      class="mt-0.5 h-4 w-4 border-gray-300 text-[#7C522A] focus:ring-[#7C522A]"
                       @change="selectedAddress = {{ $address->id }}">
                     <div class="min-w-0 flex-1">
                       <div class="flex items-center gap-2">
                         <span class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
-                          :class="selectedAddress === {{ $address->id }} ? 'bg-[#0C831F]/10 text-[#0C831F]' : 'bg-gray-100 text-gray-500'">
+                          :class="selectedAddress === {{ $address->id }} ? 'bg-[#7C522A]/10 text-[#7C522A]' : 'bg-gray-100 text-gray-500'">
                           @if($address->label === 'home')
                             <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                           @elseif($address->label === 'office')
@@ -84,7 +84,7 @@
                     </div>
                     <div class="mt-0.5 shrink-0">
                       <div class="h-5 w-5 rounded-full border-2 flex items-center justify-center transition-all duration-200"
-                        :class="selectedAddress === {{ $address->id }} ? 'border-[#0C831F] bg-[#0C831F]' : 'border-gray-300'">
+                        :class="selectedAddress === {{ $address->id }} ? 'border-[#7C522A] bg-[#7C522A]' : 'border-gray-300'">
                         <div class="h-2 w-2 rounded-full bg-white" x-show="selectedAddress === {{ $address->id }}"></div>
                       </div>
                     </div>
@@ -103,7 +103,7 @@
           {{-- Add New Address Toggle --}}
           <div class="px-5 pb-4">
             <button type="button" @click="showAddressForm = !showAddressForm"
-              class="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#0C831F]/30 py-3 text-sm font-semibold text-[#0C831F] transition-all duration-200 hover:border-[#0C831F] hover:bg-[#0C831F]/5">
+              class="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#7C522A]/30 py-3 text-sm font-semibold text-[#7C522A] transition-all duration-200 hover:border-[#7C522A] hover:bg-[#7C522A]/5">
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
               <span x-text="showAddressForm ? 'Cancel' : 'Add New Address'">Add New Address</span>
             </button>
@@ -119,7 +119,7 @@
                   <template x-for="lbl in ['home','office','other']" :key="lbl">
                     <button type="button" @click="newAddress.label = lbl"
                       class="flex-1 rounded-xl border-2 py-2.5 text-xs font-bold capitalize transition-all duration-200"
-                      :class="newAddress.label === lbl ? 'border-[#0C831F] bg-[#0C831F] text-white' : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'"
+                      :class="newAddress.label === lbl ? 'border-[#7C522A] bg-[#7C522A] text-white' : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'"
                       x-text="lbl">
                     </button>
                   </template>
@@ -131,7 +131,7 @@
                 <div>
                   <label class="mb-1 block text-xs font-bold text-gray-600">Full Name *</label>
                   <input type="text" x-model="newAddress.name" placeholder="John Doe"
-                    class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#0C831F] focus:ring-2 focus:ring-[#0C831F]/10">
+                    class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#7C522A] focus:ring-2 focus:ring-[#7C522A]/10">
                   <template x-if="addressErrors.name">
                     <p class="mt-1 text-[11px] text-red-500" x-text="addressErrors.name[0]"></p>
                   </template>
@@ -139,7 +139,7 @@
                 <div>
                   <label class="mb-1 block text-xs font-bold text-gray-600">Phone *</label>
                   <input type="tel" x-model="newAddress.phone" placeholder="9876543210" maxlength="10"
-                    class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#0C831F] focus:ring-2 focus:ring-[#0C831F]/10">
+                    class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#7C522A] focus:ring-2 focus:ring-[#7C522A]/10">
                   <template x-if="addressErrors.phone">
                     <p class="mt-1 text-[11px] text-red-500" x-text="addressErrors.phone[0]"></p>
                   </template>
@@ -150,7 +150,7 @@
               <div>
                 <label class="mb-1 block text-xs font-bold text-gray-600">House / Flat No. *</label>
                 <input type="text" x-model="newAddress.house_no" placeholder="Flat 12B, Skyline Apartments"
-                  class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#0C831F] focus:ring-2 focus:ring-[#0C831F]/10">
+                  class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#7C522A] focus:ring-2 focus:ring-[#7C522A]/10">
                 <template x-if="addressErrors.house_no">
                   <p class="mt-1 text-[11px] text-red-500" x-text="addressErrors.house_no[0]"></p>
                 </template>
@@ -160,7 +160,7 @@
               <div>
                 <label class="mb-1 block text-xs font-bold text-gray-600">Street / Road</label>
                 <input type="text" x-model="newAddress.street" placeholder="MG Road, 5th Cross"
-                  class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#0C831F] focus:ring-2 focus:ring-[#0C831F]/10">
+                  class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#7C522A] focus:ring-2 focus:ring-[#7C522A]/10">
               </div>
 
               {{-- Area & Landmark --}}
@@ -168,12 +168,12 @@
                 <div>
                   <label class="mb-1 block text-xs font-bold text-gray-600">Area / Locality</label>
                   <input type="text" x-model="newAddress.area" placeholder="Koramangala"
-                    class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#0C831F] focus:ring-2 focus:ring-[#0C831F]/10">
+                    class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#7C522A] focus:ring-2 focus:ring-[#7C522A]/10">
                 </div>
                 <div>
                   <label class="mb-1 block text-xs font-bold text-gray-600">Landmark</label>
                   <input type="text" x-model="newAddress.landmark" placeholder="Near City Hospital"
-                    class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#0C831F] focus:ring-2 focus:ring-[#0C831F]/10">
+                    class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#7C522A] focus:ring-2 focus:ring-[#7C522A]/10">
                 </div>
               </div>
 
@@ -182,7 +182,7 @@
                 <div>
                   <label class="mb-1 block text-xs font-bold text-gray-600">City *</label>
                   <input type="text" x-model="newAddress.city" placeholder="Bhubaneswar"
-                    class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#0C831F] focus:ring-2 focus:ring-[#0C831F]/10">
+                    class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#7C522A] focus:ring-2 focus:ring-[#7C522A]/10">
                   <template x-if="addressErrors.city">
                     <p class="mt-1 text-[11px] text-red-500" x-text="addressErrors.city[0]"></p>
                   </template>
@@ -190,7 +190,7 @@
                 <div>
                   <label class="mb-1 block text-xs font-bold text-gray-600">State *</label>
                   <input type="text" x-model="newAddress.state" placeholder="Odisha"
-                    class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#0C831F] focus:ring-2 focus:ring-[#0C831F]/10">
+                    class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#7C522A] focus:ring-2 focus:ring-[#7C522A]/10">
                   <template x-if="addressErrors.state">
                     <p class="mt-1 text-[11px] text-red-500" x-text="addressErrors.state[0]"></p>
                   </template>
@@ -198,7 +198,7 @@
                 <div>
                   <label class="mb-1 block text-xs font-bold text-gray-600">Pincode *</label>
                   <input type="text" x-model="newAddress.pincode" placeholder="751001" maxlength="6"
-                    class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#0C831F] focus:ring-2 focus:ring-[#0C831F]/10">
+                    class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#7C522A] focus:ring-2 focus:ring-[#7C522A]/10">
                   <template x-if="addressErrors.pincode">
                     <p class="mt-1 text-[11px] text-red-500" x-text="addressErrors.pincode[0]"></p>
                   </template>
@@ -207,7 +207,7 @@
 
               {{-- Save Button --}}
               <button type="button" @click="saveAddress()" :disabled="savingAddress"
-                class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0C831F] px-4 py-3.5 text-sm font-bold text-white shadow-md shadow-[#0C831F]/20 transition-all duration-200 hover:bg-[#096818] disabled:opacity-60">
+                class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#7C522A] px-4 py-3.5 text-sm font-bold text-white shadow-md shadow-[#7C522A]/20 transition-all duration-200 hover:bg-[#613E20] disabled:opacity-60">
                 <template x-if="!savingAddress">
                   <span class="flex items-center gap-2">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
@@ -228,7 +228,7 @@
         {{-- STEP 2: DELIVERY TIME --}}
         <section class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
           <div class="flex items-center gap-3 border-b border-gray-50 px-5 py-4">
-            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#0C831F] text-xs font-bold text-white">2</span>
+            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#7C522A] text-xs font-bold text-white">2</span>
             <h2 class="text-sm font-bold text-gray-900">Delivery Time</h2>
           </div>
 
@@ -238,17 +238,17 @@
                 @click="{{ $slot['available'] ? "selectedSlot = '{$slot['value']}'" : '' }}"
                 {{ !$slot['available'] ? 'disabled' : '' }}
                 class="relative rounded-xl border-2 p-3.5 text-center transition-all duration-200 {{ $slot['available'] ? 'cursor-pointer hover:shadow-sm' : 'cursor-not-allowed opacity-40' }}"
-                :class="selectedSlot === '{{ $slot['value'] }}' ? 'border-[#0C831F] bg-[#0C831F]/[0.04] shadow-sm' : 'border-gray-100'">
+                :class="selectedSlot === '{{ $slot['value'] }}' ? 'border-[#7C522A] bg-[#7C522A]/[0.04] shadow-sm' : 'border-gray-100'">
                 @if(!$slot['available'])
                   <div class="absolute inset-0 flex items-center justify-center rounded-xl bg-gray-50/80">
                     <span class="text-[10px] font-bold text-gray-400 uppercase">Passed</span>
                   </div>
                 @endif
-                <div class="text-sm font-bold" :class="selectedSlot === '{{ $slot['value'] }}' ? 'text-[#0C831F]' : 'text-gray-900'">{{ $slot['label'] }}</div>
+                <div class="text-sm font-bold" :class="selectedSlot === '{{ $slot['value'] }}' ? 'text-[#7C522A]' : 'text-gray-900'">{{ $slot['label'] }}</div>
                 <div class="mt-0.5 text-[11px] text-gray-400">{{ $slot['sub'] }}</div>
                 <div class="mt-2 flex justify-center">
                   <div class="h-4 w-4 rounded-full border-2 flex items-center justify-center transition-all"
-                    :class="selectedSlot === '{{ $slot['value'] }}' ? 'border-[#0C831F] bg-[#0C831F]' : 'border-gray-300'">
+                    :class="selectedSlot === '{{ $slot['value'] }}' ? 'border-[#7C522A] bg-[#7C522A]' : 'border-gray-300'">
                     <div class="h-1.5 w-1.5 rounded-full bg-white" x-show="selectedSlot === '{{ $slot['value'] }}'"></div>
                   </div>
                 </div>
@@ -266,21 +266,21 @@
         {{-- STEP 3: PAYMENT METHOD --}}
         <section class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
           <div class="flex items-center gap-3 border-b border-gray-50 px-5 py-4">
-            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#0C831F] text-xs font-bold text-white">3</span>
+            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#7C522A] text-xs font-bold text-white">3</span>
             <h2 class="text-sm font-bold text-gray-900">Payment Method</h2>
           </div>
 
           <div class="p-5">
-            <div class="rounded-xl border-2 border-[#0C831F] bg-[#0C831F]/[0.03] p-4">
+            <div class="rounded-xl border-2 border-[#7C522A] bg-[#7C522A]/[0.03] p-4">
               <div class="flex items-center gap-4">
-                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#0C831F]/10">
-                  <svg class="h-6 w-6 text-[#0C831F]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#7C522A]/10">
+                  <svg class="h-6 w-6 text-[#7C522A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                 </div>
                 <div class="flex-1">
                   <div class="text-sm font-bold text-gray-900">Cash on Delivery (COD)</div>
                   <div class="text-xs text-gray-400">Pay with cash when your order arrives</div>
                 </div>
-                <div class="flex h-6 w-6 items-center justify-center rounded-full bg-[#0C831F]">
+                <div class="flex h-6 w-6 items-center justify-center rounded-full bg-[#7C522A]">
                   <svg class="h-3.5 w-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                 </div>
               </div>
@@ -297,7 +297,7 @@
         {{-- STEP 4: ORDER ITEMS (Mobile) --}}
         <section class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm lg:hidden">
           <div class="flex items-center gap-3 border-b border-gray-50 px-5 py-4">
-            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#0C831F] text-xs font-bold text-white">4</span>
+            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#7C522A] text-xs font-bold text-white">4</span>
             <h2 class="text-sm font-bold text-gray-900">Order Items ({{ $breakdown['lines']->count() }})</h2>
           </div>
           <div class="divide-y divide-gray-50 px-5 py-3">
@@ -309,7 +309,7 @@
                   @else
                     <div class="flex h-full items-center justify-center text-xl">🌿</div>
                   @endif
-                  <span class="absolute -top-1 -right-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#0C831F] px-1 text-[10px] font-bold text-white">{{ $line['item']->quantity }}</span>
+                  <span class="absolute -top-1 -right-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#7C522A] px-1 text-[10px] font-bold text-white">{{ $line['item']->quantity }}</span>
                 </div>
                 <div class="min-w-0 flex-1">
                   <div class="text-sm font-semibold text-gray-900 line-clamp-1">{{ $line['item']->product->name }}</div>
@@ -358,16 +358,16 @@
           {{-- Coupon --}}
           <div class="border-b border-gray-50 px-5 py-3.5">
             @if($cart && $cart->coupon_id)
-              <div class="flex items-center gap-2 rounded-xl bg-[#0C831F]/5 px-3.5 py-2.5">
-                <svg class="h-4 w-4 shrink-0 text-[#0C831F]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
-                <span class="flex-1 text-xs font-bold text-[#0C831F]">{{ $cart->coupon->code }}</span>
-                <span class="text-xs font-bold text-[#0C831F]">-₹{{ number_format($breakdown['coupon_discount']) }}</span>
+              <div class="flex items-center gap-2 rounded-xl bg-[#7C522A]/5 px-3.5 py-2.5">
+                <svg class="h-4 w-4 shrink-0 text-[#7C522A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                <span class="flex-1 text-xs font-bold text-[#7C522A]">{{ $cart->coupon->code }}</span>
+                <span class="text-xs font-bold text-[#7C522A]">-₹{{ number_format($breakdown['coupon_discount']) }}</span>
               </div>
             @else
               <div class="flex items-center gap-2">
                 <svg class="h-4 w-4 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
                 <span class="flex-1 text-xs font-medium text-gray-500">Apply Coupon</span>
-                <a href="{{ route('cart.index') }}" class="text-xs font-bold text-[#0C831F] hover:underline">Add</a>
+                <a href="{{ route('cart.index') }}" class="text-xs font-bold text-[#7C522A] hover:underline">Add</a>
               </div>
             @endif
           </div>
@@ -383,15 +383,15 @@
 
               @if(($breakdown['product_discount'] ?? 0) > 0)
                 <div class="flex justify-between">
-                  <span class="text-[#0C831F]">Product discount</span>
-                  <span class="font-medium text-[#0C831F]">-₹{{ number_format($breakdown['product_discount']) }}</span>
+                  <span class="text-[#7C522A]">Product discount</span>
+                  <span class="font-medium text-[#7C522A]">-₹{{ number_format($breakdown['product_discount']) }}</span>
                 </div>
               @endif
 
               @if(($breakdown['coupon_discount'] ?? 0) > 0)
                 <div class="flex justify-between">
-                  <span class="text-[#0C831F]">Coupon discount</span>
-                  <span class="font-medium text-[#0C831F]">-₹{{ number_format($breakdown['coupon_discount']) }}</span>
+                  <span class="text-[#7C522A]">Coupon discount</span>
+                  <span class="font-medium text-[#7C522A]">-₹{{ number_format($breakdown['coupon_discount']) }}</span>
                 </div>
               @endif
 
@@ -400,7 +400,7 @@
                 @if($breakdown['delivery_charge'] > 0)
                   <span class="font-medium text-gray-900">₹{{ number_format($breakdown['delivery_charge']) }}</span>
                 @else
-                  <span class="font-bold text-[#0C831F]">FREE</span>
+                  <span class="font-bold text-[#7C522A]">FREE</span>
                 @endif
               </div>
             </div>
@@ -416,8 +416,8 @@
 
           {{-- You Save --}}
           @if(($breakdown['product_discount'] ?? 0) + ($breakdown['coupon_discount'] ?? 0) > 0)
-            <div class="mx-5 mb-4 rounded-xl bg-[#0C831F]/5 px-4 py-3 text-center">
-              <span class="text-xs font-bold text-[#0C831F]">You're saving ₹{{ number_format(($breakdown['product_discount'] ?? 0) + ($breakdown['coupon_discount'] ?? 0)) }} on this order!</span>
+            <div class="mx-5 mb-4 rounded-xl bg-[#7C522A]/5 px-4 py-3 text-center">
+              <span class="text-xs font-bold text-[#7C522A]">You're saving ₹{{ number_format(($breakdown['product_discount'] ?? 0) + ($breakdown['coupon_discount'] ?? 0)) }} on this order!</span>
             </div>
           @endif
         </div>
@@ -433,7 +433,7 @@
         <div class="text-xs text-gray-400">Total</div>
         <div class="text-xl font-extrabold text-gray-900">₹{{ number_format($breakdown['grand_total']) }}</div>
         @if(($breakdown['product_discount'] ?? 0) + ($breakdown['coupon_discount'] ?? 0) > 0)
-          <div class="text-[11px] font-bold text-[#0C831F]">You save ₹{{ number_format(($breakdown['product_discount'] ?? 0) + ($breakdown['coupon_discount'] ?? 0)) }}</div>
+          <div class="text-[11px] font-bold text-[#7C522A]">You save ₹{{ number_format(($breakdown['product_discount'] ?? 0) + ($breakdown['coupon_discount'] ?? 0)) }}</div>
         @endif
       </div>
 
@@ -441,7 +441,7 @@
       <button type="button" @click="placeOrder()"
         :disabled="placing || !canPlace"
         class="flex items-center justify-center gap-2 rounded-xl px-8 py-4 text-sm font-bold text-white shadow-lg transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
-        :class="canPlace && !placing ? 'bg-[#0C831F] shadow-[#0C831F]/25 hover:bg-[#096818]' : 'bg-gray-300'">
+        :class="canPlace && !placing ? 'bg-[#7C522A] shadow-[#7C522A]/25 hover:bg-[#613E20]' : 'bg-gray-300'">
         <template x-if="!placing">
           <span class="flex items-center gap-2">
             Place Order

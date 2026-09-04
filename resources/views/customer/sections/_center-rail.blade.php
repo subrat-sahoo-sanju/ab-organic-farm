@@ -10,8 +10,8 @@
 @if($products->count())
 <style>
   .rail-center-head{text-align:center;width:100%;margin:0 auto}
-  .rail-center-head .rail-title{font-size:1.9rem;font-weight:700;line-height:1.2;margin:0 0 .25rem;color:#235a49}
-  .rail-center-head .rail-sub{font-size:1.05rem;font-weight:400;margin:0;color:#235a49;opacity:.85}
+  .rail-center-head .rail-title{font-size:1.9rem;font-weight:700;line-height:1.2;margin:0 0 .25rem;color:#7C522A}
+  .rail-center-head .rail-sub{font-size:1.05rem;font-weight:400;margin:0;color:#7C522A;opacity:.85}
   .rail-scroll{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:hidden!important;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:12px;margin:0;padding:0 2px;align-items:stretch;scroll-snap-type:x mandatory}
   .rail-scroll::-webkit-scrollbar{display:none;width:0;height:0}
   .rail-scroll .rail-item{flex:0 0 190px;width:190px;min-width:190px;max-width:190px;position:relative;scroll-snap-align:start}
@@ -32,7 +32,7 @@
   @media (min-width:1200px){.rail-scroll .rail-item{flex:0 0 250px;width:250px;min-width:250px;max-width:250px}}
 </style>
 <section class="w-full border-t border-sage-100 py-10 sm:py-14 {{ $bg }}">
-    <div class="mx-auto w-full max-w-[1300px] px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div class="rail-center-head">
             <h2 class="rail-title">{{ $sec->title }}</h2>
             @if($sec->subtitle)

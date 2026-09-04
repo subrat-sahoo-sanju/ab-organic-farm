@@ -12,14 +12,14 @@
   .menu-scrollbar-track{flex:1;height:8px;background:#f1f1f1;border-radius:4px;position:relative;overflow:hidden;min-width:0}
   .menu-scrollbar-thumb{height:100%;background:#404040!important;border-radius:4px;position:absolute;top:0;left:0;transition:background-color .2s ease,left .05s linear;min-width:20px;cursor:pointer;display:block!important;opacity:1!important;visibility:visible!important}
   .menu-see-all-button{display:flex;align-items:center;gap:8px;padding:8px 16px;background:transparent;border:1.5px solid #404040;border-radius:20px;text-decoration:none;color:#404040;font-size:14px;font-weight:500;white-space:nowrap;transition:all .2s ease;flex-shrink:0}
-  .menu-see-all-button:hover{background:#235a49;border-color:#235a49;color:#fff}
+  .menu-see-all-button:hover{background:#1F5C3F;border-color:#1F5C3F;color:#fff}
   .menu-product-grid .menu-grid-item{flex:0 0 180px;width:180px;min-width:180px;max-width:180px;display:block;position:relative}
   @media (min-width:750px){.menu-product-grid .menu-grid-item{flex-basis:220px;width:220px;min-width:220px;max-width:220px}}
   @media (min-width:1025px){.menu-product-grid .menu-grid-item{flex-basis:260px;width:260px;min-width:260px;max-width:260px}}
   @media (max-width:767px){.menu-scrollbar-row{padding:12px 16px;gap:12px}.menu-see-all-button{padding:6px 12px;font-size:13px}}
 </style>
 <section class="w-full border-t border-sage-100 py-10 sm:py-14 {{ $isGhee ? 'bg-[#FBF7EE]' : 'bg-white' }}">
-    <div class="mx-auto w-full max-w-[1300px] px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div class="menu-section-headings">
             <h1 class="menu-main-heading">{{ $sec->title }}</h1>
             <h2 class="menu-subheading">{{ $sec->subtitle }}</h2>

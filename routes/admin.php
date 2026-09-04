@@ -44,6 +44,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'active'])
         Route::patch('/orders/{order}/transition', [Admin\OrderController::class, 'transition'])->name('orders.transition');
 
         Route::get('/delivery', [Admin\DeliveryController::class, 'index'])->name('delivery.index');
+        Route::get('/delivery/live', [Admin\DeliveryController::class, 'live'])->name('delivery.live');
         Route::post('/orders/{order}/assign', [Admin\DeliveryController::class, 'assign'])->name('delivery.assign');
         Route::post('/assignments/{assignment}/reassign', [Admin\DeliveryController::class, 'reassign'])->name('delivery.reassign');
         Route::resource('delivery-persons', Admin\DeliveryPersonController::class)
@@ -65,6 +66,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'active'])
         Route::post('/reviews/{review}/approve', [Admin\ReviewsController::class, 'approve'])->name('reviews.approve');
         Route::post('/reviews/{review}/reject', [Admin\ReviewsController::class, 'reject'])->name('reviews.reject');
         Route::delete('/reviews/{review}', [Admin\ReviewsController::class, 'destroy'])->name('reviews.destroy');
+
+        Route::get('/pages', [Admin\PageController::class, 'index'])->name('pages.index');
+        Route::get('/pages/create', [Admin\PageController::class, 'create'])->name('pages.create');
+        Route::post('/pages', [Admin\PageController::class, 'store'])->name('pages.store');
+        Route::get('/pages/{page}/edit', [Admin\PageController::class, 'edit'])->name('pages.edit');
+        Route::patch('/pages/{page}', [Admin\PageController::class, 'update'])->name('pages.update');
+        Route::post('/pages/{page}/toggle', [Admin\PageController::class, 'toggle'])->name('pages.toggle');
+        Route::delete('/pages/{page}', [Admin\PageController::class, 'destroy'])->name('pages.destroy');
 
         Route::get('/customers', [Admin\CustomersController::class, 'index'])->name('customers.index');
         Route::get('/customers/{customer}', [Admin\CustomersController::class, 'show'])->name('customers.show');

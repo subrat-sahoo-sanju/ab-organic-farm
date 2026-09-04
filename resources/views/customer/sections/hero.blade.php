@@ -49,13 +49,13 @@
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                     <div class="absolute inset-x-0 bottom-0 p-5 sm:p-8 md:p-10">
                         @if($slide['subtitle'])
-                            <span class="mb-1.5 inline-block rounded-full bg-[#74C9A1]/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white sm:text-xs">{{ $slide['subtitle'] }}</span>
+                            <span class="mb-1.5 inline-block rounded-full bg-[#A9CB92]/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white sm:text-xs">{{ $slide['subtitle'] }}</span>
                         @endif
                         @if($slide['title'])
                             <h2 class="font-display text-xl font-extrabold text-white sm:text-2xl md:text-3xl">{{ $slide['title'] }}</h2>
                         @endif
                         @if($slide['button_text'])
-                            <span class="mt-2 inline-flex items-center gap-1 text-sm font-bold text-[#74C9A1] transition group-hover:text-white sm:text-base">{{ $slide['button_text'] }}<x-lucide-arrow-right class="h-4 w-4"/></span>
+                            <span class="mt-2 inline-flex items-center gap-1 text-sm font-bold text-[#A9CB92] transition group-hover:text-white sm:text-base">{{ $slide['button_text'] }}<x-lucide-arrow-right class="h-4 w-4"/></span>
                         @endif
                     </div>
                 @endif

@@ -140,6 +140,15 @@
         <span>Reviews</span>
       </a>
 
+      <a href="{{ route('admin.pages.index') }}"
+         class="group relative flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition
+                {{ str_starts_with($current, 'admin.pages')
+                  ? 'border-l-[3px] border-forest bg-forest/10 text-forest dark:bg-forest/20 dark:text-green-400'
+                  : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white' }}">
+        <x-lucide-file-text class="h-4 w-4 shrink-0" />
+        <span>Pages &amp; Policies</span>
+      </a>
+
       {{-- People --}}
       <div class="pt-4 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">People</div>
 

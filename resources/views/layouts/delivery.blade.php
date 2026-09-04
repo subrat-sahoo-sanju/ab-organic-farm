@@ -154,6 +154,21 @@
 
       {{-- Right Actions --}}
       <div class="flex items-center gap-1">
+        {{-- Live Indicator --}}
+        <span class="hidden sm:inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] font-bold text-emerald-600
+          border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+          <span class="relative flex h-2 w-2">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75"></span>
+            <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+          </span>
+          LIVE
+        </span>
+
+        {{-- Manual Refresh --}}
+        <button onclick="window.location.reload()" class="rounded-lg p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white" title="Refresh now">
+          <x-lucide-refresh-cw class="h-5 w-5" />
+        </button>
+
         {{-- Availability Indicator --}}
         @php $person = auth()->user()->deliveryPerson; @endphp
         @if($person)

@@ -30,7 +30,7 @@
     $icon = $iconMap[$key] ?? 'M12 21C7 17 5 12 5 8c0-3 2-5 5-5 4 0 8 3 9 7 1 4-1 8-4 10-.4.2-.8.3-1 .4-.6.3-1.5.5-2 .6z';
 @endphp
 <section class="w-full border-t border-sage-100 py-10 sm:py-14 bg-[#FAFCFA]">
-    <div class="mx-auto w-full max-w-[1300px] px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div class="text-center">
             @if(($sec->title ?? ''))
                 <h2 class="font-display text-[24px] font-bold text-anv-800 sm:text-2xl">{{ $sec->title }}</h2>

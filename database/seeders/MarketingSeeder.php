@@ -96,19 +96,21 @@ class MarketingSeeder extends Seeder
         // ---- Banners (hero slider — managed via Admin → Marketing → Banners) ----
         Banner::firstOrCreate(['title' => 'High Protein Atta'], [
             'placement' => 'hero',
-            'desktop_image' => 'sections/hero-desktop.webp',
+            'desktop_image' => 'sections/hero-desktop.jpg',
             'mobile_image' => 'sections/hero-mobile.webp',
             'button_text' => 'Shop Now',
             'button_url' => '/categories/all',
             'sort_order' => 0,
+            'is_active' => true,
         ]);
         Banner::firstOrCreate(['title' => 'Explore All Products'], [
             'placement' => 'hero',
-            'desktop_image' => 'sections/hero2-desktop.webp',
+            'desktop_image' => 'sections/hero-mobile.webp',
             'mobile_image' => 'sections/hero2-mobile.webp',
             'button_text' => 'Shop Now',
             'button_url' => '/categories/all',
             'sort_order' => 1,
+            'is_active' => true,
         ]);
 
         Banner::firstOrCreate(['title' => 'Cold-Pressed Oils Week'], [
@@ -117,22 +119,28 @@ class MarketingSeeder extends Seeder
             'button_text' => 'Grab the deal',
             'button_url' => '/categories/ghee',
             'sort_order' => 1,
+            'is_active' => true,
         ]);
 
         // ---- Homepage sections ----
         $sections = [
-            ['hero', 'Hero banner', null, true, 0],
-            ['trust_badges', 'Why shop with us', null, true, 1],
-            ['categories', 'Shop by Category', 'Everything organic, neatly sorted', true, 2],
-            ['deals', "Today's Deals", 'Hand-picked savings ending soon', true, 3],
-            ['trending', 'Trending Now', 'What Bhubaneswar is buying this week', true, 4],
-            ['best_sellers', 'Best Sellers', 'Our all-time farm favourites', true, 5],
-            ['promotional_banners', 'Offers for you', null, true, 6],
-            ['new_arrivals', 'New Arrivals', 'Fresh from the farms', true, 7],
-            ['organic_picks', 'Organic Picks', 'Curated by our sourcing team', true, 8],
-            ['recommended', 'Recommended For You', null, true, 9],
-            ['recently_viewed', 'Recently Viewed', null, true, 10],
-            ['testimonials', 'Loved by our customers', null, true, 11],
+            ['hero', 'Hero', null, true, 10],
+            ['welcome', 'Welcome To AB Organic Farm!', 'You\'re One Step Closer to Purity', true, 15],
+            ['trust_badges', 'Why Choose AB Organic Farm?', 'The AB Organic Farm difference', true, 20],
+            ['native_ingredients', 'Native Ingredients. No Substitutes.', null, true, 30],
+            ['focus_oils', 'Product in Focus:', 'Explore Our Cold-Pressed Oils', true, 32],
+            ['focus_ghee', 'Product in Focus:', 'Explore Our A2 Desi Ghee', true, 35],
+            ['recently_viewed', 'You were checking these out earlier.', 'Don\'t miss out; Complete your purchase Now.', true, 36],
+            ['quality', 'Only Perfect Makes The Cut', null, true, 40],
+            ['promotional_banners', 'Promotions & Deals', null, true, 45],
+            ['combos', 'Healthy Combo Packs', null, true, 50],
+            ['superfoods', 'Explore our Superfoods', null, true, 60],
+            ['testimonials', 'What Do Our Customers Say', null, true, 70],
+            ['best_sellers', 'Best Sellers', 'Trusted by thousands of households', true, 110],
+            ['trending', 'Trending Now', 'What our community is loving right now', false, 120],
+            ['new_arrivals', 'New Arrivals', 'Just stocked, fresh off the farm', false, 130],
+            ['logo_slider', 'Trusted by', null, true, 140],
+            ['app_download', 'Download the AB Organic App', 'Order, track and save — all from the AB Organic app.', false, 150],
         ];
 
         foreach ($sections as [$key, $title, $subtitle, $visible, $sort]) {

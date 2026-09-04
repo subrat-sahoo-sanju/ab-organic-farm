@@ -65,7 +65,7 @@
             <button type="button"
                     data-wishlist
                     data-url="{{ $wishlistUrl }}"
-                    class="absolute right-2 top-2 z-10 grid h-9 w-9 place-items-center rounded-full bg-white/90 text-[#235A49] shadow-sm ring-1 ring-sage-200/70 backdrop-blur transition hover:scale-110 hover:bg-white {{ $inWishlist ? 'wish-on' : '' }}"
+                    class="absolute right-2 top-2 z-10 grid h-9 w-9 place-items-center rounded-full bg-white/90 text-[#7C522A] shadow-sm ring-1 ring-sage-200/70 backdrop-blur transition hover:scale-110 hover:bg-white {{ $inWishlist ? 'wish-on' : '' }}"
                     aria-label="Add to wishlist"
                     @click="
                         let btn = $el;
@@ -85,13 +85,13 @@
             </button>
         @else
             <a href="{{ route('login') }}" title="Login to save this item"
-               class="absolute right-2 top-2 z-10 grid h-9 w-9 place-items-center rounded-full bg-white/90 text-[#235A49] shadow-sm ring-1 ring-sage-200/70 backdrop-blur transition hover:scale-110 hover:bg-white" aria-label="Login to add to wishlist">
+               class="absolute right-2 top-2 z-10 grid h-9 w-9 place-items-center rounded-full bg-white/90 text-[#7C522A] shadow-sm ring-1 ring-sage-200/70 backdrop-blur transition hover:scale-110 hover:bg-white" aria-label="Login to add to wishlist">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z"/></svg>
             </a>
         @endauth
 
         @if(!$inStock)
-            <span class="absolute inset-0 grid place-items-center bg-white/60 backdrop-blur-[1px]">
+            <span class="pointer-events-none absolute inset-0 grid place-items-center bg-white/60 backdrop-blur-[1px]">
                 <span class="rounded-md bg-anv-600 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-white">Sold Out</span>
             </span>
         @endif
@@ -116,7 +116,7 @@
             @php $vid = $variant->id; @endphp
             <div class="mb-2 flex items-center rounded-full border-2 border-anv-600 {{ $available ? '' : 'pointer-events-none opacity-40' }}"
                  x-data="anvStepper('{{ $vid }}', {{ $available ? '1' : '0' }})"
-                 :style="qty>0 && 'background:#235A49;border-color:#235A49'">
+                 :style="qty>0 && 'background:#1F5C3F;border-color:#1F5C3F'">
                 <button type="button" @click.prevent="window.AnvCart.plus('{{ $vid }}')"
                         class="flex-1 py-1.5 text-center text-xs font-extrabold uppercase tracking-wide text-anv-600" :class="qty>0?'text-white':'text-anv-600'">
                     ADD<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="mx-auto mt-0.5 h-3.5 w-3.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
@@ -147,7 +147,7 @@
 
         <div class="mt-2 flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
             <div class="flex flex-wrap items-baseline gap-x-1.5">
-                <span class="text-[17px] font-extrabold tracking-tight text-[#235A49]">₹{{ number_format($variant?->effectivePrice() ?? $product->basePrice(), 0) }}</span>
+                <span class="text-[17px] font-extrabold tracking-tight text-[#7C522A]">₹{{ number_format($variant?->effectivePrice() ?? $product->basePrice(), 0) }}</span>
                 @if($variant && $variant->price > $variant->effectivePrice())
                     <s class="text-xs text-[#9AA79F]">₹{{ number_format($variant->price, 0) }}</s>
                 @endif

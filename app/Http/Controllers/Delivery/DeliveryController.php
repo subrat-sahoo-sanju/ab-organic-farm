@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Delivery;
 
 use App\Enums\DeliveryAssignmentStatus;
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\DeliveryAssignment;
 use App\Models\Order;
@@ -18,7 +19,7 @@ class DeliveryController extends Controller
 
         return view('delivery.deliveries', [
             'assignments' => DeliveryAssignment::where('delivery_person_id', $person->id)
-                ->with(['order' => fn ($q) => $q->with(['orderItems.product', 'payment'])])
+                ->with(['order' => fn ($q) => $q->with(['items.product', 'payment'])])
                 ->latest('assigned_at')
                 ->when(request('status'), fn ($q, $s) => $q->where('status', $s))
                 ->paginate(15)
@@ -36,22 +37,43 @@ class DeliveryController extends Controller
         $assignment->load([
             'order' => fn ($q) => $q->with([
                 'user:id,name,phone',
-                'orderItems.product.primaryImage',
+                'items.product.primaryImage',
                 'payment',
                 'payment.codCollection',
-                'addresses',
             ]),
-            'order.addresses',
         ]);
 
         return view('delivery.show', [
             'assignment' => $assignment,
             'order' => $assignment->order,
             'customer' => $assignment->order->user,
-            'address' => $assignment->order->addresses()
-                ->where('label', $assignment->order->ship_label)
-                ->first() ?? $assignment->order->addresses()->first(),
+            'address' => $this->shipAddress($assignment->order),
         ]);
+    }
+
+    /**
+     * Order shipping details are stored denormalized on the order as ship_*.
+     * Build a small value object for the view, matching the shape consumed by
+     * the address card.
+     */
+    protected function shipAddress(Order $order): object
+    {
+        $street = trim(implode(', ', array_filter([
+            $order->ship_house_no,
+            $order->ship_street,
+            $order->ship_area,
+        ])));
+
+        return (object) [
+            'address_line_1' => $street ?: 'Address not available',
+            'address_line_2' => $order->ship_landmark,
+            'city' => $order->ship_city,
+            'state' => $order->ship_state,
+            'pincode' => $order->ship_pincode,
+            'landmark' => $order->ship_landmark,
+            'latitude' => $order->latitude ?? null,
+            'longitude' => $order->longitude ?? null,
+        ];
     }
 
     public function pickedUp(DeliveryAssignment $assignment): RedirectResponse
@@ -64,13 +86,21 @@ class DeliveryController extends Controller
             'picked_up_at' => now(),
         ]);
 
+        // Keep the order's own status machine in sync so the downstream
+        // Delivered transition is legal (Assigned -> OutForDelivery -> Delivered).
+        app(\App\Services\OrderService::class)->transition(
+            $assignment->order,
+            OrderStatus::OutForDelivery,
+            'Picked up by '.auth()->user()->name
+        );
+
         return back()->with('success', 'Order picked up — heading out for delivery!');
     }
 
     public function delivered(DeliveryAssignment $assignment): RedirectResponse
     {
         $this->authorize($assignment);
-        abort_unless(in_array($assignment->status, ['assigned', 'out_for_delivery']), 422, 'Invalid status.');
+        abort_unless(in_array($assignment->status->value, ['assigned', 'out_for_delivery'], true), 422, 'Invalid status.');
 
         $person = auth()->user()->deliveryPerson;
         app(\App\Services\CodService::class)->markDelivered($assignment, $person);

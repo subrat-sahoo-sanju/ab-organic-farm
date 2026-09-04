@@ -18,7 +18,7 @@ $inStock = $inventory && $inventory->available() > 0;
 @endphp
 
 @section('content')
-<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8" x-data="productPage()">
+<div class="mx-auto max-w-[1440px] px-4 py-8 sm:px-6 lg:px-8" x-data="productPage()">
   <nav class="mb-6 text-sm text-charcoal/50">
     <a href="{{ route('shop.index') }}" class="hover:text-forest">Home</a>
     <span class="mx-1">/</span>
@@ -181,7 +181,11 @@ function productPage() {
     formatPrice(v) { return Number(v).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0}); },
     get selectedVariantAvailable() {
       const checked = document.querySelector('input[name=variant_id]:checked');
-      return checked && !checked.disabled;
+      if (checked) return !checked.disabled;
+      // Single-variant / non-selectable products use a hidden variant input that is
+      // never :checked, so they are always "available" (the renderer already shows a
+      // disabled "Out of Stock" state when the stock is gone).
+      return true;
     }
   }
 }
@@ -201,7 +205,7 @@ function productPage() {
 </script>
 
 @if($reviews->count())
-  <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-[1440px] px-4 py-16 sm:px-6 lg:px-8">
     <h2 class="font-display text-2xl font-bold text-charcoal">Customer Reviews</h2>
     <div class="mt-6 space-y-4">
       @foreach($reviews as $review)

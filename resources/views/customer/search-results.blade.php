@@ -1,7 +1,7 @@
 @extends('layouts.app', ['title' => 'Search Results'])
 
 @section('content')
-<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+<div class="mx-auto max-w-[1440px] px-4 py-8 sm:px-6 lg:px-8">
   <h1 class="font-display text-2xl font-bold text-charcoal">
     @if($query)
       Results for "{{ $query }}"

@@ -73,6 +73,11 @@ class User extends Authenticatable
 
     /* ---------------- Commerce ---------------- */
 
+    public function deliveryPerson()
+    {
+        return $this->hasOne(DeliveryPerson::class);
+    }
+
     public function addresses()
     {
         return $this->hasMany(Address::class);

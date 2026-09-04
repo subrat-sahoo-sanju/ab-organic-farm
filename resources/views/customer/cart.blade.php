@@ -17,15 +17,15 @@
     {{-- ========== EMPTY STATE ========== --}}
     <template x-if="lines.length === 0 && !loading">
       <div class="mx-auto mt-16 max-w-sm text-center">
-        <div class="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-[#0C831F]/10">
-          <svg class="h-12 w-12 text-[#0C831F]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-[#7C522A]/10">
+          <svg class="h-12 w-12 text-[#7C522A]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/>
           </svg>
         </div>
         <h2 class="text-xl font-extrabold text-gray-900">Your basket is empty</h2>
         <p class="mt-2 text-sm text-gray-400">Looks like you haven't added any organic goodness yet.</p>
         <a href="{{ route('shop.index') }}"
-          class="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#0C831F] px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#0C831F]/25 hover:bg-[#096818] transition">
+          class="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#7C522A] px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#7C522A]/25 hover:bg-[#613E20] transition">
           Start Shopping
         </a>
       </div>
@@ -43,7 +43,7 @@
               <span x-text="productCount"></span> product<span x-show="productCount > 1">s</span>
             </p>
           </div>
-          <a href="{{ route('shop.index') }}" class="flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3.5 py-2 text-xs font-semibold text-gray-600 transition hover:border-[#0C831F] hover:text-[#0C831F]">
+          <a href="{{ route('shop.index') }}" class="flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3.5 py-2 text-xs font-semibold text-gray-600 transition hover:border-[#7C522A] hover:text-[#7C522A]">
             <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Add More
           </a>
@@ -72,7 +72,7 @@
                         <div class="text-sm font-bold text-gray-900 line-clamp-1" x-text="line.product_name"></div>
                         <div class="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
                           <span x-text="line.variant_name" x-show="line.variant_name"></span>
-                          <span class="text-[#0C831F] font-medium">In stock</span>
+                          <span class="text-[#7C522A] font-medium">In stock</span>
                         </div>
                       </div>
                       <button @click="removeItem(line.id)" class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-300 transition hover:bg-red-50 hover:text-red-500" title="Remove">
@@ -84,9 +84,9 @@
                     <div class="mt-3 flex items-end justify-between">
                       {{-- Quantity Stepper --}}
                       <div class="flex items-center overflow-hidden rounded-xl border-2 transition-colors duration-200"
-                        :class="updatingId === line.id ? 'border-gray-200 opacity-60' : 'border-[#0C831F]'">
+                        :class="updatingId === line.id ? 'border-gray-200 opacity-60' : 'border-[#7C522A]'">
                         <button type="button" @click="updateQty(line.id, line.quantity - 1)" :disabled="updatingId === line.id"
-                          class="flex h-9 w-9 items-center justify-center text-[#0C831F] transition hover:bg-[#0C831F]/10 disabled:pointer-events-none">
+                          class="flex h-9 w-9 items-center justify-center text-[#7C522A] transition hover:bg-[#7C522A]/10 disabled:pointer-events-none">
                           <template x-if="line.quantity <= 1">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                           </template>
@@ -94,9 +94,9 @@
                             <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"/></svg>
                           </template>
                         </button>
-                        <span class="flex h-9 w-9 items-center justify-center text-sm font-extrabold text-[#0C831F]" x-text="line.quantity"></span>
+                        <span class="flex h-9 w-9 items-center justify-center text-sm font-extrabold text-[#7C522A]" x-text="line.quantity"></span>
                         <button type="button" @click="updateQty(line.id, line.quantity + 1)" :disabled="updatingId === line.id"
-                          class="flex h-9 w-9 items-center justify-center text-[#0C831F] transition hover:bg-[#0C831F]/10 disabled:pointer-events-none">
+                          class="flex h-9 w-9 items-center justify-center text-[#7C522A] transition hover:bg-[#7C522A]/10 disabled:pointer-events-none">
                           <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                         </button>
                       </div>
@@ -108,7 +108,7 @@
                         </template>
                         <div class="text-base font-extrabold text-gray-900" x-text="'₹' + formatNum(line.line_total)"></div>
                         <template x-if="line.discount_per_unit > 0">
-                          <span class="inline-block rounded bg-[#0C831F]/10 px-1.5 py-0.5 text-[10px] font-bold text-[#0C831F]"
+                          <span class="inline-block rounded bg-[#7C522A]/10 px-1.5 py-0.5 text-[10px] font-bold text-[#7C522A]"
                             x-text="'SAVE ₹' + formatNum(line.discount_per_unit * line.quantity)"></span>
                         </template>
                       </div>
@@ -120,20 +120,20 @@
 
             {{-- Free delivery progress --}}
             <div class="rounded-2xl border p-4 transition-all duration-300"
-              :class="grandTotal >= freeAbove ? 'border-[#0C831F]/20 bg-[#0C831F]/[0.03]' : 'border-[#0C831F]/20 bg-[#0C831F]/[0.03]'">
+              :class="grandTotal >= freeAbove ? 'border-[#7C522A]/20 bg-[#7C522A]/[0.03]' : 'border-[#7C522A]/20 bg-[#7C522A]/[0.03]'">
               <template x-if="freeRemaining > 0">
                 <div>
-                  <div class="flex items-center gap-2 text-xs font-medium text-[#0C831F]">
+                  <div class="flex items-center gap-2 text-xs font-medium text-[#7C522A]">
                     <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/></svg>
                     Add <span x-text="'₹' + formatNum(freeRemaining)" class="font-bold"></span> more to get <span class="font-bold">FREE delivery!</span>
                   </div>
-                  <div class="mt-2 h-2 overflow-hidden rounded-full bg-[#0C831F]/10">
-                    <div class="h-full rounded-full bg-[#0C831F] transition-all duration-700" :style="'width:' + freeProgress + '%'"></div>
+                  <div class="mt-2 h-2 overflow-hidden rounded-full bg-[#7C522A]/10">
+                    <div class="h-full rounded-full bg-[#7C522A] transition-all duration-700" :style="'width:' + freeProgress + '%'"></div>
                   </div>
                 </div>
               </template>
               <template x-if="freeRemaining <= 0">
-                <div class="flex items-center justify-center gap-2 text-xs font-bold text-[#0C831F]">
+                <div class="flex items-center justify-center gap-2 text-xs font-bold text-[#7C522A]">
                   <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                   You've unlocked FREE delivery!
                 </div>
@@ -150,8 +150,8 @@
                 <form action="{{ route('cart.apply-coupon') }}" method="POST" class="flex gap-2" x-data>
                   @csrf
                   <input type="text" name="coupon_code" placeholder="Enter coupon code"
-                    class="flex-1 rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-[#0C831F] focus:bg-white focus:ring-2 focus:ring-[#0C831F]/10 transition">
-                  <button type="submit" class="shrink-0 rounded-xl border-2 border-[#0C831F] bg-[#0C831F] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#096818]">Apply</button>
+                    class="flex-1 rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm placeholder:text-gray-300 focus:border-[#7C522A] focus:bg-white focus:ring-2 focus:ring-[#7C522A]/10 transition">
+                  <button type="submit" class="shrink-0 rounded-xl border-2 border-[#7C522A] bg-[#7C522A] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#613E20]">Apply</button>
                 </form>
               </div>
 
@@ -167,15 +167,15 @@
 
                   <template x-if="productDiscount > 0">
                     <div class="flex justify-between">
-                      <span class="text-[#0C831F]">Discounts</span>
-                      <span class="font-medium text-[#0C831F]" x-text="'-₹' + formatNum(productDiscount)"></span>
+                      <span class="text-[#7C522A]">Discounts</span>
+                      <span class="font-medium text-[#7C522A]" x-text="'-₹' + formatNum(productDiscount)"></span>
                     </div>
                   </template>
 
                   <template x-if="couponDiscount > 0">
                     <div class="flex justify-between">
-                      <span class="text-[#0C831F]">Coupon discount</span>
-                      <span class="font-medium text-[#0C831F]" x-text="'-₹' + formatNum(couponDiscount)"></span>
+                      <span class="text-[#7C522A]">Coupon discount</span>
+                      <span class="font-medium text-[#7C522A]" x-text="'-₹' + formatNum(couponDiscount)"></span>
                     </div>
                   </template>
 
@@ -185,7 +185,7 @@
                       <span class="font-medium text-gray-900" x-text="'₹' + formatNum(deliveryCharge)"></span>
                     </template>
                     <template x-if="deliveryCharge <= 0">
-                      <span class="font-bold text-[#0C831F]">FREE</span>
+                      <span class="font-bold text-[#7C522A]">FREE</span>
                     </template>
                   </div>
                 </div>
@@ -198,8 +198,8 @@
                 </div>
 
                 <template x-if="totalSavings > 0">
-                  <div class="mt-3 rounded-xl bg-[#0C831F]/5 px-4 py-2.5 text-center">
-                    <span class="text-xs font-bold text-[#0C831F]" x-text="'You\\'re saving ₹' + formatNum(totalSavings) + '!'"></span>
+                  <div class="mt-3 rounded-xl bg-[#7C522A]/5 px-4 py-2.5 text-center">
+                    <span class="text-xs font-bold text-[#7C522A]" x-text="'You\\'re saving ₹' + formatNum(totalSavings) + '!'"></span>
                   </div>
                 </template>
               </div>
@@ -207,7 +207,7 @@
               {{-- Checkout Button (Desktop) --}}
               <div class="hidden lg:block px-5 pb-5">
                 <a href="{{ route('checkout') }}"
-                  class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0C831F] px-6 py-4 text-sm font-bold text-white shadow-lg shadow-[#0C831F]/25 transition hover:bg-[#096818]">
+                  class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#7C522A] px-6 py-4 text-sm font-bold text-white shadow-lg shadow-[#7C522A]/25 transition hover:bg-[#613E20]">
                   Proceed to Checkout
                   <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
@@ -230,11 +230,11 @@
           <div class="text-xs text-gray-400">Total</div>
           <div class="text-xl font-extrabold text-gray-900" x-text="'₹' + formatNum(grandTotal)"></div>
           <template x-if="totalSavings > 0">
-            <div class="text-[11px] font-bold text-[#0C831F]" x-text="'You save ₹' + formatNum(totalSavings)"></div>
+            <div class="text-[11px] font-bold text-[#7C522A]" x-text="'You save ₹' + formatNum(totalSavings)"></div>
           </template>
         </div>
         <a href="{{ route('checkout') }}"
-          class="flex items-center gap-2 rounded-xl bg-[#0C831F] px-8 py-4 text-sm font-bold text-white shadow-lg shadow-[#0C831F]/25 transition hover:bg-[#096818]">
+          class="flex items-center gap-2 rounded-xl bg-[#7C522A] px-8 py-4 text-sm font-bold text-white shadow-lg shadow-[#7C522A]/25 transition hover:bg-[#613E20]">
           Checkout
           <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </a>

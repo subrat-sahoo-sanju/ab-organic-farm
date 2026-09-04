@@ -9,7 +9,7 @@
 
 @if($logos->count())
 <section class="w-full border-y border-sage-100 bg-white py-6">
-    <div class="mx-auto w-full max-w-[1300px] px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div class="anv-marquee-track overflow-hidden">
             <div class="anv-marquee">
                 @foreach([0, 1] as $dup)

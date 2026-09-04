@@ -51,14 +51,31 @@ class SearchController extends Controller
         $products = Product::query()
             ->published()
             ->where(fn (Builder $q) => $q->where('name', 'like', "%{$term}%")->orWhere('sku', 'like', "%{$term}%"))
+            ->with(['primaryImage', 'defaultVariant', 'category'])
             ->take(6)
-            ->get(['id', 'name', 'slug'])
-            ->map(fn ($p) => ['name' => $p->name, 'url' => route('shop.product', $p->slug)]);
+            ->get()
+            ->map(function (Product $p) {
+                $img = $p->primaryImage?->path;
+                $variant = $p->defaultVariant;
+                $unit = $variant?->unit_label ?: ($variant && $variant->weight_grams ? $variant->weight_grams.' gm' : null);
+
+                return [
+                    'name'      => $p->name,
+                    'slug'      => $p->slug,
+                    'url'       => route('shop.product', $p->slug),
+                    'image'     => $img ? asset('storage/'.$img) : asset('images/placeholder.png'),
+                    'price'     => (int) round($variant?->price ?? $p->basePrice()),
+                    'sale'      => (int) round($variant?->effectivePrice() ?? $p->basePrice()),
+                    'unit'      => $unit,
+                    'category'  => $p->category?->name,
+                ];
+            })
+            ->values();
 
         $categories = Category::where('name', 'like', "%{$term}%")
             ->take(3)
             ->get(['id', 'name', 'slug'])
-            ->map(fn ($c) => ['name' => $c->name.' (category)', 'url' => route('shop.category', $c->slug)]);
+            ->map(fn ($c) => ['name' => $c->name, 'url' => route('shop.category', $c->slug)]);
 
         return response()->json(['products' => $products, 'categories' => $categories]);
     }

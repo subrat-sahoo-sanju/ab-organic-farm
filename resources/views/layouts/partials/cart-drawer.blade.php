@@ -13,7 +13,7 @@
     {{-- Header --}}
     <div class="flex items-center justify-between border-b border-sage-100 px-5 py-4">
       <div class="flex items-center gap-2">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#235A49" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C522A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
         <h2 class="font-display text-base font-bold text-anv-800">My Cart</h2>
         <span x-show="count > 0" x-cloak class="rounded-full bg-anv-100 px-2 py-0.5 text-[11px] font-bold text-anv-700" x-text="count + ' item' + (count !== 1 ? 's' : '')"></span>
       </div>
@@ -49,7 +49,7 @@
       <template x-if="!loading && lines.length === 0">
         <div class="flex flex-col items-center justify-center py-12 text-center">
           <div class="mb-4 grid h-20 w-20 place-items-center rounded-full bg-leaf-100">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#235A49" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#7C522A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
           </div>
           <p class="text-base font-semibold text-anv-800">Nothing in your cart yet.</p>
           <p class="mt-1 text-sm text-charcoal-600/50">Let's fix that with something pure and delicious.</p>

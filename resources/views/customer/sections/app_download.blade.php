@@ -9,9 +9,9 @@
 
 @if($android || $ios || ! empty($imgs['desktop']))
 <section class="relative w-full overflow-hidden">
-    <div class="mx-auto w-full max-w-[1300px] px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-        <div class="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#0B3B30] via-[#0C5B3B] to-[#0C831F] px-6 py-12 sm:px-12 lg:px-16">
-            <div class="pointer-events-none absolute -right-20 -top-16 h-72 w-72 rounded-full bg-[#74C9A1]/25 blur-3xl"></div>
+    <div class="mx-auto w-full max-w-[1440px] px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+        <div class="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#1A4630] via-[#1F5C3F] to-[#2E7D53] px-6 py-12 sm:px-12 lg:px-16">
+            <div class="pointer-events-none absolute -right-20 -top-16 h-72 w-72 rounded-full bg-[#A9CB92]/25 blur-3xl"></div>
             <div class="pointer-events-none absolute -bottom-24 left-1/3 h-72 w-72 rounded-full bg-gold-400/20 blur-3xl"></div>
             <div class="pointer-events-none absolute inset-0 opacity-[0.06]" style="background-image:radial-gradient(#fff 1.5px, transparent 1.5px); background-size:22px 22px;"></div>
 

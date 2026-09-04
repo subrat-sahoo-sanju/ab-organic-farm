@@ -272,7 +272,7 @@
                 <label class="adm-label">Banner Background Color</label>
                 <div class="flex gap-2">
                   <input type="color" name="banner_bg_color" x-model="form.banner_bg_color" class="h-9 w-12 cursor-pointer rounded border border-gray-200">
-                  <input type="text" x-model="form.banner_bg_color" class="adm-input flex-1" placeholder="#00584b">
+                  <input type="text" x-model="form.banner_bg_color" class="adm-input flex-1" placeholder="#7C522A">
                 </div>
               </div>
               <div>
@@ -472,7 +472,7 @@
                           <label class="adm-label">Background Color</label>
                           <div class="flex gap-2">
                             <input type="color" x-model="sec.config.bg_color" class="h-8 w-10 cursor-pointer rounded border border-gray-200">
-                            <input type="text" x-model="sec.config.bg_color" class="adm-input flex-1" placeholder="#00584b">
+                            <input type="text" x-model="sec.config.bg_color" class="adm-input flex-1" placeholder="#7C522A">
                           </div>
                         </div>
                         <div>
@@ -621,7 +621,7 @@ function categoryManager() {
       banner_image: '',
       banner_cta_text: '',
       banner_cta_url: '',
-      banner_bg_color: '#00584b',
+      banner_bg_color: '#7C522A',
         brand_logo: '',
         brand_name: '',
         banner_images: [],
@@ -638,7 +638,7 @@ function categoryManager() {
         name: '', parent_id: '', description: '', icon: '', sort_order: 0,
         is_active: true, is_featured: false, image_path: '', card_image: '',
         banner_heading: '', banner_subheading: '', banner_image: '',
-        banner_cta_text: '', banner_cta_url: '', banner_bg_color: '#00584b',
+        banner_cta_text: '', banner_cta_url: '', banner_bg_color: '#7C522A',
         brand_logo: '', brand_name: '', banner_images: [], sections: [],
       };
       this.showModal = true;
@@ -691,7 +691,7 @@ function categoryManager() {
         banner_image: cat.banner_image || '',
         banner_cta_text: cat.banner_cta_text || '',
         banner_cta_url: cat.banner_cta_url || '',
-        banner_bg_color: cat.banner_bg_color || '#00584b',
+        banner_bg_color: cat.banner_bg_color || '#7C522A',
         brand_logo: cat.brand_logo || '',
         brand_name: cat.brand_name || '',
         banner_images: cat.banner_images || [],
@@ -761,7 +761,7 @@ function categoryManager() {
           { title: 'Traditional Processing', text: 'Cold-pressed, stone-ground methods', icon: 'wheat', image: '' },
           { title: 'No Chemicals', text: 'Zero preservatives or artificial additives', icon: 'shield-check', image: '' },
         ]}},
-        promo_banner: { title: 'Special Offer', subtitle: 'Limited time deal', config: { bg_color: '#00584b', text_color: '#ffffff', cta_text: 'Shop Now', cta_url: '#' }},
+        promo_banner: { title: 'Special Offer', subtitle: 'Limited time deal', config: { bg_color: '#7C522A', text_color: '#ffffff', cta_text: 'Shop Now', cta_url: '#' }},
         cross_sell: { title: 'You May Also Like', subtitle: 'Complete your organic collection' },
         subcategory_cards: { title: 'Explore Categories', subtitle: '' },
       };

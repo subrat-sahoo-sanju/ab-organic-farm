@@ -1,7 +1,7 @@
 @extends('layouts.app', ['title' => 'All Categories'])
 
 @section('content')
-<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+<div class="mx-auto max-w-[1440px] px-4 py-8 sm:px-6 lg:px-8">
   <h1 class="font-display text-3xl font-bold text-charcoal">Shop by Category</h1>
   <p class="mt-2 text-charcoal/60">Find exactly what you need — all certified organic, all farm-fresh.</p>
 
@@ -14,7 +14,7 @@
           @elseif($category->image_path)
             <img src="{{ asset('storage/'.$category->image_path) }}" alt="{{ $category->name }}" class="h-12 w-12 rounded-xl object-cover">
           @else
-            <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#0C831F]/10 text-2xl leading-none">{{ $category->icon ?? '🌱' }}</span>
+            <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#7C522A]/10 text-2xl leading-none">{{ $category->icon ?? '🌱' }}</span>
           @endif
         </div>
         <div class="p-5">

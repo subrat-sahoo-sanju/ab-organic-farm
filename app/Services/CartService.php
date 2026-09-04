@@ -47,8 +47,9 @@ class CartService
         $available = $variant->inventory?->available() ?? 0;
 
         $existing = $cart->items()->where('product_variant_id', $variant->id)->first();
-        $qty = max(1, $qty);
-        $newQty = ($existing?->quantity ?? 0) + $qty;
+        // qty is a signed delta: +1 to increment, -1 to decrement (from the
+        // storefront steppers). Floor the resulting line quantity at 1.
+        $newQty = max(1, ($existing?->quantity ?? 0) + $qty);
 
         if ($newQty > $available) {
             throw new \DomainException($available > 0

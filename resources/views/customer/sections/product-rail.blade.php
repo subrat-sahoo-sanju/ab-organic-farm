@@ -19,7 +19,7 @@
 
 @if($products->count())
 <section class="w-full border-t border-sage-100 py-8 sm:py-10 {{ $bg }}">
-    <div class="mx-auto w-full max-w-[1300px] px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div class="flex items-end justify-between gap-4">
             <div>
                 <h2 class="font-display text-[24px] font-bold text-anv-800 sm:text-2xl">{{ $sec->title }}</h2>

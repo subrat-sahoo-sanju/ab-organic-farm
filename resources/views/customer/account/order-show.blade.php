@@ -15,7 +15,7 @@
   <div class="mx-auto max-w-4xl px-4 py-5 sm:px-6 lg:px-8">
 
     {{-- Back Link --}}
-    <a href="{{ route('account.orders') }}" class="mb-5 inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 transition hover:text-[#0C831F]">
+    <a href="{{ route('account.orders') }}" class="mb-5 inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 transition hover:text-[#7C522A]">
       <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
       My Orders
     </a>
@@ -63,7 +63,7 @@
           @if($order->status->value === 'delivered')
             <form action="{{ route('account.orders.reorder', $order) }}" method="POST">
               @csrf
-              <button type="submit" class="inline-flex items-center gap-1.5 rounded-xl bg-[#0C831F] px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-[#0C831F]/20 transition hover:bg-[#096818]">
+              <button type="submit" class="inline-flex items-center gap-1.5 rounded-xl bg-[#7C522A] px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-[#7C522A]/20 transition hover:bg-[#613E20]">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                 Reorder
               </button>
@@ -105,7 +105,7 @@
         {{-- Progress Bar --}}
         <div class="mb-6">
           <div class="h-2 overflow-hidden rounded-full bg-gray-100">
-            <div class="h-full rounded-full transition-all duration-700 ease-out {{ $order->status->value === 'cancelled' ? 'bg-red-400' : 'bg-[#0C831F]' }}"
+            <div class="h-full rounded-full transition-all duration-700 ease-out {{ $order->status->value === 'cancelled' ? 'bg-red-400' : 'bg-[#7C522A]' }}"
               style="width: {{ $progress }}%"></div>
           </div>
         </div>
@@ -118,18 +118,18 @@
               $isCurrent = $currentIdx === $i;
             @endphp
             <div class="text-center">
-              <div class="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 {{ $isCurrent ? 'bg-[#0C831F] text-white shadow-lg shadow-[#0C831F]/30 ring-4 ring-[#0C831F]/10' : ($reached ? 'bg-[#0C831F] text-white' : 'bg-gray-100 text-gray-300') }}">
+              <div class="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 {{ $isCurrent ? 'bg-[#7C522A] text-white shadow-lg shadow-[#7C522A]/30 ring-4 ring-[#7C522A]/10' : ($reached ? 'bg-[#7C522A] text-white' : 'bg-gray-100 text-gray-300') }}">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $stepIcons[$status] !!}</svg>
               </div>
-              <div class="text-[11px] font-semibold {{ $isCurrent ? 'text-[#0C831F]' : ($reached ? 'text-gray-700' : 'text-gray-300') }}">{{ $stepLabels[$status] }}</div>
+              <div class="text-[11px] font-semibold {{ $isCurrent ? 'text-[#7C522A]' : ($reached ? 'text-gray-700' : 'text-gray-300') }}">{{ $stepLabels[$status] }}</div>
             </div>
           @endforeach
         </div>
 
         @if($order->status->value === 'out_for_delivery')
-          <div class="mt-5 rounded-xl bg-[#0C831F]/5 border border-[#0C831F]/20 p-4 text-center">
-            <div class="flex items-center justify-center gap-2 text-sm font-bold text-[#0C831F]">
-              <span class="relative flex h-2.5 w-2.5"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#0C831F] opacity-75"></span><span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#0C831F]"></span></span>
+          <div class="mt-5 rounded-xl bg-[#7C522A]/5 border border-[#7C522A]/20 p-4 text-center">
+            <div class="flex items-center justify-center gap-2 text-sm font-bold text-[#7C522A]">
+              <span class="relative flex h-2.5 w-2.5"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#7C522A] opacity-75"></span><span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#7C522A]"></span></span>
               Your order is on the way!
             </div>
             <p class="mt-1 text-xs text-gray-500">Estimated delivery in 30-45 minutes</p>
@@ -154,7 +154,7 @@
         </div>
         <form action="{{ route('account.orders.reorder', $order) }}" method="POST" class="mt-4">
           @csrf
-          <button type="submit" class="inline-flex items-center gap-1.5 rounded-xl bg-[#0C831F] px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:bg-[#096818]">
+          <button type="submit" class="inline-flex items-center gap-1.5 rounded-xl bg-[#7C522A] px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:bg-[#613E20]">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
             Reorder
           </button>
@@ -206,14 +206,14 @@
                 $history = $histories->first();
               @endphp
               <div class="relative pl-6 pb-5 last:pb-0">
-                <div class="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 {{ $event['reached'] ? 'border-[#0C831F] bg-[#0C831F]' : 'border-gray-200 bg-white' }}">
+                <div class="absolute -left-[9px] top-0 h-4 w-4 rounded-full border-2 {{ $event['reached'] ? 'border-[#7C522A] bg-[#7C522A]' : 'border-gray-200 bg-white' }}">
                   @if($event['reached'] && !$event['is_current'])
                     <svg class="absolute inset-0.5 h-2.5 w-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                   @endif
                 </div>
                 <div class="flex items-start justify-between">
                   <div>
-                    <div class="text-sm font-bold {{ $event['is_current'] ? 'text-[#0C831F]' : ($event['reached'] ? 'text-gray-900' : 'text-gray-300') }}">
+                    <div class="text-sm font-bold {{ $event['is_current'] ? 'text-[#7C522A]' : ($event['reached'] ? 'text-gray-900' : 'text-gray-300') }}">
                       {{ $event['status']->label() }}
                     </div>
                     @if($history && $history->note)
@@ -222,8 +222,8 @@
                   </div>
                   <div class="text-[11px] text-gray-400 shrink-0">
                     @if($event['is_current'])
-                      <span class="inline-flex items-center gap-1 rounded-full bg-[#0C831F]/10 px-2 py-0.5 text-[10px] font-bold text-[#0C831F]">
-                        <span class="h-1 w-1 rounded-full bg-[#0C831F] animate-pulse"></span>
+                      <span class="inline-flex items-center gap-1 rounded-full bg-[#7C522A]/10 px-2 py-0.5 text-[10px] font-bold text-[#7C522A]">
+                        <span class="h-1 w-1 rounded-full bg-[#7C522A] animate-pulse"></span>
                         Current
                       </span>
                     @elseif($event['reached'])
@@ -244,8 +244,8 @@
         <section class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
           <h2 class="mb-3 text-sm font-bold text-gray-900">Delivery Address</h2>
           <div class="flex items-start gap-3">
-            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#0C831F]/10">
-              <svg class="h-4 w-4 text-[#0C831F]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#7C522A]/10">
+              <svg class="h-4 w-4 text-[#7C522A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
             </div>
             <div class="text-sm text-gray-600 leading-relaxed">
               <span class="font-bold text-gray-900">{{ $order->ship_name }}</span>
@@ -276,14 +276,14 @@
               </div>
               @if($order->product_discount > 0)
                 <div class="flex justify-between">
-                  <span class="text-[#0C831F]">Product discount</span>
-                  <span class="font-medium text-[#0C831F]">-₹{{ number_format($order->product_discount) }}</span>
+                  <span class="text-[#7C522A]">Product discount</span>
+                  <span class="font-medium text-[#7C522A]">-₹{{ number_format($order->product_discount) }}</span>
                 </div>
               @endif
               @if($order->coupon_discount > 0)
                 <div class="flex justify-between">
-                  <span class="text-[#0C831F]">Coupon discount</span>
-                  <span class="font-medium text-[#0C831F]">-₹{{ number_format($order->coupon_discount) }}</span>
+                  <span class="text-[#7C522A]">Coupon discount</span>
+                  <span class="font-medium text-[#7C522A]">-₹{{ number_format($order->coupon_discount) }}</span>
                 </div>
               @endif
               <div class="flex justify-between">
@@ -291,7 +291,7 @@
                 @if($order->delivery_charge > 0)
                   <span class="font-medium text-gray-900">₹{{ number_format($order->delivery_charge) }}</span>
                 @else
-                  <span class="font-bold text-[#0C831F]">FREE</span>
+                  <span class="font-bold text-[#7C522A]">FREE</span>
                 @endif
               </div>
             </div>
@@ -316,7 +316,7 @@
               <div class="text-xs text-gray-400">Pay when your order arrives</div>
             </div>
             <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase
-              {{ ($order->payment->status ?? '') === 'collected' ? 'bg-[#0C831F]/10 text-[#0C831F]' : 'bg-amber-50 text-amber-600' }}">
+              {{ ($order->payment->status ?? '') === 'collected' ? 'bg-[#7C522A]/10 text-[#7C522A]' : 'bg-amber-50 text-amber-600' }}">
               {{ ucfirst($order->payment->status ?? 'pending') }}
             </span>
           </div>
@@ -324,11 +324,11 @@
 
         {{-- COUPON --}}
         @if($order->coupon)
-          <div class="rounded-2xl border border-[#0C831F]/20 bg-[#0C831F]/[0.03] p-4">
+          <div class="rounded-2xl border border-[#7C522A]/20 bg-[#7C522A]/[0.03] p-4">
             <div class="flex items-center gap-2">
-              <svg class="h-4 w-4 shrink-0 text-[#0C831F]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+              <svg class="h-4 w-4 shrink-0 text-[#7C522A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
               <div class="flex-1">
-                <div class="text-sm font-bold text-[#0C831F]">{{ $order->coupon->code }}</div>
+                <div class="text-sm font-bold text-[#7C522A]">{{ $order->coupon->code }}</div>
                 <div class="text-xs text-gray-500">You saved ₹{{ number_format($order->coupon_discount) }}</div>
               </div>
             </div>
@@ -338,7 +338,7 @@
         {{-- Help --}}
         <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm text-center">
           <p class="text-xs text-gray-400">Need help with this order?</p>
-          <a href="mailto:support@aborganicfarm.com" class="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-[#0C831F] hover:underline">
+          <a href="mailto:support@aborganicfarm.com" class="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-[#7C522A] hover:underline">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
             Contact Support
           </a>

@@ -8,7 +8,7 @@
 <style>
   .anv-nav-panel{background:#fff}
   .anv-nav-link{display:flex;align-items:center;gap:8px;padding:4px 10px;font-size:14px;font-weight:500;color:#2c2c2c;text-decoration:none;transition:color .15s ease;white-space:nowrap}
-  .anv-nav-link:hover{color:#235a49}
+  .anv-nav-link:hover{color:#1F5C3F}
   .anv-nav-link img{width:22px;height:22px;object-fit:contain}
   .nav-rainbow{background:linear-gradient(90deg,#f5350a,#d8296b,#6344b7,#2e7d32);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700}
   .anv-drawer{position:fixed;inset:0;z-index:90;visibility:hidden;transition:visibility 0s .4s}
@@ -23,21 +23,42 @@
   .anv-drawer-item img{width:24px;height:24px;object-fit:contain}
   .anv-drawer-sub{margin-left:50px;padding:8px 0;border-bottom:1px solid #f1f1f1}
   .anv-drawer-sub a{display:block;padding:8px 18px;font-size:13px;color:#555;text-decoration:none}
-  .anv-drawer-sub a:hover{color:#235a49}
-  .anv-submenu{position:absolute;top:100%;left:0;min-width:230px;background:#fff;border:1px solid #eee;border-top:2px solid #235a49;border-radius:0 0 8px 8px;box-shadow:0 18px 40px -18px rgba(0,0,0,.25);padding:8px 0;opacity:0;visibility:hidden;transform:translateY(8px);transition:all .2s ease}
+  .anv-drawer-sub a:hover{color:#1F5C3F}
+  .anv-submenu{position:absolute;top:100%;left:0;min-width:230px;background:#fff;border:1px solid #eee;border-top:2px solid #1F5C3F;border-radius:0 0 8px 8px;box-shadow:0 18px 40px -18px rgba(0,0,0,.25);padding:8px 0;opacity:0;visibility:hidden;transform:translateY(8px);transition:all .2s ease}
   .anv-nav-hasmenu:hover .anv-submenu,.anv-nav-hasmenu:focus-within .anv-submenu{opacity:1;visibility:visible;transform:none}
   .anv-submenu a{position:relative;display:flex;align-items:center;gap:10px;padding:9px 18px;font-size:13px;color:#444;text-decoration:none;transition:all .12s ease}
-  .anv-submenu a:hover{color:#235a49;background:#f6f9f7;padding-left:22px}
+  .anv-submenu a:hover{color:#1F5C3F;background:#f6f9f7;padding-left:22px}
   .anv-submenu a img{width:20px;height:20px;object-fit:contain}
   .anv-search-toggle{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:9999px;color:#242424;transition:background .15s ease}
-  .anv-search-toggle:hover{background:#eef5f0}
+  .anv-search-toggle:hover{background:#EAF4EE}
+
+  {{-- ═══ LIVE SEARCH PANEL ═══ --}}
+  .anv-search-panel{position:fixed;left:0;right:0;top:0;bottom:0;z-index:95;background:rgba(244,240,233,.94);backdrop-filter:blur(6px);overflow-y:auto;visibility:hidden;opacity:0;transition:opacity .22s ease,visibility 0s .22s}
+  .anv-search-panel.open{visibility:visible;opacity:1;transition:opacity .22s ease}
+  .anv-search-card{width:min(680px,94vw);margin:56px auto 0;background:#fff;border:1px solid #eadfc9;border-top:2px solid #1F5C3F;border-radius:20px;box-shadow:0 26px 60px -20px rgba(20,60,40,.4);transform:translateY(10px);transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+  .anv-search-panel.open .anv-search-card{transform:none}
+  .anv-sr-head{font-size:16px;font-weight:800;color:#173F2A;letter-spacing:.2px}
+  .anv-sr-hint{font-size:12px;color:#A9A9A9}
+  .anv-sr-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;transition:background .15s}
+  .anv-sr-item:hover{background:#EAF4EE}
+  .anv-sr-img{width:46px;height:46px;border-radius:10px;object-fit:cover;background:#f3efe7;flex-shrink:0}
+  .anv-sr-name{font-size:14px;font-weight:600;color:#2f2a24;line-height:1.25}
+  .anv-sr-cat{font-size:11px;color:#8a8578}
+  .anv-sr-sale{font-size:15px;font-weight:800;color:#1F5C3F}
+  .anv-sr-price{font-size:12px;color:#a9a9a9}
+  .anv-sr-loading{display:flex;align-items:center;gap:10px;padding:16px;color:#1F5C3F;font-weight:600;font-size:13px}
+  .anv-sr-empty{display:flex;align-items:center;gap:10px;padding:16px;color:#666;font-size:13px}
+  .anv-sr-spin{width:16px;height:16px;border:2px solid #1F5C3F;border-top-color:transparent;border-radius:50%;animation:anvSpin .7s linear infinite}
+  @keyframes anvSpin{to{transform:rotate(360deg)}}
+  .anv-chip{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:9999px;border:1.5px solid #d9c9a8;background:#fff;color:#5a4a2f;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+  .anv-chip:hover{border-color:#1F5C3F;color:#1F5C3F;background:#EAF4EE}
 </style>
 
 {{-- ════════════════════════════════════════════
      TOP HEADER BAR  (Sticky)
 ════════════════════════════════════════════ --}}
-<header class="sticky top-0 z-40 bg-white shadow-sm" x-data="{ drawer: false, search: false }">
-  <div class="mx-auto flex h-16 max-w-[1300px] items-center gap-2 px-4 sm:gap-4 sm:px-6 lg:px-8">
+<header class="sticky top-0 z-40 bg-white shadow-sm" x-data="headerSearch()">
+  <div class="mx-auto flex h-16 max-w-[1440px] items-center gap-2 px-4 sm:gap-4 sm:px-6 lg:px-8">
 
     {{-- Mobile hamburger --}}
     <button type="button" class="lg:hidden flex items-center justify-center p-2 -ml-2 text-[#242424]" @click="drawer = true" aria-label="Open menu">
@@ -84,15 +105,15 @@
 
     {{-- Right icons: search · wishlist · cart · account --}}
     <div class="ml-auto flex shrink-0 items-center gap-0.5 sm:gap-1 lg:ml-0">
-      <button type="button" class="anv-search-toggle" @click="search = true" aria-label="Search">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="9.75" cy="9.75" r="8.25" stroke="#00584B" stroke-width="2"/><path d="M15.6 15.6 22.5 22.5" stroke="#00584B" stroke-width="2" stroke-linecap="round"/></svg>
+      <button type="button" class="anv-search-toggle" @click="openSearch()" aria-label="Search">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="9.75" cy="9.75" r="8.25" stroke="#C9A227" stroke-width="2"/><path d="M15.6 15.6 22.5 22.5" stroke="#C9A227" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
 
-      <a href="{{ route('account.wishlist') }}" class="hidden items-center justify-center rounded-full p-2.5 text-[#00584B] transition-colors hover:bg-[#eef5f0] sm:flex" aria-label="Wishlist">
+      <a href="{{ route('account.wishlist') }}" class="hidden items-center justify-center rounded-full p-2.5 text-[#7C522A] transition-colors hover:bg-[#eef5f0] sm:flex" aria-label="Wishlist">
         <x-lucide-heart class="h-5 w-5"/>
       </a>
 
-      <button type="button" data-cart-anchor class="relative flex items-center justify-center rounded-full p-2.5 text-[#00584B] transition-colors hover:bg-[#eef5f0]" aria-label="Cart"
+      <button type="button" data-cart-anchor class="relative flex items-center justify-center rounded-full p-2.5 text-[#7C522A] transition-colors hover:bg-[#eef5f0]" aria-label="Cart"
               @click="window.dispatchEvent(new CustomEvent('anv:cart-drawer-open'))">
         <x-lucide-shopping-basket class="h-5 w-5"/>
         <span x-text="$store.cart.count" x-show="$store.cart.count > 0" x-cloak class="absolute -right-0.5 -top-0.5 h-5 min-w-5 rounded-full bg-anv-600 px-1 text-center text-[11px] font-bold text-white grid place-items-center"></span>
@@ -128,34 +149,84 @@
     </div>
   </div>
 
-  {{-- Mobile search row --}}
+  {{-- Mobile search row — opens the live-search panel --}}
   <div class="px-4 pb-3 lg:hidden">
-    <form action="{{ route('shop.search') }}" method="GET">
-      <div class="relative w-full group">
-        <x-lucide-search class="absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-charcoal-600/40 group-focus-within:text-anv-600 transition-colors"/>
-        <input type="search" name="q" value="{{ request('q') }}" placeholder="{{ setting('home.search_placeholder', 'Find your favorite items') }}" class="h-11 w-full rounded-full border-2 border-sage-100 bg-leaf-50 pl-11 pr-5 text-sm placeholder:text-charcoal-600/40 transition-all focus:border-anv-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-anv-500/20">
-      </div>
-    </form>
+    <button type="button" @click="openSearch()" class="flex w-full items-center gap-3 rounded-full border-2 border-sage-100 bg-leaf-50 px-4 py-3 text-left text-sm text-charcoal-600/70 transition hover:border-anv-500 hover:bg-white">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9.75" cy="9.75" r="6.5"/><path d="m15.3 15.3 5 5" stroke-linecap="round"/></svg>
+      <span class="flex-1">{{ setting('home.search_placeholder', 'Find your favorite items') }}</span>
+    </button>
   </div>
 
-  {{-- ═══ SEARCH MODAL (desktop) ═══ --}}
-  <div x-show="search" x-cloak x-transition @keydown.escape.window="search=false" class="fixed inset-0 z-[95] bg-white" @click.self="search=false">
-    <div class="mx-auto flex h-full max-w-xl flex-col px-4 pt-10 sm:px-6">
-      <div class="flex items-center justify-between">
-        <h2 class="font-display text-xl font-bold text-[#235a49]">Search</h2>
-        <button @click="search=false" class="p-2 text-charcoal-600/60 hover:text-charcoal-900"><x-lucide-x class="h-6 w-6"/></button>
+  {{-- ═══ LIVE SEARCH PANEL (desktop + mobile) ═══ --}}
+  <div class="anv-search-panel" :class="search ? 'open' : ''" x-cloak @keydown.escape.window="closeSearch" @click.self="closeSearch">
+    <div class="anv-search-card">
+      <div class="flex items-center justify-between px-5 pt-4">
+        <p class="anv-sr-head">Search our organic store</p>
+        <button @click="closeSearch" class="grid h-8 w-8 place-items-center rounded-full text-[#7C522A] transition hover:bg-[#f6efe3]" aria-label="Close search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
-      <form action="{{ route('shop.search') }}" method="GET" class="mt-5">
-        <div class="relative w-full">
-          <x-lucide-search class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-charcoal-600/40"/>
-          <input type="search" name="q" autofocus placeholder="{{ setting('home.search_placeholder', 'Search products, e.g. ghee') }}" class="h-13 w-full rounded-full border-2 border-[#235a49] py-3.5 pl-12 pr-5 text-base outline-none focus:ring-2 focus:ring-anv-500/30">
+      <p class="anv-sr-hint px-5 pt-1">Start typing — results appear live</p>
+
+      <div class="px-5 pt-4">
+        <div class="relative">
+          <svg class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#C9A227]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9.75" cy="9.75" r="6.5"/><path d="m15.3 15.3 5 5" stroke-linecap="round"/></svg>
+          <input type="text" x-ref="searchInput" x-model="q"
+                 @input.debounce.300ms="runSearch()"
+                 @keydown.enter.prevent="goSearch()"
+                 placeholder="Search products, e.g. ghee, atta, oil" autocomplete="off"
+                 class="h-[52px] w-full rounded-full border-2 border-[#eadfc9] bg-[#fbf7ef] py-3 pl-12 pr-24 text-[15px] text-[#2f2a24] outline-none transition focus:border-[#1F5C3F] focus:bg-white focus:ring-2 focus:ring-[#1F5C3F]/20 placeholder:text-[#a9a9a9]">
+          <button @click.prevent="goSearch()" class="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full bg-[#1F5C3F] px-4 py-2 text-[13px] font-extrabold uppercase tracking-wide text-white transition hover:bg-[#173F2A]">Search</button>
         </div>
-      </form>
-      <div class="mt-6 text-sm text-charcoal-600/60">Popular:</div>
-      <div class="mt-3 flex flex-wrap gap-2">
-        @foreach(setting_json('home.tags', ['Ghee','Oils','Atta','Superfoods']) as $tag)
-          <a href="{{ route('shop.search', ['q' => $tag]) }}" class="rounded-full border border-sage-200 px-4 py-1.5 text-sm text-charcoal-700 transition hover:border-anv-600 hover:text-anv-700">{{ $tag }}</a>
-        @endforeach
+      </div>
+
+      {{-- Loaded results / states --}}
+      <div class="max-h-[48vh] overflow-y-auto px-3 pb-3 pt-3">
+        <template x-if="loading">
+          <div class="anv-sr-loading"><span class="anv-sr-spin"></span> Searching our farm stock…</div>
+        </template>
+
+        <template x-if="!loading && q.trim().length < 2">
+          <div class="px-2 pb-1">
+            <p class="anv-sr-hint mb-2">Popular: </p>
+            <div class="flex flex-wrap gap-2">
+              <template x-for="tag in popular" :key="tag">
+                <button @click="q = tag; runSearch()" class="anv-chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="6"/><path d="m16 16 5 5"/></svg><span x-text="tag"></span></button>
+              </template>
+            </div>
+          </div>
+        </template>
+
+        <template x-if="!loading && q.trim().length >= 2 && results.length === 0">
+          <div class="anv-sr-empty">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            No matches for “<b x-text="q" class="mx-1"></b>”. Try a different keyword.
+          </div>
+        </template>
+
+        <template x-if="!loading && q.trim().length >= 2 && results.length > 0">
+          <div class="grid gap-1 sm:grid-cols-2">
+            <template x-for="p in results" :key="p.slug">
+              <a :href="p.url" @click="closeSearch" class="anv-sr-item">
+                <img :src="p.image" :alt="p.name" loading="lazy" class="anv-sr-img">
+                <span class="min-w-0 flex-1">
+                  <span class="anv-sr-name block truncate" x-text="p.name"></span>
+                  <span class="anv-sr-cat" x-show="p.category" x-text="p.category"></span>
+                  <span class="mt-0.5 flex items-baseline gap-1.5">
+                    <span class="anv-sr-sale" x-text="'₹' + p.sale.toLocaleString('en-IN')"></span>
+                    <s class="anv-sr-price" x-show="p.price > p.sale" x-text="'₹' + p.price.toLocaleString('en-IN')"></s>
+                    <span class="anv-sr-cat" x-show="p.unit">/ <span x-text="p.unit"></span></span>
+                  </span>
+                </span>
+                <svg class="h-4 w-4 flex-shrink-0 text-[#C9A22A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+            </template>
+          </div>
+        </template>
+      </div>
+
+      <div class="border-t border-[#eadfc9] px-5 py-3">
+        <a href="#" @click.prevent="goSearch()" class="flex items-center justify-center gap-2 rounded-xl bg-[#f6efe3] py-2.5 text-[13px] font-bold text-[#7C522A] transition hover:bg-[#7C522A] hover:text-white">
+          See all results <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
       </div>
     </div>
   </div>
