@@ -41,8 +41,6 @@
     }
 @endphp
 
-@endphp
-
 <article class="anv-card group relative flex h-full w-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_2px_14px_-8px_rgba(36,36,36,.18)] ring-1 ring-sage-100/80 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_44px_-18px_rgba(35,90,73,.4)]">
     {{-- ═══ IMAGE · 1:1 · badges · hover swap · wishlist · sold-out ═══ --}}
     <a href="{{ route('shop.product', $product) }}" class="relative block aspect-square w-full overflow-hidden rounded-t-[14px] bg-[#f3f3f3]">
