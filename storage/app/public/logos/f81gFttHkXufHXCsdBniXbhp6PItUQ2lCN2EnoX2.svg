@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="AB Organic Farm logo">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#235A49"/>
+      <stop offset="1" stop-color="#143B2F"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#E6B64A"/>
+      <stop offset="1" stop-color="#CF9726"/>
+    </linearGradient>
+  </defs>
+
+  <!-- round badge -->
+  <circle cx="256" cy="256" r="248" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="248" fill="none" stroke="url(#gold)" stroke-width="7"/>
+
+  <!-- laurel / leaf sprig wrapping the badge -->
+  <g fill="none" stroke="#3E7C5A" stroke-width="5" stroke-linecap="round">
+    <path d="M256 96c-38 22-72 60-88 108-9 27-13 55-12 84"/>
+    <path d="M256 96c38 22 72 60 88 108 9 27 13 55 12 84"/>
+  </g>
+  <!-- leaves -->
+  <g fill="#67B18A">
+    <path d="M168 148c18-6 34 4 38 22-18 6-34-4-38-22z"/>
+    <path d="M344 148c-18-6-34 4-38 22 18 6 34-4 38-22z"/>
+    <path d="M156 210c8-18 30-22 44-8-8 18-30 22-44 8z"/>
+    <path d="M356 210c-8-18-30-22-44-8 8 18 30 22 44 8z"/>
+  </g>
+
+  <!-- AB monogram -->
+  <g transform="translate(256,240)" text-anchor="middle">
+    <circle cx="0" cy="0" r="96" fill="#B9E3C7" opacity="0.14"/>
+    <text x="0" y="-4" font-family="Georgia, 'Times New Roman', serif" font-size="120" font-weight="bold" font-style="italic" fill="#F6F9F4" dominant-baseline="middle" letter-spacing="2">A</text>
+    <text x="0" y="4" font-family="Georgia, 'Times New Roman', serif" font-size="54" font-weight="bold" fill="#B9E3C7" dominant-baseline="middle" letter-spacing="6">B</text>
+  </g>
+
+  <!-- ORGANIC  FARM -->
+  <text x="256" y="420" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="700" letter-spacing="6" fill="#CF9726">ORGANIC</text>
+  <text x="256" y="462" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="500" letter-spacing="14" fill="#B9E3C7">FARM</text>
+
+  <!-- EST. underline accent -->
+  <path d="M216 484 h80" stroke="url(#gold)" stroke-width="3"/>
+</svg>

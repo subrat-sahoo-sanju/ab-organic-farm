@@ -2,9 +2,15 @@
 !.gitignore
 !banners/
 !banners/**
+!bgs/
+!bgs/**
 !brands/
 !brands/**
 !categories/
 !categories/**
+!logos/
+!logos/**
 !products/
 !products/**
+!sections/
+!sections/**
