@@ -334,14 +334,18 @@
                           </div>
                           <button type="button" @click="removeRow(i)" class="inline-flex items-center gap-1 rounded-lg bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20">Remove</button>
                         </div>
-                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
                           <div>
                             <label class="adm-field">Tab Name</label>
                             <input x-model="row.title" class="adm-input" placeholder="e.g. Ghee">
                           </div>
                           <div>
+                            <label class="adm-field">Key (URL slug)</label>
+                            <input x-model="row.key" class="adm-input" placeholder="e.g. ghee" @input="row.key = row.key.toLowerCase().replace(/[^a-z0-9-]/g, '-')">
+                          </div>
+                          <div>
                             <label class="adm-field">Show (type)</label>
-                            <select x-model="row.type" class="adm-input">
+                            <select x-model="row.type" @input="row.url = genTabUrl(row)" class="adm-input">
                               <option value="all">All products</option>
                               <option value="deal">Sale / deal products</option>
                               <option value="category">One category</option>
@@ -351,11 +355,20 @@
                           </div>
                           <div>
                             <label class="adm-field">Value</label>
-                            <input x-model="row.value" class="adm-input" placeholder="Name or category slug e.g. ghee">
+                            <input x-model="row.value" @input="row.url = genTabUrl(row)" class="adm-input" placeholder="Name or category slug e.g. ghee">
                           </div>
                           <div>
-                            <label class="adm-field">Icon</label>
+                            <label class="adm-field">Icon (inactive)</label>
                             <input x-model="row.inactive_icon" class="adm-input" placeholder="images/nav/nav-ghee.svg">
+                          </div>
+                          <div>
+                            <label class="adm-field">Icon (active)</label>
+                            <input x-model="row.active_icon" class="adm-input" placeholder="images/nav/nav-ghee-active.svg">
+                          </div>
+                          <div class="lg:col-span-2">
+                            <label class="adm-field">AJAX URL (auto if empty)</label>
+                            <input x-model="row.url" class="adm-input" placeholder="/api/menu/ghee?type=category&value=ghee" readonly>
+                            <p class="text-xs text-gray-400 mt-1">Leave empty to auto-generate from type + value</p>
                           </div>
                         </div>
                         <details class="mt-3 rounded-lg border border-gray-100 bg-white/60 p-3 dark:border-gray-800 dark:bg-gray-900/30">
@@ -707,6 +720,18 @@ function sectionList(schema, initial) {
     }
     return out;
   }).filter(r => Object.keys(r).length);
+  const genTabUrl = (row) => {
+    if (!row.type || !row.value) return '';
+    const base = '/api/welcome-tab/products';
+    const params = new URLSearchParams();
+    params.set('type', row.type);
+    if (row.type === 'category' || row.type === 'categories') {
+      params.set('value', row.value);
+    } else if (row.type === 'keyword') {
+      params.set('value', row.value);
+    }
+    return base + '?' + params.toString();
+  };
   return {
     schema, rows,
     get jsonValue() { return JSON.stringify(serialize()); },
@@ -714,6 +739,7 @@ function sectionList(schema, initial) {
     removeRow(i) { this.rows.splice(i, 1); if (!this.rows.length) this.rows.push(blankRow(this.schema)); },
     move(i, d) { const j = i + d; if (j < 0 || j >= this.rows.length) return; const t = this.rows[i]; this.rows[i] = this.rows[j]; this.rows[j] = t; },
     sync() { const h = this.$el && this.$el.querySelector('input[type="hidden"][data-listsync]'); if (h) h.value = this.jsonValue; },
+    genTabUrl,
   };
 }
 
