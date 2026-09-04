@@ -38,7 +38,9 @@
             <div class="overflow-hidden rounded-[8px]">
                 <div class="flex items-center gap-3 transition-transform duration-500 ease-out"
                      :style="`transform: translateX(-${index * (100 / per)}%)`"
-                     x-ref="track">
+                     x-ref="track"
+                     @touchstart.passive="handleTouchStart"
+                     @touchend="handleTouchEnd">
                     @foreach($items as $item)
                         @php $src = $item['image'] ?? $item->image; @endphp
                         <a href="{{ ($item['url'] ?? '') ?: '#' }}" class="shrink-0">
@@ -52,10 +54,10 @@
             </div>
 
             {{-- Arrows --}}
-            <button @click="prev()" :disabled="index === 0" class="absolute -left-3 top-1/2 hidden h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-black shadow-lg transition hover:bg-white disabled:opacity-40 sm:grid" aria-label="Previous">
+            <button @click="prev()" :disabled="index === 0" class="absolute -left-3 top-1/2 h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-black shadow-lg transition hover:bg-white disabled:opacity-40 anv-carousel-arrow sm:hidden sm:-left-3" aria-label="Previous">
                 <x-lucide-chevron-left class="h-5 w-5"/>
             </button>
-            <button @click="next()" :disabled="index >= maxIndex()" class="absolute -right-3 top-1/2 hidden h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-black shadow-lg transition hover:bg-white disabled:opacity-40 sm:grid" aria-label="Next">
+            <button @click="next()" :disabled="index >= maxIndex()" class="absolute -right-3 top-1/2 h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-black shadow-lg transition hover:bg-white disabled:opacity-40 anv-carousel-arrow sm:hidden sm:-right-3" aria-label="Next">
                 <x-lucide-chevron-right class="h-5 w-5"/>
             </button>
 

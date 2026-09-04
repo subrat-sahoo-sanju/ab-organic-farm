@@ -426,7 +426,7 @@
   </div>
 
   {{-- ===== BOTTOM STICKY BAR (Mobile + Desktop) ===== --}}
-  <div class="sticky-total-bar fixed inset-x-0 z-40 border-t border-gray-200 bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+  <div class="sticky-total-bar fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
     <div class="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
       {{-- Total --}}
       <div class="flex-1">
@@ -584,9 +584,9 @@ function checkoutPage() {
 <style>
 [x-cloak] { display: none !important; }
 /* Keep the Total/Place-Order bar clear of the fixed mobile bottom nav (h-16 + safe-area). */
-.sticky-total-bar { bottom: calc(env(safe-area-inset-bottom, 0px) + 4rem); }
+.sticky-total-bar { bottom: calc(env(safe-area-inset-bottom, 0px) + 4rem) !important; }
 @media (min-width: 1024px) {
-  .sticky-total-bar { bottom: 0; }
+  .sticky-total-bar { bottom: 0 !important; }
 }
 /* Validation toast floats above the mobile nav + total bar. */
 .sticky-toast { bottom: calc(env(safe-area-inset-bottom, 0px) + 9.5rem); }

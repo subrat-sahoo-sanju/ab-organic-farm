@@ -362,6 +362,9 @@ function cartPage() {
 </script>
 <style>[x-cloak] { display: none !important; }
 /* Keep the Total/Checkout bar clear of the fixed mobile bottom nav (h-16 + safe-area). */
-.sticky-total-bar { bottom: calc(env(safe-area-inset-bottom, 0px) + 4rem); }
+.sticky-total-bar { bottom: calc(env(safe-area-inset-bottom, 0px) + 4rem) !important; }
+@media (min-width: 1024px) {
+  .sticky-total-bar { bottom: 0 !important; }
+}
 </style>
 @endsection

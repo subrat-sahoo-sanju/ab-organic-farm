@@ -732,6 +732,133 @@ h1, h2, h3, .font-display { font-family: var(--font-display); }
 }
 
 /* ==========================================================================
+   Mobile-First Responsive Enhancements
+   ========================================================================== */
+
+/* Touch targets — minimum 44x44px for accessibility */
+@media (max-width: 639px) {
+    button, [role="button"], .btn, .adm-btn-primary, .adm-btn-outline, .adm-btn-ghost,
+    .adm-action-link, .adm-pill, .adm-toggle, input[type="checkbox"], input[type="radio"],
+    select, .input, .adm-input {
+        min-height: 44px;
+    }
+    
+    /* Larger tap targets for navigation */
+    .anv-rail-item, .menu-grid-item, .menu-nav-item {
+        min-width: 44px;
+    }
+    
+    /* Better spacing for mobile cards */
+    .card, .product-card, .anv-card, .adm-card, .stat-card, .admin-card {
+        border-radius: 1rem;
+    }
+    
+    /* Improved text readability on mobile */
+    body { font-size: 16px; /* Prevents zoom on iOS inputs */ }
+    
+    /* Section headers more compact on mobile */
+    .adm-section-title, h2, h3, .font-display { 
+        font-size: clamp(1.125rem, 4vw, 1.5rem); 
+    }
+    
+    /* Form inputs full width on mobile */
+    .input, .adm-input, select, textarea {
+        width: 100%;
+    }
+    
+    /* Modal improvements on mobile */
+    .adm-modal-card, .adm-modal {
+        max-width: calc(100vw - 1rem);
+        margin: 0.5rem;
+        max-height: calc(100vh - 1rem);
+    }
+    
+    /* Table responsive - horizontal scroll on mobile */
+    .adm-table-wrap { 
+        overflow-x: auto; 
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Grid adjustments for mobile */
+    .adm-grid-2, .adm-grid-3, .adm-grid-5 {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Button full width on mobile for better UX */
+    .adm-btn-primary, .adm-btn-outline, .adm-btn-danger, .btn-primary, .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    /* Mobile-friendly spacing */
+    .space-y-4 > * + * { margin-top: 1rem; }
+    .space-y-6 > * + * { margin-top: 1.25rem; }
+    .gap-4 { gap: 1rem; }
+    .gap-6 { gap: 1.25rem; }
+    
+    /* Product card adjustments */
+    .product-card, .anv-card { 
+        padding: 0.75rem; 
+    }
+    
+    /* Announcement bar text size */
+    .app-download-bar__heading { font-size: 14px; }
+    .app-download-bar__sub { font-size: 11px; }
+    .app-download-bar__btn { padding: 6px 14px; font-size: 12px; }
+    
+    /* Sticky bars safe area */
+    .sticky-total-bar, .sticky-toast { 
+        padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+    
+    /* Mobile nav improvements */
+    nav[aria-label="Mobile navigation"] {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
+
+/* Tablet improvements */
+@media (min-width: 640px) and (max-width: 1023px) {
+    .adm-grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .adm-grid-3 { grid-template-columns: repeat(2, 1fr); }
+    .adm-grid-5 { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Large mobile / small tablet - better product grid */
+@media (min-width: 480px) and (max-width: 767px) {
+    .menu-product-grid .menu-grid-item {
+        flex-basis: 180px !important;
+        width: 180px !important;
+        min-width: 180px !important;
+        max-width: 180px !important;
+    }
+}
+
+/* Print styles */
+@media print {
+    .no-print { display: none !important; }
+    .sticky-total-bar, .anv-rewards-bar, .app-download-bar { display: none !important; }
+    body { background: white !important; }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --color-forest-500: #1B4332;
+        --color-forest-600: #163D2D;
+        --color-sage-300: #8A9A85;
+    }
+    .btn-primary, .adm-btn-primary { border: 2px solid currentColor; }
+}
+
+/* Focus visible improvements for keyboard navigation */
+*:focus-visible {
+    outline: 3px solid var(--color-forest-400);
+    outline-offset: 3px;
+    border-radius: 6px;
+}
+
+/* ==========================================================================
    Dark Mode (Admin Panel)
    ========================================================================== */
 
@@ -1542,6 +1669,31 @@ textarea.adm-input {
 .anv-rail .anv-rail-item { flex: 0 0 auto; scroll-snap-align: start; }
 .anv-rail::-webkit-scrollbar { display: none; }
 .anv-rail { scrollbar-width: none; }
+
+/* Mobile scroll hint — fade on right edge when scrollable */
+.anv-rail { position: relative; }
+.anv-rail::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 80px;
+  background: linear-gradient(to left, var(--color-cream-50), transparent);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.anv-rail:not(:hover)::after { opacity: 1; }
+@media (max-width: 639px) {
+  .anv-rail::after { opacity: 1; }
+  .anv-rail:hover::after { opacity: 0; }
+}
+
+/* Touch-friendly carousel arrows on mobile */
+@media (max-width: 639px) {
+  .anv-carousel-arrow { display: flex !important; }
+}
 
 /* Cards */
 .anv-card {

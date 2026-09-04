@@ -400,6 +400,8 @@ Alpine.data('reviewsSlider', () => ({
 Alpine.data('slideCarousel', () => ({
     index: 0,
     per: 1,
+    touchStartX: 0,
+    touchEndX: 0,
     init() {
         this.measure()
         window.addEventListener('resize', () => this.measure())
@@ -425,6 +427,20 @@ Alpine.data('slideCarousel', () => ({
     },
     next() {
         this.index = Math.min(this.maxIndex(), this.index + 1)
+    },
+    handleTouchStart(e) {
+        this.touchStartX = e.changedTouches[0].screenX
+    },
+    handleTouchEnd(e) {
+        this.touchEndX = e.changedTouches[0].screenX
+        this.handleSwipe()
+    },
+    handleSwipe() {
+        const diff = this.touchStartX - this.touchEndX
+        if (Math.abs(diff) > 50) {
+            if (diff > 0) this.next()
+            else this.prev()
+        }
     },
 }))
 
