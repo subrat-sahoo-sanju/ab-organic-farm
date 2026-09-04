@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
     <link rel="icon" href="{{ asset('storage/sections/app-icon.jpg') }}" type="image/jpeg">
-    @php $css = @file_get_contents(public_path('static/assets/app-ClhGhLBA.css')); @endphp
+    @php $css = @file_get_contents(public_path('static/assets/app-Dgsg4rRZ.css')); @endphp
     <style>{!! $css !!}</style>
 </head>
 <body class="min-h-screen bg-cream flex items-center justify-center p-4">
