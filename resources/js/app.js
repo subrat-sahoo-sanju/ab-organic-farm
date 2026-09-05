@@ -167,15 +167,28 @@ const flyToCart = () => {
 window.AnvCart = {
     plus(variants) {
         const store = Alpine.store('cart')
-        const cur = store.qtyOf(variants) || 0
-        return adjustCart(variants, cur === 0 ? 1 : 1)
+        return adjustCart(variants, 1).catch(err => {
+            if (err && /stock|available|sold out/i.test(err.message || '')) {
+                const info = window.__lastAdd
+                if (info) window.dispatchEvent(new CustomEvent('open-notify', { detail: info }))
+            }
+        })
     },
     minus(variants) {
         const store = Alpine.store('cart')
         const cur = store.qtyOf(variants) || 0
-        if (cur > 0) return adjustCart(variants, -1)
+        if (cur > 0) return adjustCart(variants, -1).catch(() => {})
     },
 }
+
+// Pop the header / mobile cart badge whenever any quantity changes.
+window.addEventListener('anv:qty-changed', () => {
+    document.querySelectorAll('.cart-badge').forEach(badge => {
+        badge.classList.remove('anv-bump')
+        void badge.offsetWidth
+        badge.classList.add('anv-bump')
+    })
+})
 
 // Per-card stepper: reactive qty bound to the global cart store.
 Alpine.data('anvStepper', (vid, initial) => ({
@@ -184,11 +197,21 @@ Alpine.data('anvStepper', (vid, initial) => ({
         const store = Alpine.store('cart')
         this.qty = store.qtyOf(vid)
         window.addEventListener('anv:qty-changed', e => {
-            if (String(e.detail.variants) === String(vid)) this.qty = e.detail.qty || 0
+            if (String(e.detail.variants) === String(vid)) {
+                this.qty = e.detail.qty || 0
+                this.pop()
+            }
         })
         window.addEventListener('anv:cart-refresh', () => {
             this.qty = Alpine.store('cart').qtyOf(vid)
         })
+    },
+    pop() {
+        const pill = this.$root?.querySelector('.anv-qty-pill')
+        if (!pill) return
+        pill.classList.remove('anv-qty-pop')
+        void pill.offsetWidth
+        pill.classList.add('anv-qty-pop')
     },
 }))
 
@@ -245,6 +268,7 @@ Alpine.data('notifyModal', () => ({
             this.error = ''
             this.open = true
             document.body.style.overflow = 'hidden'
+            this.$nextTick(() => this.$refs?.email?.focus())
         })
     },
     close() {

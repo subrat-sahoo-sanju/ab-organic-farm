@@ -2191,6 +2191,106 @@ html.anv-dragging * {
     user-select: none !important;
 }
 
+/* ════════════════════════════════════════════════════════════════════
+   Quick-add pill (card) — compact, centered, beautiful morph:
+   qty 0 → small outlined "ADD ⇢" · qty>0 → filled green − qty +
+   ═════════════════════════════════════════════════════════════════════ */
+.anv-qty-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #1F5C3F;
+    border-radius: 999px;
+    overflow: hidden;
+    background: transparent;
+    min-height: 34px;
+    transition: background 0.25s ease, border-color 0.25s ease,
+        box-shadow 0.25s ease, min-width 0.25s ease;
+}
+.anv-qty-pill--on {
+    box-shadow: 0 6px 14px -6px rgba(31, 92, 63, 0.45);
+}
+.anv-qty-pill--off {
+    opacity: 0.45;
+}
+.anv-qty-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 14px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    line-height: 1;
+    color: #1F5C3F;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+.anv-qty-add:disabled { cursor: not-allowed; }
+.anv-qty-add svg { transition: transform 0.2s ease; }
+.anv-qty-add:hover:not(:disabled) svg { transform: translateX(2px); }
+.anv-qty-btn {
+    border: none;
+    background: transparent;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 6px 11px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+.anv-qty-btn:hover { background: rgba(255, 255, 255, 0.18); }
+.anv-qty-num {
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    text-align: center;
+    pointer-events: none;
+}
+.anv-qty-pop { animation: anvQtyPop 0.3s ease; }
+@keyframes anvQtyPop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.18); }
+    100% { transform: scale(1); }
+}
+
+/* Header / mobile cart badge pop when quantity changes */
+.cart-badge.anv-bump { animation: anvBump 0.45s cubic-bezier(0.36, 1.3, 0.4, 1); }
+@keyframes anvBump {
+    0% { transform: scale(1); }
+    35% { transform: scale(1.4) rotate(4deg); }
+    70% { transform: scale(0.92); }
+    100% { transform: scale(1); }
+}
+
+/* Notify Me pill on sold-out cards */
+.anv-notify-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    width: 100%;
+    border-radius: 999px;
+    border: 2px solid #CF9726;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #CF9726;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+.anv-notify-btn:hover {
+    background: #CF9726;
+    color: #fff;
+    transform: translateY(-1px);
+}
+.anv-notify-btn svg { transition: transform 0.2s ease; }
+.anv-notify-btn:hover svg { transform: rotate(-12deg); }
+
 /* Infinite-scroll sentinel + brand spinner (mobile only) */
 .welcome-sentinel {
     display: none;

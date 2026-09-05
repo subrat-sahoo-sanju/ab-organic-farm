@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800&family=Roboto+Slab:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" href="{{ asset('storage/sections/app-icon.jpg') }}" type="image/jpeg">
-    @php $css = @file_get_contents(public_path('static/assets/app-CTN2fX9S.css')); @endphp
+    @php $css = @file_get_contents(public_path('static/assets/app-CG2n5-Qg.css')); @endphp
     <style>{!! $css !!}</style>
     <style>[x-cloak]{display:none!important}[data-wishlist].wish-on{background:#fff;box-shadow:0 6px 18px -6px rgba(224,36,65,.45)}</style>
     @stack('head')
@@ -263,7 +263,7 @@
                   <button type="button" class="relative flex flex-col items-center justify-center gap-1 text-charcoal-600" @click="window.dispatchEvent(new CustomEvent('anv:cart-drawer-open'))">
                     <span class="relative">
                       <x-lucide-shopping-cart class="h-[22px] w-[22px]"/>
-                      <span x-text="$store.cart.count" x-show="$store.cart.count > 0" x-cloak class="absolute -top-2 -right-2.5 h-4 min-w-4 px-1 rounded-full bg-anv-600 text-white text-[10px] font-bold grid place-items-center leading-none ring-2 ring-white"></span>
+                      <span x-text="$store.cart.count" x-show="$store.cart.count > 0" x-cloak class="cart-badge absolute -top-2 -right-2.5 h-4 min-w-4 px-1 rounded-full bg-anv-600 text-white text-[10px] font-bold grid place-items-center leading-none ring-2 ring-white"></span>
                     </span>
                     <span>{{ $ni['label'] }}</span>
                   </button>
@@ -425,7 +425,7 @@
                         </div>
                         <h3 class="mt-4 text-center font-display text-lg font-bold text-anv-800">Get notified when it's back</h3>
                         <p class="mt-1 text-center text-sm text-charcoal-600/60">We'll email you the moment <b x-text="name"></b> is back in stock.</p>
-                        <input x-model="email" type="email" placeholder="Enter your email"
+                        <input x-model="email" x-ref="email" type="email" placeholder="Enter your email" autocomplete="email"
                                class="mt-4 w-full rounded-full border-2 border-sage-100 px-5 py-3 text-sm focus:border-anv-500 focus:outline-none">
                         <p x-show="error" x-text="error" class="mt-2 text-xs text-clay-600" x-cloak></p>
                         <button @click="submit()" :disabled="busy" class="mt-3 w-full rounded-full bg-anv-600 py-3 text-sm font-bold text-white transition hover:bg-anv-700"
@@ -434,9 +434,11 @@
                 </template>
                 <template x-if="submitted">
                     <div class="text-center">
-                        <div class="mx-auto grid h-12 w-12 place-items-center rounded-full bg-leaf-100 text-anv-600 text-2xl">🔔</div>
+                        <div class="mx-auto grid h-12 w-12 place-items-center rounded-full bg-leaf-100 text-anv-600">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="h-6 w-6"><path d="M20 6 9 17l-5-5"/></svg>
+                        </div>
                         <h3 class="mt-4 font-display text-lg font-bold text-anv-800">You're on the list!</h3>
-                        <p class="mt-1 text-sm text-charcoal-600/60">We'll ping you when it's available again.</p>
+                        <p class="mt-1 text-sm text-charcoal-600/60">We'll ping <b x-text="email"></b> the moment it's available again.</p>
                         <button @click="close()" class="mt-5 w-full rounded-full bg-anv-600 py-3 text-sm font-bold text-white transition hover:bg-anv-700">Done</button>
                     </div>
                 </template>
@@ -466,7 +468,7 @@
     </div>
 
     @stack('scripts')
-    @php $js = @file_get_contents(public_path('static/assets/app-B74kZ-Ua.js')); @endphp
+    @php $js = @file_get_contents(public_path('static/assets/app-Ble7JpfC.js')); @endphp
     <script>{!! $js !!}</script>
 </body>
 </html>

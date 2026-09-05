@@ -116,7 +116,7 @@
       <button type="button" data-cart-anchor class="relative flex items-center justify-center rounded-full p-2.5 text-[#7C522A] transition-colors hover:bg-[#eef5f0]" aria-label="Cart"
               @click="window.dispatchEvent(new CustomEvent('anv:cart-drawer-open'))">
         <x-lucide-shopping-basket class="h-5 w-5"/>
-        <span x-text="$store.cart.count" x-show="$store.cart.count > 0" x-cloak class="absolute -right-0.5 -top-0.5 h-5 min-w-5 rounded-full bg-anv-600 px-1 text-center text-[11px] font-bold text-white grid place-items-center"></span>
+        <span x-text="$store.cart.count" x-show="$store.cart.count > 0" x-cloak class="cart-badge absolute -right-0.5 -top-0.5 h-5 min-w-5 rounded-full bg-anv-600 px-1 text-center text-[11px] font-bold text-white grid place-items-center"></span>
       </button>
 
       @auth

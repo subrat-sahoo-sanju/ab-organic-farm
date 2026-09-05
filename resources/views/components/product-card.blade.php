@@ -103,7 +103,8 @@
         {{-- ═══ QUICK-ADD / STEPPER ═══ --}}
         @if(!$inStock)
             <button type="button" @click.prevent="$dispatch('open-notify', {name: {{ json_encode($product->name) }}, slug: {{ json_encode($product->slug) }}})"
-                    class="anv-badge-tag mb-2 w-full rounded-full border-2 border-[#CF9726] py-1.5 text-xs font-extrabold uppercase tracking-wider text-[#CF9726] transition hover:bg-[#CF9726] hover:text-white">
+                    class="anv-notify-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
                 Notify Me
             </button>
         @elseif($multi)
@@ -114,20 +115,27 @@
             </button>
         @else
             @php $vid = $variant->id; @endphp
-            <div class="mb-2 flex items-center rounded-full border-2 border-anv-600 {{ $available ? '' : 'pointer-events-none opacity-40' }}"
+            <div class="flex justify-center"
                  x-data="anvStepper('{{ $vid }}', {{ $available ? '1' : '0' }})"
-                 :style="qty>0 && 'background:#1F5C3F;border-color:#1F5C3F'">
-                <button type="button" @click.prevent="window.AnvCart.plus('{{ $vid }}')"
-                        class="flex-1 py-1.5 text-center text-xs font-extrabold uppercase tracking-wide text-anv-600" :class="qty>0?'text-white':'text-anv-600'">
-                    ADD<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="mx-auto mt-0.5 h-3.5 w-3.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                </button>
-                <template x-if="qty > 0">
-                    <button type="button" @click.prevent="window.AnvCart.minus('{{ $vid }}')" class="px-3 py-1.5 text-lg font-bold leading-none text-white">−</button>
-                </template>
-                <span x-show="qty>0" x-text="qty" class="text-sm font-bold text-white" x-cloak></span>
-                <template x-if="qty > 0">
-                    <button type="button" @click.prevent="window.AnvCart.plus('{{ $vid }}')" class="px-3 py-1.5 text-lg font-bold leading-none text-white">+</button>
-                </template>
+                 @click="window.__lastAdd = { name: {{ json_encode($product->name) }}, slug: {{ json_encode($product->slug) }} }">
+                <div class="anv-qty-pill"
+                     :class="qty > 0 ? 'anv-qty-pill--on' : ({{ $available ? 'true' : 'false' }} ? '' : 'anv-qty-pill--off')"
+                     :style="qty>0 && 'background:#1F5C3F;border-color:#1F5C3F'">
+                    <template x-if="qty === 0">
+                        <button type="button" @click.prevent="window.AnvCart.plus('{{ $vid }}')"
+                                class="anv-qty-add" :disabled="!{{ $available ? 'true' : 'false' }}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="h-4 w-4"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                            <span>ADD</span>
+                        </button>
+                    </template>
+                    <template x-if="qty > 0">
+                        <div class="flex items-center justify-center">
+                            <button type="button" @click.prevent="window.AnvCart.minus('{{ $vid }}')" class="anv-qty-btn" aria-label="Decrease quantity">−</button>
+                            <span x-text="qty" class="anv-qty-num min-w-[1.4rem]"></span>
+                            <button type="button" @click.prevent="window.AnvCart.plus('{{ $vid }}')" class="anv-qty-btn" aria-label="Increase quantity">+</button>
+                        </div>
+                    </template>
+                </div>
             </div>
         @endif
 
