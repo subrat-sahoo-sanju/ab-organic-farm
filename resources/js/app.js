@@ -774,20 +774,27 @@ document.addEventListener('pointerdown', (e) => {
     if (e.pointerType !== 'mouse' || e.button !== 0) return
     const rail = e.target.closest(RAIL_SELECTOR)
     if (!rail) return
-    railDrag = { el: rail, x: e.clientX, sl: rail.scrollLeft, moved: false }
-    rail.classList.add('anv-rail--dragging')
-    document.documentElement.classList.add('anv-dragging')
+    railDrag = { el: rail, x: e.clientX, sl: rail.scrollLeft, moved: false, engaged: false }
 }, true)
 document.addEventListener('pointermove', (e) => {
     if (!railDrag) return
     const dx = e.clientX - railDrag.x
-    if (Math.abs(dx) > 4) railDrag.moved = true
+    if (Math.abs(dx) > 4) {
+        if (!railDrag.engaged) {
+            railDrag.engaged = true
+            railDrag.el.classList.add('anv-rail--dragging')
+            document.documentElement.classList.add('anv-dragging')
+        }
+        railDrag.moved = true
+    }
     railDrag.el.scrollLeft = railDrag.sl - dx
 }, true)
 document.addEventListener('pointerup', () => {
     if (!railDrag) return
-    railDrag.el.classList.remove('anv-rail--dragging')
-    document.documentElement.classList.remove('anv-dragging')
+    if (railDrag.engaged) {
+        railDrag.el.classList.remove('anv-rail--dragging')
+        document.documentElement.classList.remove('anv-dragging')
+    }
     const d = railDrag
     railDrag = null
     if (d.moved) {
@@ -800,8 +807,10 @@ document.addEventListener('pointerup', () => {
 }, true)
 document.addEventListener('pointercancel', () => {
     if (railDrag) {
-        railDrag.el.classList.remove('anv-rail--dragging')
-        document.documentElement.classList.remove('anv-dragging')
+        if (railDrag.engaged) {
+            railDrag.el.classList.remove('anv-rail--dragging')
+            document.documentElement.classList.remove('anv-dragging')
+        }
         railDrag = null
     }
 }, true)

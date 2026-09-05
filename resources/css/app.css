@@ -2180,10 +2180,6 @@ textarea.adm-input {
         scroll-snap-type: none;
         cursor: grabbing;
     }
-    .anv-rail--dragging > * {
-        pointer-events: none;
-        user-select: none;
-    }
 }
 html.anv-dragging,
 html.anv-dragging * {
