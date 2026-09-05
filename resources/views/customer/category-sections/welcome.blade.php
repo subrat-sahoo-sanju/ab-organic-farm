@@ -6,24 +6,6 @@
     $allProducts = $sectionData ?? collect();
 @endphp
 
-<style>
-  .cat-welcome-tabs{display:flex;overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none;gap:8px;justify-content:center;padding:0 16px;min-height:80px}
-  .cat-welcome-tabs::-webkit-scrollbar{display:none}
-  .cat-tab-item{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;text-decoration:none;color:inherit;min-width:68px;max-width:88px;white-space:nowrap;transition:transform .2s ease;cursor:pointer;border:none;background:none;padding:4px}
-  .cat-tab-item.active{transform:translateY(-2px)}
-  .cat-tab-icon{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;border:2px solid #E2E4DA;background:#FBFBF6;transition:all .3s ease;overflow:hidden}
-  .cat-tab-item.active .cat-tab-icon{border-color:#7C522A;background:#FBF5EA;box-shadow:0 0 0 4px rgb(212 166 54 / 0.25),0 6px 16px -6px rgb(56 96 44 / 0.30);transform:scale(1.06)}
-  .cat-tab-item:hover .cat-tab-icon{border-color:#D4E0C4;transform:translateY(-1px)}
-  .cat-tab-icon img{width:36px;height:36px;object-fit:contain;border-radius:50%}
-  .cat-tab-label{text-align:center;font-size:11px;font-weight:600;color:#495057;margin-top:4px;line-height:1.2}
-  .cat-tab-item.active .cat-tab-label{color:#7C522A}
-  .cat-products-scroll{display:flex;overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none;gap:14px;padding:0 20px;min-height:200px}
-  .cat-products-scroll::-webkit-scrollbar{display:none}
-  .cat-product-card{flex:0 0 220px;width:220px}
-  @media(min-width:750px){.cat-product-card{flex:0 0 240px;width:240px}}
-  @media(min-width:1025px){.cat-product-card{flex:0 0 260px;width:260px}}
-</style>
-
 <section class="w-full bg-white py-10 sm:py-14">
     <div class="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         {{-- Section heading --}}
@@ -49,7 +31,7 @@
                         :class="active === '{{ $t['key'] }}' ? 'active' : ''"
                         class="cat-tab-item">
                         <div class="cat-tab-icon">
-                            <img src="{{ $t['inactive_icon'] }}" :src="active === '{{ $t['key'] }}' ? '{{ $t['active_icon'] ?? $t['inactive_icon'] }}' : '{{ $t['inactive_icon'] }}'" :alt="'{{ addslashes($t['title']) }}'" loading="eager">
+                            <img src="{{ $t['inactive_icon'] }}" :src="active === '{{ $t['key'] }}' ? '{{ $t['active_icon'] ?? $t['inactive_icon'] }}' : '{{ $t['inactive_icon'] }}'" alt="" loading="eager" onerror="this.closest('.cat-tab-icon')?.remove()">
                         </div>
                         <span class="cat-tab-label">{{ $t['title'] }}</span>
                     </button>

@@ -22,7 +22,7 @@
                     <template x-for="tab in tabs" :key="tab.key">
                         <button type="button" @click="pick(tab, $el)" :class="active === tab.key ? 'active' : ''" class="cat-tab-item">
                             <div class="cat-tab-icon">
-                                <img :src="active === tab.key ? (tab.active_icon || tab.inactive_icon) : tab.inactive_icon" :alt="tab.title" loading="eager">
+                                <img :src="active === tab.key ? (tab.active_icon || tab.inactive_icon) : tab.inactive_icon" alt="" loading="eager" onerror="this.closest('.cat-tab-icon')?.remove()">
                             </div>
                             <span class="cat-tab-label" x-text="tab.title"></span>
                         </button>

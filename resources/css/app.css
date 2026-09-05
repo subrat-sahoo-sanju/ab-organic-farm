@@ -2041,6 +2041,156 @@ textarea.adm-input {
     }
 }
 
+/* ════════════════════════════════════════════════════════════════════
+   Category section tabs + rails (welcome / featured / cross-sell)
+   ─ now centralized so every section looks identical & professional
+   ═════════════════════════════════════════════════════════════════════ */
+.cat-welcome-tabs {
+    display: flex;
+    align-items: center;
+    justify-content: safe center;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding: 0 16px;
+    min-height: 80px;
+}
+.cat-welcome-tabs::-webkit-scrollbar { display: none; }
+.cat-tab-item {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    text-decoration: none;
+    color: inherit;
+    min-width: 68px;
+    max-width: 88px;
+    white-space: nowrap;
+    transition: transform 0.2s ease;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 4px;
+    scroll-snap-align: center;
+}
+.cat-tab-item.active { transform: translateY(-2px); }
+.cat-tab-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    border: 2px solid #E2E4DA;
+    background: #FBFBF6;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+.cat-tab-item.active .cat-tab-icon {
+    border-color: #7C522A;
+    background: #FBF5EA;
+    box-shadow: 0 0 0 4px rgb(212 166 54 / 0.25), 0 6px 16px -6px rgb(56 96 44 / 0.30);
+    transform: scale(1.06);
+}
+.cat-tab-item:hover .cat-tab-icon {
+    border-color: #D4E0C4;
+    transform: translateY(-1px);
+}
+.cat-tab-icon img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    border-radius: 50%;
+}
+.cat-tab-label {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: #495057;
+    margin-top: 4px;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+.cat-tab-item.active .cat-tab-label { color: #7C522A; }
+
+.cat-products-scroll {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+    gap: 14px;
+    padding: 0 20px;
+    min-height: 200px;
+}
+.cat-products-scroll::-webkit-scrollbar { display: none; }
+.cat-product-card {
+    flex: 0 0 220px;
+    width: 220px;
+    scroll-snap-align: start;
+    min-width: 0;
+    min-height: 0;
+}
+@media (min-width: 750px) {
+    .cat-product-card { flex: 0 0 240px; width: 240px; }
+}
+@media (min-width: 1025px) {
+    .cat-product-card { flex: 0 0 260px; width: 260px; }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Horizontal product rails — universal "there's a side scroll" affordance
+   • thin branded scrollbar on desktop/laptop (obvious you can scroll sideways)
+   • soft edge fade on any rail that overflows (cue content continues)
+   • drag-to-scroll with the mouse while snapping stays on for touch
+   ═════════════════════════════════════════════════════════════════════ */
+/* Edge-fade cue whenever a rail actually overflows (all screen sizes) */
+.anv-rail.has-overflow {
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+}
+@media (min-width: 1024px) {
+    .anv-rail {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(31, 92, 63, 0.30) rgba(31, 92, 63, 0.07);
+    }
+    .anv-rail::-webkit-scrollbar { height: 8px; }
+    .anv-rail::-webkit-scrollbar-track {
+        background: rgba(31, 92, 63, 0.06);
+        border-radius: 999px;
+        margin: 0 18px;
+    }
+    .anv-rail::-webkit-scrollbar-thumb {
+        background: rgba(31, 92, 63, 0.32);
+        border-radius: 999px;
+    }
+    .anv-rail::-webkit-scrollbar-thumb:hover {
+        background: rgba(31, 92, 63, 0.55);
+    }
+    .anv-rail--dragging {
+        scroll-snap-type: none;
+        cursor: grabbing;
+    }
+    .anv-rail--dragging > * {
+        pointer-events: none;
+        user-select: none;
+    }
+}
+html.anv-dragging,
+html.anv-dragging * {
+    cursor: grabbing !important;
+    user-select: none !important;
+}
+
 /* Infinite-scroll sentinel + brand spinner (mobile only) */
 .welcome-sentinel {
     display: none;

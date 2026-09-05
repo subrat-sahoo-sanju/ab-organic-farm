@@ -725,5 +725,73 @@ window.AnvBoot = (scope) => {
     }
 }
 
+/* ── Horizontal rail enhancer ─────────────────────────────────────────
+   Brands every product rail (.welcome-grid / .rail-scroll /
+   .cat-products-scroll / .menu-product-grid / .rv-horizontal-scroll) so
+   users SEE there is a side scroll:
+     • thin branded scrollbar on desktop/laptop
+     • soft edge fade (.has-overflow) whenever content overflows
+     • drag-to-scroll with a mouse (click-drag like a native carousel)
+   Re-applies automatically when tabs swap / items append (MutationObserver). */
+const RAIL_SELECTOR = '.welcome-grid, .rail-scroll, .cat-products-scroll, .menu-product-grid, .rv-horizontal-scroll'
+
+const decorateRails = () => {
+    document.querySelectorAll(RAIL_SELECTOR).forEach(el => el.classList.add('anv-rail'))
+}
+
+const refreshRails = () => {
+    document.querySelectorAll('.anv-rail').forEach(el => {
+        el.classList.toggle('has-overflow', el.scrollWidth > el.clientWidth + 8)
+    })
+}
+
+let railDrag = null
+document.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return
+    const rail = e.target.closest(RAIL_SELECTOR)
+    if (!rail) return
+    railDrag = { el: rail, x: e.clientX, sl: rail.scrollLeft, moved: false }
+    rail.classList.add('anv-rail--dragging')
+    document.documentElement.classList.add('anv-dragging')
+}, true)
+document.addEventListener('pointermove', (e) => {
+    if (!railDrag) return
+    const dx = e.clientX - railDrag.x
+    if (Math.abs(dx) > 4) railDrag.moved = true
+    railDrag.el.scrollLeft = railDrag.sl - dx
+}, true)
+document.addEventListener('pointerup', () => {
+    if (!railDrag) return
+    railDrag.el.classList.remove('anv-rail--dragging')
+    document.documentElement.classList.remove('anv-dragging')
+    const d = railDrag
+    railDrag = null
+    if (d.moved) {
+        document.addEventListener('click', function swallow(e) {
+            e.preventDefault()
+            e.stopPropagation()
+            document.removeEventListener('click', swallow, true)
+        }, true)
+    }
+}, true)
+document.addEventListener('pointercancel', () => {
+    if (railDrag) {
+        railDrag.el.classList.remove('anv-rail--dragging')
+        document.documentElement.classList.remove('anv-dragging')
+        railDrag = null
+    }
+}, true)
+
+document.addEventListener('DOMContentLoaded', () => {
+    decorateRails()
+    refreshRails()
+    window.addEventListener('resize', refreshRails)
+    const mo = new MutationObserver(() => {
+        decorateRails()
+        refreshRails()
+    })
+    mo.observe(document.body, { childList: true, subtree: true })
+})
+
 // Start Alpine only after every component is registered.
 Alpine.start()
