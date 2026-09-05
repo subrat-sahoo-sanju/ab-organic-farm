@@ -42,7 +42,7 @@
         </div>
     </div>
 
-    <div :id="gridId" class="welcome-grid" role="tabpanel">
+    <div :id="gridId" class="welcome-grid" role="tabpanel" data-more="{{ $data->count() > 0 ? 1 : 0 }}">
         @forelse($products as $product)
             <div class="welcome-grid-item">
                 <x-product-card :product="$product" />
@@ -57,77 +57,9 @@
            :href="activeTab?.see_all || '#'"
            x-text="activeTab?.title ? 'See All ' + activeTab.title + ' →' : 'See All'"></a>
     </div>
+
+    <div data-tab-sentinel class="welcome-sentinel" aria-hidden="true">
+        <span class="welcome-spinner"></span>
+    </div>
 </section>
 @endif
-
-@push('scripts')
-<script>
-document.addEventListener('alpine:init', () => {
-    Alpine.data('welcomeTabs', (gridId, initialKey, tabs) => ({
-        active: initialKey,
-        loading: false,
-        tabs,
-        showScrollHint: true,
-        touchStartX: 0,
-        init() {
-            this.$nextTick(() => {
-                this.moveToActive();
-                this.checkScrollHint();
-                this.$refs.rail?.addEventListener('scroll', () => this.checkScrollHint(), { passive: true });
-                window.addEventListener('resize', () => this.checkScrollHint());
-            });
-        },
-        checkScrollHint() {
-            const rail = this.$refs.rail;
-            if (rail) {
-                this.showScrollHint = rail.scrollWidth > rail.clientWidth + 10;
-            }
-        },
-        get activeTab() {
-            return this.tabs.find(t => t.key === this.active) || this.tabs[0] || null;
-        },
-        moveToActive() {
-            const btn = this.$refs.rail?.querySelector('.welcome-tab--active');
-            if (btn) this.placeIndicator(btn);
-        },
-        placeIndicator(el) {
-            const ind = this.$refs.indicator;
-            if (!ind || !el) return;
-            ind.style.opacity = '1';
-            ind.style.width = el.offsetWidth + 'px';
-            ind.style.transform = 'translateX(' + el.offsetLeft + 'px)';
-        },
-        onTouchStart(e) { this.touchStartX = e.changedTouches[0].screenX; },
-        onTouchEnd(e) {
-            this.touchEndX = e.changedTouches[0].screenX;
-            const diff = this.touchStartX - this.touchEndX;
-            if (Math.abs(diff) > 40 && this.tabs.length > 1) {
-                const currentIdx = this.tabs.findIndex(t => t.key === this.active);
-                if (diff > 0 && currentIdx < this.tabs.length - 1) {
-                    this.pick(this.tabs[currentIdx + 1], this.$refs.rail?.children[currentIdx + 1]);
-                } else if (diff < 0 && currentIdx > 0) {
-                    this.pick(this.tabs[currentIdx - 1], this.$refs.rail?.children[currentIdx - 1]);
-                }
-            }
-        },
-        async pick(tab, el) {
-            if (this.loading || !el || this.active === tab.key) return;
-            this.active = tab.key;
-            this.placeIndicator(el);
-            this.loading = true;
-            const grid = document.getElementById(gridId);
-            grid?.classList.add('opacity-40', 'pointer-events-none');
-            try {
-                const r = await fetch(tab.url, { headers: { 'Accept': 'application/json' } });
-                const d = await r.json();
-                if (grid) grid.innerHTML = d.html;
-            } catch (e) {
-                if (grid) grid.innerHTML = '<div class="welcome-empty">Couldn\'t load products. Please try again.</div>';
-            }
-            grid?.classList.remove('opacity-40', 'pointer-events-none');
-            this.loading = false;
-        },
-    }));
-});
-</script>
-@endpush

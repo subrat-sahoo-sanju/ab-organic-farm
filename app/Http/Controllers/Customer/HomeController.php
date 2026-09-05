@@ -24,6 +24,9 @@ class HomeController extends Controller
         'category',
     ];
 
+    /** Default leaf mark — used whenever a tab has no icon configured or the file is missing. */
+    protected const DEFAULT_ICON_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#1F5C3F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>';
+
     public function index(): View
     {
         $sections = HomepageSection::where('is_visible', true)->orderBy('sort_order')->get();
@@ -186,13 +189,18 @@ class HomeController extends Controller
             'values' => array_values(array_filter(array_map('trim', explode(',', (string) request('values', ''))))),
             'fallback' => $fallback,
         ];
-        $limit = (int) request('limit', 12);
+        $limit = min(max((int) request('limit', 12), 1), 100);
+        $offset = max((int) request('offset', 0), 0);
 
-        $products = $this->attachSoldCount($this->resolveTabProducts($tab, $limit));
+        // Fetch limit+1 so we can report hasMore without an extra pass.
+        $all = $this->attachSoldCount($this->resolveTabProducts($tab, $offset + $limit));
+        $products = $all->slice($offset)->take($limit)->values();
+        $hasMore = $all->count() > $offset + $limit;
 
         return response()->json([
             'html' => view('components.product-card-grid', ['products' => $products, 'itemClass' => 'menu-grid-item'])->render(),
             'count' => $products->count(),
+            'hasMore' => $hasMore,
         ]);
     }
 
@@ -263,6 +271,9 @@ class HomeController extends Controller
         $type = $t['type'] ?? 'all';
         $key = \Illuminate\Support\Str::slug($t['key'] ?? $title);
 
+        $active = $this->iconSrc($t['active_icon'] ?? null, $t['inactive_icon'] ?? null);
+        $inactive = $this->iconSrc($t['inactive_icon'] ?? null);
+
         return [
             'key' => $key ?: 'tab-'.random_int(100, 999),
             'title' => $title,
@@ -275,10 +286,72 @@ class HomeController extends Controller
                 'limit' => $count,
             ])),
             'see_all' => $this->tabSeeAllUrl($t),
-            'active_icon' => ! empty($t['active_icon']) ? asset($t['active_icon']) : null,
-            'inactive_icon' => ! empty($t['inactive_icon']) ? asset($t['inactive_icon']) : null,
+            'active_icon' => $active,
+            'inactive_icon' => $inactive,
             'fallback' => $t['fallback'] ?? null,
         ];
+    }
+
+    /** Resolve an icon path to a URL that is guaranteed to render on this host.
+     *
+     * SVG files in public are embedded as base64 data URIs — no extra HTTP
+     * request, no ModSecurity / missing-file failures, always visible.
+     */
+    protected function iconSrc(?string $path, ?string $fallback = null): ?string
+    {
+        $leaf = 'data:image/svg+xml;base64,'.base64_encode(self::DEFAULT_ICON_SVG);
+
+        foreach ([$path, $fallback] as $candidate) {
+            if (empty($candidate)) {
+                continue;
+            }
+            $uri = $this->iconDataUri($candidate);
+            if ($uri !== null) {
+                return $uri;
+            }
+            // A plain (non-uploaded) SVG we can't inline → use the leaf mark so
+            // the tab never renders a broken <img> with its alt text showing.
+            if (str_ends_with(strtolower((string) $candidate), '.svg')) {
+                return $leaf;
+            }
+            return asset($candidate);
+        }
+
+        return $leaf;
+    }
+
+    /** Read an SVG file into a data URI, or null when it cannot be resolved to a local file. */
+    protected function iconDataUri(?string $path): ?string
+    {
+        if (empty($path)) {
+            return null;
+        }
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            return null;
+        }
+        if (! str_ends_with(strtolower($path), '.svg')) {
+            return null;
+        }
+
+        $full = $path;
+        if (str_starts_with($path, 'storage/')) {
+            $full = public_path($path);
+        } elseif (str_starts_with($path, 'images/')) {
+            $full = public_path($path);
+        } elseif (str_starts_with($path, '/')) {
+            $full = public_path(ltrim($path, '/'));
+        }
+
+        if (! is_file($full)) {
+            return null;
+        }
+
+        $raw = @file_get_contents($full);
+        if ($raw === false || trim($raw) === '') {
+            return null;
+        }
+
+        return 'data:image/svg+xml;base64,'.base64_encode($raw);
     }
 
     /** Destination of the reference 'See All' button for a menu tab. */

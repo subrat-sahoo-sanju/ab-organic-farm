@@ -664,5 +664,67 @@ Alpine.data('livePanel', (cfg = {}) => ({
     },
 }))
 
+/* ── Brand loader ─────────────────────────────────────────────────────
+   Shows an elegant logo loader only when a page navigation actually takes
+   time. Takes: intercept internal <a> clicks / form submits, wait ~180ms,
+   show the overlay; if navigation is instant the page unloads first and
+   the loader never flashes. Re-hooked on every page load.                 */
+const initBrandLoader = () => {
+    const el = document.getElementById('brand-loader')
+    if (!el) return
+    const pos = el.style.position
+    let t = null
+
+    const show = () => el.classList.add('is-visible')
+    const hide = () => {
+        el.classList.remove('is-visible')
+        clearTimeout(t)
+    }
+
+    const isInternal = (href) => {
+        if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) return false
+        try {
+            const u = new URL(href, location.href)
+            return u.host === location.host || u.host === ''
+        } catch (e) { return false }
+    }
+
+    const schedule = (link) => {
+        if (!link || link.hasAttribute('data-no-loader')) return
+        clearTimeout(t)
+        t = setTimeout(show, 180)
+    }
+
+    document.addEventListener('click', (e) => {
+        const a = e.target.closest('a')
+        if (!a || !isInternal(a.getAttribute('href'))) return
+        if (a.target && a.target !== '_self') return
+        if (a.getAttribute('download') !== null) return
+        schedule(a)
+    }, true)
+
+    document.addEventListener('submit', (e) => {
+        const f = e.target
+        if (!(f instanceof HTMLFormElement)) return
+        if (f.dataset.noloader !== undefined) return
+        const method = ((f.method || 'get')).toLowerCase()
+        const action = f.getAttribute('action')
+        if (method === 'get' && action && isInternal(action)) schedule(f)
+    }, true)
+
+    window.addEventListener('pagehide', hide)
+    window.addEventListener('pageshow', hide)
+    window.addEventListener('load', () => setTimeout(hide, 250))
+}
+
+document.addEventListener('DOMContentLoaded', initBrandLoader)
+
+// Boot any Alpine components inside freshly injected HTML (tab grids, load-more feeds).
+window.AnvBoot = (scope) => {
+    if (scope && window.Alpine && typeof Alpine.initTree === 'function') {
+        try { Alpine.initTree(scope) } catch (e) { /* ignore */ }
+    }
+}
+
 // Start Alpine only after every component is registered.
 Alpine.start()

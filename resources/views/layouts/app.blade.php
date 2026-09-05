@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800&family=Roboto+Slab:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" href="{{ asset('storage/sections/app-icon.jpg') }}" type="image/jpeg">
-    @php $css = @file_get_contents(public_path('static/assets/app-Dgsg4rRZ.css')); @endphp
+    @php $css = @file_get_contents(public_path('static/assets/app-BOVgKhmW.css')); @endphp
     <style>{!! $css !!}</style>
     <style>[x-cloak]{display:none!important}[data-wishlist].wish-on{background:#fff;box-shadow:0 6px 18px -6px rgba(224,36,65,.45)}</style>
     @stack('head')
@@ -448,8 +448,25 @@
     @include('layouts.partials.cart-drawer')
 
     <x-ui.toaster/>
+
+    {{-- ═══ BRAND LOADER (professional full-page loader) ═══ --}}
+    @php
+        $__logoFile = public_path('images/logo/ab-organic-label.svg');
+        $__logoData = is_file($__logoFile) ? 'data:image/svg+xml;base64,'.base64_encode(file_get_contents($__logoFile)) : '';
+    @endphp
+    <div id="brand-loader" class="brand-loader" aria-hidden="true">
+        <div class="brand-loader__inner">
+            @if($__logoData)
+                <img src="{{ $__logoData }}" alt="" class="brand-loader__logo">
+            @else
+                <span class="brand-loader__logo brand-loader__logo--text">AB Organic</span>
+            @endif
+            <span class="brand-loader__ring" aria-hidden="true"></span>
+        </div>
+    </div>
+
     @stack('scripts')
-    @php $js = @file_get_contents(public_path('static/assets/app-CfqTcJ9y.js')); @endphp
+    @php $js = @file_get_contents(public_path('static/assets/app-BWG9SdEO.js')); @endphp
     <script>{!! $js !!}</script>
 </body>
 </html>

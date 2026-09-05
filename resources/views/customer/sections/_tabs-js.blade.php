@@ -25,78 +25,157 @@ if (!window.__tabGridRegistered) {
     }));
 
   // Reference "Welcome To" / "Product in Focus" menu: icon tabs + sliding indicator + lazy product grid.
-    Alpine.data('welcomeTabs', (gridId, initialKey, tabs) => ({
-      active: initialKey,
-      loading: false,
-      tabs,
-      init() {
-        // Wait for x-for + :class to settle, then show the indicator under the active tab.
-        let tries = 0;
-        const tryShow = () => {
-          if (!this.$refs.rail || !this.$refs.rail.querySelector('.menu-nav-item.active')) {
-            if (tries++ < 25) setTimeout(tryShow, 60);
-            return;
-          }
-          this.moveToActive();
-          this.syncScrollbar();
-        };
-        this.$nextTick(() => setTimeout(tryShow, 0));
-      },
-      get activeTab() {
-        return this.tabs.find(t => t.key === this.active) || this.tabs[0] || null;
-      },
-      moveToActive() {
-        const btn = this.$refs.rail?.querySelector('.menu-nav-item.active');
-        if (btn) this.placeIndicator(btn);
-      },
-      placeIndicator(el) {
-        const ind = this.$refs.indicator;
-        if (!ind || !el) return;
-        ind.style.opacity = '1';
-        ind.style.width = el.offsetWidth + 'px';
-        ind.style.transform = 'translateX(' + el.offsetLeft + 'px)';
-      },
-      initScrollbar(thumb) {
-        const grid = this.$gridEl = document.getElementById(gridId);
-        if (!grid || !thumb) return;
-        this.$thumb = thumb;
-        grid.addEventListener('scroll', () => this.syncScrollbar(), { passive: true });
-        new ResizeObserver(() => this.syncScrollbar()).observe(grid);
-        this.syncScrollbar();
-      },
-      syncScrollbar() {
-        const grid = this.$gridEl || document.getElementById(gridId);
-        const thumb = this.$thumb;
-        if (!grid || !thumb) return;
-        const track = thumb.parentElement;
-        if (!track) return;
-        const trackW = track.clientWidth;
-        const scrollable = grid.scrollWidth - grid.clientWidth;
-        const ratio = scrollable > 0 ? trackW / grid.scrollWidth : 1;
-        thumb.style.width = Math.max(20, trackW * ratio) + 'px';
-        thumb.style.left = scrollable > 0
-          ? (grid.scrollLeft / scrollable) * (trackW - thumb.offsetWidth) + 'px'
-          : '0px';
-      },
-      async pick(tab, el) {
-        if (this.loading || !el || this.active === tab.key) return;
-        this.active = tab.key;
-        this.placeIndicator(el);
-        this.loading = true;
-        const grid = document.getElementById(gridId);
-        grid?.classList.add('opacity-40', 'pointer-events-none');
-        try {
-          const r = await fetch(tab.url, { headers: { 'Accept': 'application/json' } });
-          const d = await r.json();
-          if (grid) grid.innerHTML = d.html;
-        } catch (e) {
-          if (grid) grid.innerHTML = '<div class="col-span-full py-10 text-center text-sm text-charcoal-600/50">Couldn\'t load products. Please try again.</div>';
+  // Also used by category "Featured Products" / "Cross Sell" sections (cat-tab-item markup).
+  // On mobile the welcome grid becomes a 2-column vertical feed that loads more
+  // products automatically as you scroll (infinite scroll).
+  Alpine.data('welcomeTabs', (gridId, initialKey, tabs) => ({
+    active: initialKey,
+    loading: false,
+    tabs,
+    offset: 0,
+    hasMore: false,
+    _observer: null,
+    mobileQuery: window.matchMedia('(max-width: 639px)'),
+    init() {
+      const grid = document.getElementById(gridId);
+      if (grid && grid.classList.contains('welcome-grid')) {
+        this.hasMore = grid.dataset.total !== undefined
+          ? Number(grid.dataset.more || 0) > 0
+          : false;
+      }
+      let tries = 0;
+      const tryShow = () => {
+        const btn = this.activeBtn();
+        if (!btn) {
+          if (tries++ < 25) setTimeout(tryShow, 60);
+          return;
         }
-        grid?.classList.remove('opacity-40', 'pointer-events-none');
+        this.placeIndicator(btn);
+        this.checkScrollHint();
+      };
+      this.$nextTick(() => setTimeout(tryShow, 0));
+      this.$el.addEventListener('scroll', () => this.checkScrollHint(), true);
+      window.addEventListener('resize', () => this.checkScrollHint());
+      this.armObserver();
+    },
+    activeBtn() {
+      const rail = this.$el.querySelector('.welcome-tabs-rail, .cat-welcome-tabs, [x-ref="rail"]');
+      return rail
+        ? rail.querySelector('.welcome-tab--active, .menu-nav-item.active, .cat-tab-item.active')
+        : null;
+    },
+    get activeTab() {
+      return this.tabs.find(t => t.key === this.active) || this.tabs[0] || null;
+    },
+    checkScrollHint() {
+      this.showScrollHint = (() => {
+        const rail = this.$el.querySelector('.welcome-tabs-rail, .cat-welcome-tabs');
+        return rail ? rail.scrollWidth > rail.clientWidth + 10 : false;
+      })();
+    },
+    showScrollHint: true,
+    touchStartX: 0,
+    placeIndicator(el) {
+      const ind = this.$el.querySelector('.welcome-tab-indicator');
+      if (!ind || !el) return;
+      ind.style.opacity = '1';
+      ind.style.width = el.offsetWidth + 'px';
+      ind.style.transform = 'translateX(' + el.offsetLeft + 'px)';
+    },
+    onTouchStart(e) {
+      this.touchStartX = e.changedTouches[0].screenX;
+    },
+    onTouchEnd(e) {
+      this.touchEndX = e.changedTouches[0].screenX;
+      const diff = this.touchStartX - this.touchEndX;
+      if (Math.abs(diff) > 40 && this.tabs.length > 1) {
+        const currentIdx = this.tabs.findIndex(t => t.key === this.active);
+        const rails = this.$el.querySelectorAll('.welcome-tabs-rail, .cat-welcome-tabs');
+        const rail = rails[rails.length - 1];
+        if (!rail) return;
+        const btns = rail.querySelectorAll('.welcome-tab, .cat-tab-item, .menu-nav-item');
+        if (diff > 0 && currentIdx < this.tabs.length - 1) {
+          this.pick(this.tabs[currentIdx + 1], btns[currentIdx + 1]);
+        } else if (diff < 0 && currentIdx > 0) {
+          this.pick(this.tabs[currentIdx - 1], btns[currentIdx - 1]);
+        }
+      }
+    },
+    armObserver() {
+      if (this.mobileQuery.matches && !this._observer) {
+        const sentinel = this.$el.querySelector('[data-tab-sentinel]');
+        const grid = document.getElementById(gridId);
+        if (sentinel && grid && grid.classList.contains('welcome-grid')) {
+          this._observer = new IntersectionObserver(entries => {
+            if (entries.some(e => e.isIntersecting)) this.loadMore();
+          }, { rootMargin: '200px 0px' });
+          this._observer.observe(sentinel);
+        }
+      }
+    },
+    async pick(tab, el) {
+      if (this.loading || !el || this.active === tab.key) return;
+      this.active = tab.key;
+      this.placeIndicator(el);
+      const grid = document.getElementById(gridId);
+      if (tab.url) {
+        this.loading = true;
+        if (grid) {
+          grid.setAttribute('aria-busy', 'true');
+          grid.innerHTML = this.skeletonGrid();
+        }
+        try {
+          const full = new URL(tab.url, location.origin);
+          full.searchParams.set('offset', '0');
+          const r = await fetch(full.toString(), { headers: { 'Accept': 'application/json' } });
+          if (!r.ok) throw new Error('Request failed');
+          const d = await r.json();
+          if (grid) {
+            grid.innerHTML = d.html;
+            window.AnvBoot(grid);
+          }
+          this.offset = d.count || 0;
+          this.hasMore = !!d.hasMore;
+        } catch (e) {
+          if (grid) grid.innerHTML = '<div class="welcome-empty">Couldn&#39;t load products. Please try again.</div>';
+        }
+        if (grid) grid.removeAttribute('aria-busy');
         this.loading = false;
-        this.syncScrollbar();
-      },
-    }));
+        this.armObserver();
+      }
+      this.$nextTick(() => this.placeIndicator(el));
+    },
+    skeletonGrid() {
+      let html = '';
+      for (let i = 0; i < 4; i++) {
+        html += '<div class="welcome-skeleton-card"><div class="welcome-skeleton-img"></div><div class="welcome-skeleton-line"></div><div class="welcome-skeleton-line short"></div></div>';
+      }
+      return html;
+    },
+    async loadMore() {
+      const tab = this.tabs.find(t => t.key === this.active);
+      const grid = document.getElementById(gridId);
+      if (!tab?.url || !grid || this.loading || !this.hasMore) return;
+      this.loading = true;
+      const sentinel = this.$el.querySelector('[data-tab-sentinel]');
+      sentinel?.classList.add('is-active');
+      try {
+        const full = new URL(tab.url, location.origin);
+        full.searchParams.set('offset', String(this.offset));
+        const r = await fetch(full.toString(), { headers: { 'Accept': 'application/json' } });
+        if (!r.ok) throw new Error('Request failed');
+        const d = await r.json();
+        grid.insertAdjacentHTML('beforeend', d.html);
+        window.AnvBoot(grid);
+        this.offset += d.count || 0;
+        this.hasMore = !!d.hasMore;
+      } catch (e) {
+        /* silently stop infinite loading on error */
+      }
+      sentinel?.classList.remove('is-active');
+      this.loading = false;
+    },
+  }));
 
     // Category page tabs (welcome/featured/cross-sell sections): switch active tab,
     // lazy-load that category's products into the rail via the AJAX endpoint.
