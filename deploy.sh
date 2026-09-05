@@ -22,8 +22,10 @@ php artisan config:clear || true
 php artisan cache:clear || true
 php artisan event:clear || true
 
-echo "==> [3/3] removing any compiled/packed bootstrap caches"
-rm -f bootstrap/cache/*.php
+echo "==> [3/3] rebuilding production caches (faster page loads)"
+php artisan config:cache || true
+php artisan route:cache || true
+php artisan view:cache || true
 
 echo ""
 echo "==> Done. Hard-refresh the browser (Cmd/Ctrl+Shift+R)."
