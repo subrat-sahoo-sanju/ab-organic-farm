@@ -6,11 +6,12 @@ if (!window.__tabGridRegistered) {
     Alpine.data('tabGrid', (gridId, initial = 'all') => ({
       active: initial,
       loading: false,
+      gridId,
       async pick(id, url) {
         if (this.loading || this.active === id) return;
         this.active = id;
         this.loading = true;
-        const grid = document.getElementById(gridId);
+        const grid = document.getElementById(this.gridId);
         grid?.classList.add('opacity-40', 'pointer-events-none');
         try {
           const r = await fetch(url, { headers: { 'Accept': 'application/json' } });
@@ -32,12 +33,13 @@ if (!window.__tabGridRegistered) {
     active: initialKey,
     loading: false,
     tabs,
+    gridId,
     offset: 0,
     hasMore: false,
     _observer: null,
     mobileQuery: window.matchMedia('(max-width: 639px)'),
     init() {
-      const grid = document.getElementById(gridId);
+      const grid = document.getElementById(this.gridId);
       if (grid && grid.classList.contains('welcome-grid')) {
         this.hasMore = grid.dataset.total !== undefined
           ? Number(grid.dataset.more || 0) > 0
@@ -56,7 +58,7 @@ if (!window.__tabGridRegistered) {
       this.$nextTick(() => setTimeout(tryShow, 0));
       this.$el.addEventListener('scroll', () => this.checkScrollHint(), true);
       window.addEventListener('resize', () => this.checkScrollHint());
-      this.armObserver();
+      this.$nextTick(() => this.armObserver());
     },
     activeBtn() {
       const rail = this.$el.querySelector('.welcome-tabs-rail, .cat-welcome-tabs, [x-ref="rail"]');
@@ -104,7 +106,7 @@ if (!window.__tabGridRegistered) {
     armObserver() {
       if (this.mobileQuery.matches && !this._observer) {
         const sentinel = this.$el.querySelector('[data-tab-sentinel]');
-        const grid = document.getElementById(gridId);
+        const grid = document.getElementById(this.gridId);
         if (sentinel && grid && grid.classList.contains('welcome-grid')) {
           this._observer = new IntersectionObserver(entries => {
             if (entries.some(e => e.isIntersecting)) this.loadMore();
@@ -117,7 +119,7 @@ if (!window.__tabGridRegistered) {
       if (this.loading || !el || this.active === tab.key) return;
       this.active = tab.key;
       this.placeIndicator(el);
-      const grid = document.getElementById(gridId);
+      const grid = document.getElementById(this.gridId);
       if (tab.url) {
         this.loading = true;
         if (grid) {
@@ -154,7 +156,7 @@ if (!window.__tabGridRegistered) {
     },
     async loadMore() {
       const tab = this.tabs.find(t => t.key === this.active);
-      const grid = document.getElementById(gridId);
+      const grid = document.getElementById(this.gridId);
       if (!tab?.url || !grid || this.loading || !this.hasMore) return;
       this.loading = true;
       const sentinel = this.$el.querySelector('[data-tab-sentinel]');
@@ -182,11 +184,12 @@ if (!window.__tabGridRegistered) {
     Alpine.data('categoryTabs', (gridId, initialKey) => ({
       active: initialKey,
       loading: false,
+      gridId,
       async pick(tab, el) {
         if (this.loading || !el || !tab.url || tab.url === '#' || this.active === tab.key) return;
         this.active = tab.key;
         this.loading = true;
-        const grid = document.getElementById(gridId);
+        const grid = document.getElementById(this.gridId);
         grid?.classList.add('opacity-40', 'pointer-events-none');
         try {
           const base = tab.url.replace(/\/+$/, '');

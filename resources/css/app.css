@@ -1720,6 +1720,24 @@ textarea.adm-input {
 .anv-hero-dot { width: 8px; height: 8px; border-radius: 9999px; background: rgba(255,255,255,.45); transition: width .25s ease, background .25s ease; }
 .anv-hero-dot.active { width: 26px; background: #fff; }
 
+/* Mobile hero: show the ENTIRE banner (no aggressive 16:9 crop) while keeping a
+   generous max height. Text over the bottom gradient still reads clearly. */
+@media (max-width: 639px) {
+    .hero-slide > .sm\:hidden {
+        aspect-ratio: auto;
+        display: flex;
+        justify-content: center;
+        min-height: 180px;
+        overflow: hidden;
+    }
+    .hero-slide > .sm\:hidden img {
+        width: 100%;
+        height: auto;
+        max-height: 72vh;
+        object-fit: cover;
+    }
+}
+
 /* Reviews slider */
 .anv-rev-nav { width: 40px; height: 40px; border-radius: 9999px; display: grid; place-items: center;
   background: #fff; border: 1px solid #EDF3EF; color: #7C522A; cursor: pointer; transition: all .2s ease; }
@@ -1808,6 +1826,7 @@ textarea.adm-input {
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    justify-content: safe center;
     padding: 0.5rem 0 1rem;
     min-height: 80px;
 }

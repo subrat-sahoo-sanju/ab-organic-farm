@@ -17,16 +17,14 @@
     <div class="welcome-tabs" x-ref="tabsWrapper" @touchstart.passive="onTouchStart" @touchend="onTouchEnd">
         <div class="welcome-tabs-rail" x-ref="rail" role="tablist" aria-label="{{ $sec->title }} categories">
             <template x-for="tab in tabs" :key="tab.key">
-                <button type="button"
+<button type="button"
                         role="tab"
                         :aria-selected="active === tab.key"
+                        :aria-label="tab.title"
                         @click="pick(tab, $el)"
                         :class="['welcome-tab', { 'welcome-tab--active': active === tab.key }]">
                     <div class="welcome-tab__icon">
-                        <img :src="active === tab.key ? (tab.active_icon || tab.inactive_icon) : tab.inactive_icon"
-                             :alt="tab.title + (active === tab.key ? ' (active)' : '')"
-                             loading="eager"
-                             class="welcome-tab__img">
+                        <img :src="active === tab.key ? (tab.active_icon || tab.inactive_icon) : tab.inactive_icon" alt="" loading="eager" onerror="this.closest('.welcome-tab__icon')?.remove()" class="welcome-tab__img">
                     </div>
                     <span class="welcome-tab__label" x-text="tab.title"></span>
                 </button>

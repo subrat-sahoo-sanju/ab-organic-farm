@@ -83,7 +83,7 @@
         @if($children->count())
           <div class="anv-nav-hasmenu relative" @mouseenter="open = '{{ $loop->index }}'" @mouseleave="open = null">
             <a href="{{ $item['url'] ?? '#' }}" class="anv-nav-link {{ !empty($item['highlight']) ? 'nav-rainbow' : '' }}">
-              @if(!empty($item['icon']))<img src="{{ asset('images/nav/'.$item['icon'].'.svg') }}" alt="" onerror="this.style.display='none'">@endif
+              @if(!empty($item['icon']))<img src="{{ nav_icon_src($item['icon']) }}" alt="" onerror="this.style.display='none'">@endif
               <span>{{ $item['label'] }}</span>
               <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9.354.646a.5.5 0 0 0-.708 0L5 4.293 1.354.646a.5.5 0 0 0-.708.708l4 4a.5.5 0 0 0 .708 0l4-4a.5.5 0 0 0 0-.708z"/></svg>
             </a>
@@ -95,7 +95,7 @@
           </div>
         @else
           <a href="{{ $item['url'] ?? '#' }}" class="anv-nav-link {{ !empty($item['highlight']) ? 'nav-rainbow' : '' }}">
-            @if(!empty($item['icon']))<img src="{{ asset('images/nav/'.$item['icon'].'.svg') }}" alt="" onerror="this.style.display='none'">@endif
+            @if(!empty($item['icon']))<img src="{{ nav_icon_src($item['icon']) }}" alt="" onerror="this.style.display='none'">@endif
             <span>{{ $item['label'] }}</span>
           </a>
         @endif
@@ -253,7 +253,7 @@
         @forelse($navItems as $item)
           @php $children = collect($item['children'] ?? []); @endphp
           <a href="{{ $item['url'] ?? '#' }}" class="anv-drawer-item {{ !empty($item['highlight']) ? 'nav-rainbow' : '' }}" @click="drawer=false">
-            @if(!empty($item['icon']))<img src="{{ asset('images/nav/'.$item['icon'].'.svg') }}" alt="" onerror="this.style.display='none'">@endif
+            @if(!empty($item['icon']))<img src="{{ nav_icon_src($item['icon']) }}" alt="" onerror="this.style.display='none'">@endif
             <span>{{ $item['label'] }}</span>
           </a>
           @if($children->count())

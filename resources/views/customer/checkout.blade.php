@@ -32,6 +32,67 @@
       </div>
     </div>
 
+    {{-- Mobile: collapsible quick summary (saves scrolling, keeps total visible) --}}
+    <div class="mb-4 lg:hidden" x-data="{ open: false }">
+      <button type="button" @click="open = !open"
+        class="flex w-full items-center justify-between gap-3 rounded-2xl border border-gray-100 bg-white px-4 py-3.5 shadow-sm transition active:scale-[0.99]">
+        <span class="flex items-center gap-2 text-sm font-bold text-gray-900">
+          <svg class="h-4 w-4 text-[#7C522A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+          Order Summary
+          <span class="rounded-full bg-[#7C522A]/10 px-2 py-0.5 text-[11px] font-bold text-[#7C522A]">{{ $breakdown['lines']->count() }} item{{ $breakdown['lines']->count() > 1 ? 's' : '' }}</span>
+        </span>
+        <span class="flex items-center gap-2">
+          <span class="text-base font-extrabold text-gray-900">₹{{ number_format($breakdown['grand_total']) }}</span>
+          <svg class="h-4 w-4 text-gray-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </span>
+      </button>
+
+      <div x-show="open" x-transition.opacity x-cloak class="mt-2 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+        <div class="px-4 py-4">
+          <h3 class="mb-3 text-[11px] font-bold uppercase tracking-wider text-gray-400">Bill Details</h3>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between">
+              <span class="text-gray-500">Item total</span>
+              <span class="font-medium text-gray-900">₹{{ number_format($breakdown['subtotal'] + ($breakdown['product_discount'] ?? 0)) }}</span>
+            </div>
+            @if(($breakdown['product_discount'] ?? 0) > 0)
+              <div class="flex justify-between">
+                <span class="text-[#7C522A]">Product discount</span>
+                <span class="font-medium text-[#7C522A]">-₹{{ number_format($breakdown['product_discount']) }}</span>
+              </div>
+            @endif
+            @if(($breakdown['coupon_discount'] ?? 0) > 0)
+              <div class="flex justify-between">
+                <span class="text-[#7C522A]">Coupon discount</span>
+                <span class="font-medium text-[#7C522A]">-₹{{ number_format($breakdown['coupon_discount']) }}</span>
+              </div>
+            @endif
+            <div class="flex justify-between">
+              <span class="text-gray-500">Delivery charge</span>
+              @if($breakdown['delivery_charge'] > 0)
+                <span class="font-medium text-gray-900">₹{{ number_format($breakdown['delivery_charge']) }}</span>
+              @else
+                <span class="font-bold text-[#7C522A]">FREE</span>
+              @endif
+            </div>
+          </div>
+
+          <div class="my-3.5 border-t border-dashed border-gray-200"></div>
+
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-extrabold text-gray-900">Grand Total</span>
+            <span class="text-base font-extrabold text-gray-900">₹{{ number_format($breakdown['grand_total']) }}</span>
+          </div>
+
+          @if(($breakdown['product_discount'] ?? 0) + ($breakdown['coupon_discount'] ?? 0) > 0)
+            <div class="mt-3 rounded-xl bg-[#7C522A]/5 px-3 py-2.5 text-center">
+              <span class="text-xs font-bold text-[#7C522A]">You're saving ₹{{ number_format(($breakdown['product_discount'] ?? 0) + ($breakdown['coupon_discount'] ?? 0)) }} on this order!</span>
+            </div>
+          @endif
+        </div>
+      </div>
+    </div>
+
     <div class="grid gap-6 lg:grid-cols-[1fr_400px]">
 
       {{-- ===== LEFT COLUMN ===== --}}

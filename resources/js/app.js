@@ -672,7 +672,6 @@ Alpine.data('livePanel', (cfg = {}) => ({
 const initBrandLoader = () => {
     const el = document.getElementById('brand-loader')
     if (!el) return
-    const pos = el.style.position
     let t = null
 
     const show = () => el.classList.add('is-visible')
